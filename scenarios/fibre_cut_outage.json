@@ -1,0 +1,40 @@
+{
+  "meta": {
+    "id": "fibre_cut_outage",
+    "name": "Metro fibre cut (non-disaster)",
+    "description": "Northgate: roadworks cut a metro fibre feeding the business district and a care home. No disaster: the same engine handles a routine infrastructure outage.",
+    "hazard_label": "Fibre cut (roadworks)",
+    "category": "validation",
+    "center_lat": 51.512,
+    "center_lon": -0.100,
+    "zoom": 13.4
+  },
+  "dynamics": {"battery_drain_pct_per_min": 0.0, "demand_per_person": 0.008},
+  "zones": [
+    {"id": "Z-BIZ", "name": "Business District", "lat": 51.515, "lon": -0.095, "radius_m": 600, "population": 15000, "road_access": "open"},
+    {"id": "Z-CARE", "name": "Elm Park (care home)", "lat": 51.508, "lon": -0.110, "radius_m": 500, "population": 2000, "road_access": "open"},
+    {"id": "Z-RES", "name": "Riverside Residential", "lat": 51.506, "lon": -0.090, "radius_m": 600, "population": 8000, "road_access": "open"}
+  ],
+  "sites": [
+    {"id": "S-CARE", "name": "Elm Park Care Home", "kind": "care_home", "zone_id": "Z-CARE", "critical": true}
+  ],
+  "assets": [
+    {"id": "CORE", "name": "Metro core", "kind": "core", "lat": 51.520, "lon": -0.080},
+    {"id": "FB-1", "name": "FB-1 Metro fibre (north)", "kind": "backhaul_link", "lat": 51.514, "lon": -0.100, "links": ["CORE"]},
+    {"id": "FB-2", "name": "FB-2 Metro fibre (south)", "kind": "backhaul_link", "lat": 51.507, "lon": -0.095, "links": ["CORE"]},
+    {"id": "B1", "name": "B1 Business-A", "kind": "cell_tower", "lat": 51.516, "lon": -0.097, "capacity": 60, "coverage_zones": ["Z-BIZ"], "links": ["FB-1"], "serves": ["voice", "data", "text"]},
+    {"id": "B2", "name": "B2 Business-B", "kind": "cell_tower", "lat": 51.513, "lon": -0.092, "capacity": 60, "coverage_zones": ["Z-BIZ"], "links": ["FB-1"], "serves": ["voice", "data", "text"]},
+    {"id": "B3", "name": "B3 Elm Park", "kind": "cell_tower", "lat": 51.509, "lon": -0.106, "capacity": 30, "coverage_zones": ["Z-CARE", "Z-BIZ"], "links": ["FB-1"], "serves": ["voice", "data", "text"]},
+    {"id": "B4", "name": "B4 Riverside", "kind": "cell_tower", "lat": 51.506, "lon": -0.091, "capacity": 70, "coverage_zones": ["Z-RES"], "links": ["FB-2"], "serves": ["voice", "data", "text"]},
+    {"id": "SAT-N", "name": "SAT-N Telco van terminal", "kind": "sat_terminal", "lat": 51.505, "lon": -0.085, "status": "standby", "bandwidth": 25, "mobile": true, "coverage_zones": ["Z-CARE"], "serves": ["voice", "data", "text"]},
+    {"id": "MBS-N", "name": "MBS-N Cell on wheels", "kind": "mobile_base_station", "lat": 51.503, "lon": -0.080, "status": "standby", "capacity": 60, "mobile": true, "depot": "Telco depot", "links": ["CORE"], "serves": ["voice", "data", "text"]},
+    {"id": "TS-N", "name": "TETRA site Northgate", "kind": "tetra_site", "lat": 51.511, "lon": -0.098, "capacity": 15, "coverage_zones": ["Z-BIZ", "Z-CARE", "Z-RES"], "serves": ["responder_radio"]}
+  ],
+  "events": [
+    {"t": 0, "kind": "telemetry", "channel": "telemetry", "payload": {"id": "TM-1", "asset_id": "FB-1", "changes": {"status": "down"}, "note": "FB-1 metro fibre: loss of light at 10:05; contractor reports excavator strike at roadworks"}},
+    {"t": 3, "kind": "comm", "channel": "facility", "payload": {"id": "F-1", "source_id": "elm-park-care-home", "source_role": "facility", "lat": 51.5082, "lon": -0.1101, "text": "Elm Park Care Home: our nurse call and telecare alarm platform has been offline since 10:05. 64 residents, 2 of them on remote oxygen monitoring."}},
+    {"t": 5, "kind": "comm", "channel": "cellular", "payload": {"id": "C-1", "source_id": "+44-7xxx-2210", "source_role": "citizen", "lat": 51.5152, "lon": -0.0948, "text": "Card payments and phones are down across the business district, shops are closing early."}},
+    {"t": 8, "kind": "comm", "channel": "citizen_app", "payload": {"id": "C-2", "source_id": "app-user-7781", "source_role": "citizen", "lat": 51.5149, "lon": -0.0962, "text": "Cannot reach the office VPN from here, any estimate on when the repair will be done? Nobody is hurt, just annoying."}},
+    {"t": 12, "kind": "telemetry", "channel": "telemetry", "payload": {"id": "TM-2", "asset_id": "B4", "changes": {}, "note": "B4 Riverside: utilisation rising as devices roam from the business district"}}
+  ]
+}

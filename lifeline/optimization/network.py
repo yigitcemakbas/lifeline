@@ -83,10 +83,16 @@ def analyse(
     g = build_graph(assets)
     alive_nodes = [n for n, d in g.nodes(data=True) if d["alive"]]
     live = g.subgraph(alive_nodes)
+    # mesh nodes carry text only: they never provide backhaul for towers or terminals
+    live_backhaul = g.subgraph(
+        [n for n in alive_nodes if g.nodes[n]["kind"] != AssetKind.MESH_NODE]
+    )
     core_ids = [a.id for a in assets if a.kind == AssetKind.CORE and _alive(a)]
 
     def reaches_core(aid: str) -> bool:
-        return aid in live and any(c in live and nx.has_path(live, aid, c) for c in core_ids)
+        return aid in live_backhaul and any(
+            c in live_backhaul and nx.has_path(live_backhaul, aid, c) for c in core_ids
+        )
 
     usable: set[str] = set()
     unusable: dict[str, str] = {}

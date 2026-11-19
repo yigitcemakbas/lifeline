@@ -340,10 +340,9 @@ def apply(
         t.capacity = min(t.capacity, s.bandwidth)
     elif iv.kind == "bridge_mesh":
         g = by_id[iv.asset_ids[0]]
-        if g.status == AssetStatus.STANDBY:
+        if g.status == AssetStatus.STANDBY:  # terminal becomes the mesh gateway only
             g.status = AssetStatus.UP
             g.links = [core]
-            g.coverage_zones = [iv.target_zone] if iv.target_zone else []
         node = by_id[iv.asset_ids[1]]
         node.links = [*node.links, g.id]
     elif iv.kind == "deploy_mobile_bs":
