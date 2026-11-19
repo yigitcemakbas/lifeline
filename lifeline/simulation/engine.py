@@ -259,10 +259,11 @@ class Engine:
             if not need_served(n, self.snapshot) and need_served(n, proj_snap):
                 planned[n.id] = [p.intervention.label for p in self.pending]
         comms_by_id = {c.id: c for c in self.comms}
+        sites = self.scenario.sites
         self.priorities: list[PrioritizedNeed] = prioritize(
-            needs, self.snapshot, comms_by_id, planned
+            needs, self.snapshot, comms_by_id, planned, self.zones, sites
         )
-        proj_priorities = prioritize(needs, proj_snap, comms_by_id)
+        proj_priorities = prioritize(needs, proj_snap, comms_by_id, None, self.zones, sites)
         candidates = generate(self.zones, pa, proj_snap, needs, ppz)
         committed = {r for p in self.pending for r in p.intervention.scarce}
         candidates = [c for c in candidates if not set(c.scarce) & committed]

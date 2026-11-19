@@ -325,7 +325,11 @@ class HeuristicInterpreter:
             c0 = comms[cid]
             life = (
                 Tri.YES
-                if any(comms[m]["triage_floor"] == TriageFloor.LIFE_SAFETY.value for m in members)
+                if any(
+                    comms[m]["triage_floor"] == TriageFloor.LIFE_SAFETY.value
+                    for m in members
+                    if m in comms  # members may include telemetry ids from earlier synthesis
+                )
                 else Tri.UNKNOWN
             )
             incidents.append(

@@ -104,6 +104,8 @@ class Site(BaseModel):
     kind: str  # free text: hospital, shelter, port, clinic, care_home, ...
     zone_id: str
     critical: bool = False
+    lat: float | None = None  # defaults to the zone centre when omitted
+    lon: float | None = None
 
 
 class Zone(BaseModel):

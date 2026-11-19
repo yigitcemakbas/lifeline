@@ -661,7 +661,13 @@ def workflow(engine: Engine) -> None:
         prio = "".join(
             f'<div class="wf-need">{tier_chip(p.tier)}<div>{escape(p.need.who)}</div>'
             f'<div class="ll-small">{escape(zones.get(p.need.zone_id or "", "location unknown"))} · '
-            f"needs {escape(p.need.service.value.replace('_', ' '))} · {escape(p.served)}</div></div>"
+            f"needs {escape(p.need.service.value.replace('_', ' '))} · {escape(p.served)}</div>"
+            + (
+                f'<div class="ll-small">Distance to help: {escape(access_text(p))}</div>'
+                if access_text(p)
+                else ""
+            )
+            + "</div>"
             for p in linked[:2]
         )
     else:
@@ -727,6 +733,11 @@ def workflow(engine: Engine) -> None:
     )
 
 
+def access_text(p: PrioritizedNeed) -> str:
+    """The deterministic distance-to-help reason for a need, if the policy computed one."""
+    return next((c.value for c in p.criteria if c.criterion == "access to help"), "")
+
+
 def priority_queue(engine: Engine) -> None:
     """The core of Lifeline: every situation ranked by urgency, most urgent first."""
     pr = engine.priorities
@@ -763,5 +774,10 @@ def priority_queue(engine: Engine) -> None:
             f'<div class="pq-who">{escape(n.who)}</div>'
             f'<div class="ll-small">{escape(n.purpose)} · {escape(zones.get(n.zone_id or "", "location unknown"))}</div>'
             f'<div class="ll-small">Why this rank: {escape(p.tier_rule)}</div>'
-            f'<div class="pq-status" style="color:{scol}">● {status}</div>{jump_txt}</div></div>'
+            + (
+                f'<div class="ll-small">Distance to help: {escape(access_text(p))}</div>'
+                if access_text(p)
+                else ""
+            )
+            + f'<div class="pq-status" style="color:{scol}">● {status}</div>{jump_txt}</div></div>'
         )
