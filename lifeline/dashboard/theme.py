@@ -110,5 +110,9 @@ EVENT_CSS = """
 .ll-event .ai span { color:var(--acc); font-weight:700; margin-right:6px; }
 .ll-ai { border-bottom:1px solid var(--line); padding:0 0 6px 0; margin-bottom:6px; }
 .ll-ai .ttl { font-weight:900; color:var(--txt); font-size:.85rem; }
+.ll-grid { display:grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap:8px 12px; }
+.ll-m .lbl { font-size:.68rem; color:var(--dim); line-height:1.3; }
+.ll-m .val { font-size:1rem; font-weight:900; color:var(--txt); font-variant-numeric: tabular-nums; }
+.ll-m .dot { display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:5px; vertical-align:middle; }
 </style>
 """

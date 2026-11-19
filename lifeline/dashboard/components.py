@@ -114,7 +114,7 @@ def header(engine: Engine, mode_label: str) -> None:
 def overview(engine: Engine) -> None:
     pic = engine.intel.picture
     pr = engine.priorities
-    c1, c2 = st.columns([3, 2])
+    c1, c2 = st.columns([1, 1])
     with c1:
         changes = [e for e in engine.timeline if e.kind == "intelligence"][-3:][::-1]
         ch_html = "".join(
@@ -142,26 +142,30 @@ def overview(engine: Engine) -> None:
             if a.status == AssetStatus.STANDBY
             and a.kind in (AssetKind.MOBILE_BS, AssetKind.SAT_TERMINAL, AssetKind.TETRA_SITE)
         ]
-        cell = [a for a in engine.assets if a.kind == AssetKind.CELL_TOWER]
-        up = sum(1 for a in cell if a.id in engine.snapshot.usable_assets)
+        cell_towers = [a for a in engine.assets if a.kind == AssetKind.CELL_TOWER]
+        up = sum(1 for a in cell_towers if a.id in engine.snapshot.usable_assets)
+        people = f"{lo}" if lo == hi else f"{lo}–{hi}"
+        if unknown:
+            people += f'<span class="ll-small"> +{unknown} unknown</span>'
+
+        def cell(label: str, value: str, dot: str = "") -> str:
+            d = f'<i class="dot" style="background:{dot}"></i>' if dot else ""
+            return f'<div class="ll-m"><div class="lbl">{d}{label}</div><div class="val">{value}</div></div>'
+
         html(
-            '<div class="ll-panel"><h4>Situation status</h4><div class="ll-strip">'
-            f"<span>{tier_chip(1)}unserved <b>{unserved[1]}</b></span>"
-            f"<span>{tier_chip(2)}unserved <b>{unserved[2]}</b></span>"
-            f"<span>open needs <b>{len(pr)}</b></span>"
-            f"<span>incidents <b>{len(pic.incidents)}</b></span></div>"
-            f'<div class="ll-strip" style="margin-top:6px">'
-            f"<span>people in incidents <b>{lo}–{hi}</b>"
-            f"{f' (+{unknown} unknown)' if unknown else ''}</span>"
-            f"<span>towers usable <b>{up}/{len(cell)}</b></span></div>"
-            f'<div class="ll-strip" style="margin-top:6px">'
-            f"<span>isolated <b>{len(isolated)}</b> · degraded <b>{len(degraded)}</b> zones</span>"
-            f"<span>free resources: <b>{escape(', '.join(free) or 'none')}</b></span></div>"
-            f'<div class="ll-strip" style="margin-top:6px">'
-            f"<span>pending <b>{len(engine.pending)}</b></span>"
-            f"<span>applied <b>{len(engine.applied)}</b></span>"
-            f"<span>contradictions <b>{len(pic.contradictions)}</b></span>"
-            f"<span>info gaps <b>{len(pic.gaps)}</b></span></div></div>"
+            '<div class="ll-panel"><h4>Situation status</h4><div class="ll-grid">'
+            + cell("Critical, unserved", str(unserved[1]), TIER_COLOR[1])
+            + cell("High, unserved", str(unserved[2]), TIER_COLOR[2])
+            + cell("Open needs", str(len(pr)))
+            + cell("Incidents", str(len(pic.incidents)))
+            + cell("People affected", people)
+            + cell("Towers usable", f"{up}/{len(cell_towers)}")
+            + cell("Zones degraded / cut off", f"{len(degraded)} / {len(isolated)}")
+            + cell("Actions en route / in effect", f"{len(engine.pending)} / {len(engine.applied)}")
+            + cell("Information gaps", str(len(pic.gaps)))
+            + "</div>"
+            + f'<div class="ll-small" style="margin-top:6px">Available resources: '
+            f"{escape(', '.join(free) or 'none')}</div></div>"
         )
 
 
