@@ -721,7 +721,7 @@ def workflow(engine: Engine) -> None:
         f'<div class="wf" data-k="{key}"><div class="wf-title">Update at T+{t:.0f} min: how Lifeline '
         'handled it</div><div class="wf-row">'
         + '<div class="wf-arrow">›</div>'.join(
-            _stage(i + 1, title, body, i * 1.2, key) for i, (title, body) in enumerate(stages)
+            _stage(i + 1, title, body, i * 0.6, key) for i, (title, body) in enumerate(stages)
         )
         + "</div></div>"
     )
