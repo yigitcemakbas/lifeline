@@ -25,6 +25,7 @@ from lifeline.models import (
     Zone,
 )
 from lifeline.optimization.allocator import recommend
+from lifeline.optimization.flow import with_allocation
 from lifeline.optimization.interventions import apply, generate
 from lifeline.optimization.network import analyse, need_served
 from lifeline.optimization.prioritizer import prioritize, telemetry_only_ranking
@@ -248,22 +249,34 @@ class Engine:
         return a, pz
 
     def recompute(self) -> None:
-        self.snapshot: NetworkSnapshot = analyse(
-            self.assets, self.zones, self.dpp, self.priority_zones
-        )
         needs = self.intel.picture.needs
-        planned: dict[str, list[str]] = {}
+        comms_by_id = {c.id: c for c in self.comms}
+        sites, interps = self.scenario.sites, self.intel.interpretations
+        incidents = self.intel.picture.incidents
         pa, ppz = self.projected()
+        snap = analyse(self.assets, self.zones, self.dpp, self.priority_zones)
         proj_snap = analyse(pa, self.zones, self.dpp, ppz)
+        # 1. queue order (does not depend on bandwidth), 2. allocate bandwidth in that order
+        order = [
+            p.need
+            for p in prioritize(
+                needs, snap, comms_by_id, None, self.zones, sites, interps, incidents
+            )
+        ]
+        self.snapshot: NetworkSnapshot = with_allocation(
+            snap, self.assets, self.zones, order, self.dpp, self.priority_zones
+        )
+        proj_snap = with_allocation(proj_snap, pa, self.zones, order, self.dpp, ppz)
+        planned: dict[str, list[str]] = {}
         for n in needs:
             if not need_served(n, self.snapshot) and need_served(n, proj_snap):
                 planned[n.id] = [p.intervention.label for p in self.pending]
-        comms_by_id = {c.id: c for c in self.comms}
-        sites = self.scenario.sites
         self.priorities: list[PrioritizedNeed] = prioritize(
-            needs, self.snapshot, comms_by_id, planned, self.zones, sites
+            needs, self.snapshot, comms_by_id, planned, self.zones, sites, interps, incidents
         )
-        proj_priorities = prioritize(needs, proj_snap, comms_by_id, None, self.zones, sites)
+        proj_priorities = prioritize(
+            needs, proj_snap, comms_by_id, None, self.zones, sites, interps, incidents
+        )
         candidates = generate(self.zones, pa, proj_snap, needs, ppz)
         committed = {r for p in self.pending for r in p.intervention.scarce}
         candidates = [c for c in candidates if not set(c.scarce) & committed]

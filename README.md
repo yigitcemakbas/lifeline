@@ -21,7 +21,7 @@ channel adapters → rule-based pre-triage → AI interpretation → AI synthesi
 → network analysis (NetworkX) → priority policy (tiers) → optimizer → operator approval → simulation
 ```
 - **AI interprets and synthesises:** facts labelled verified / reported / inferred with verbatim evidence, incidents merged across duplicate reports, communication needs, dependency chains, contradictions, information gaps, and what changed and why.
-- **Deterministic code decides feasibility:** zone connectivity from the network graph, explicit priority tiers (no weighted scores), and a lexicographic search over scarce resources. Every rejected alternative carries its reason.
+- **Deterministic code decides:** zone connectivity from the network graph; explicit priority tiers (no weighted scores); road routing with Dijkstra over a derived road graph (travel time to help, mobile unit ETAs, blocked routes); Bayesian evidence fusion with source reliability and Marzullo's algorithm for conflicting people counts; urgency-ordered bandwidth allocation as a min-cost flow; and a lexicographic search over scarce resources that simulates every plan end to end. Every rejected alternative carries its reason.
 - **Guards:** quotes must appear verbatim in the source, a single citizen report cannot be "verified", unknown locations are flagged, AI uncertainty can never lower a pre-triage life-safety flag, and no message is dropped.
 
 See [docs/architecture.md](docs/architecture.md) for details and [scenarios/README.md](scenarios/README.md) for the scenario format.

@@ -207,6 +207,12 @@ def need_served(need: CommNeed, snap: NetworkSnapshot) -> bool:
         return ch["tetra"] > 0
     if need.service == Service.TEXT:
         return zs.capacity > 0 or ch["mesh"] > 0
+    alloc = snap.allocation.get(need.id)
+    if alloc is not None:  # min-cost flow result (lifeline.optimization.flow)
+        if need.category in URGENT_CATEGORIES:
+            return zs.capacity > 0 and alloc.fraction >= 0.999
+        if need.category == "population":
+            return alloc.fraction >= 0.5
     if need.category in URGENT_CATEGORIES:
         # priority access can only protect urgent traffic if enough residual capacity remains
         return zs.capacity > 0 and (

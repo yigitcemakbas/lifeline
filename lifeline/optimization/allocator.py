@@ -1,10 +1,11 @@
-"""Deterministic resource allocation.
-
-Searches combinations of scarce resources (mobile base stations, satellite terminals,
-portable repeaters) and picks the plan that serves the most T1 needs, then T2, ..., T5
-(lexicographic), preferring fewer scarce resources and then a shorter ETA. Non-scarce actions
-(priority access, rebalancing, mesh bridging via existing gateways) are added where they help.
-Every candidate that is not chosen is reported with the reason.
+"""Deterministic resource allocation. Every candidate plan is evaluated end to end: apply its
+simulated effects, re-run the network analysis, then re-run the urgency-ordered min-cost flow
+(lifeline.optimization.flow) to see which needs actually get their bandwidth. Searches
+combinations of scarce resources (mobile base stations, satellite terminals, portable
+repeaters) and picks the plan that serves the most T1 needs, then T2, ..., T5 (lexicographic),
+preferring fewer scarce resources and then a shorter ETA. Non-scarce actions (priority access,
+rebalancing, mesh bridging via existing gateways) are added where they help. Every candidate
+that is not chosen is reported with the reason.
 """
 
 from __future__ import annotations
@@ -21,6 +22,7 @@ from lifeline.models import (
     Rejected,
     Zone,
 )
+from lifeline.optimization.flow import with_allocation
 from lifeline.optimization.interventions import apply
 from lifeline.optimization.network import analyse, need_served
 
@@ -39,6 +41,7 @@ def _served(
     for iv in plan:
         a, pz = apply(iv, a, zones, pz)
     snap = analyse(a, zones, demand_per_person, pz)
+    snap = with_allocation(snap, a, zones, [p.need for p in needs], demand_per_person, pz)
     return {p.need.id for p in needs if need_served(p.need, snap)}
 
 

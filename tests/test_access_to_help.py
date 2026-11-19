@@ -72,7 +72,9 @@ def test_farther_from_help_ranks_first_within_tier() -> None:
     ranked = prioritize(needs, _snapshot(NEAR, FAR), comms, None, [NEAR, FAR], [HOSPITAL])
     assert [p.need.id for p in ranked] == ["N-far", "N-near"]
     assert all(p.tier == 1 for p in ranked)
-    assert "km away" in next(c.value for c in ranked[0].criteria if c.criterion == "access to help")
+    assert "min from General Hospital" in next(
+        c.value for c in ranked[0].criteria if c.criterion == "access to help"
+    )
 
 
 def test_distance_never_crosses_tiers() -> None:

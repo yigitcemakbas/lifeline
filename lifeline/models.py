@@ -350,10 +350,24 @@ class ZoneState(BaseModel):
         return self.capacity / self.demand if self.demand > 0 else float("inf")
 
 
+class NeedAllocation(BaseModel):
+    """Bandwidth the min-cost flow gives one need (abstract capacity units)."""
+
+    demand: float
+    allocated: float
+    mode: Literal["priority", "best_effort"]
+    pool_fraction: float | None = None  # share of the zone's best-effort pool that got through
+
+    @property
+    def fraction(self) -> float:
+        return self.allocated / self.demand if self.demand > 0 else 1.0
+
+
 class NetworkSnapshot(BaseModel):
     zones: dict[str, ZoneState]
     usable_assets: list[str]
     unusable: dict[str, str]  # asset id -> reason
+    allocation: dict[str, NeedAllocation] = Field(default_factory=dict)  # need id -> flow result
 
     def facts(self) -> list[str]:
         out = [

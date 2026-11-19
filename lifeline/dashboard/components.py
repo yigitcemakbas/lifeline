@@ -662,11 +662,7 @@ def workflow(engine: Engine) -> None:
             f'<div class="wf-need">{tier_chip(p.tier)}<div>{escape(p.need.who)}</div>'
             f'<div class="ll-small">{escape(zones.get(p.need.zone_id or "", "location unknown"))} · '
             f"needs {escape(p.need.service.value.replace('_', ' '))} · {escape(p.served)}</div>"
-            + (
-                f'<div class="ll-small">Distance to help: {escape(access_text(p))}</div>'
-                if access_text(p)
-                else ""
-            )
+            + algo_lines(p)
             + "</div>"
             for p in linked[:2]
         )
@@ -733,9 +729,24 @@ def workflow(engine: Engine) -> None:
     )
 
 
-def access_text(p: PrioritizedNeed) -> str:
-    """The deterministic distance-to-help reason for a need, if the policy computed one."""
-    return next((c.value for c in p.criteria if c.criterion == "access to help"), "")
+def crit(p: PrioritizedNeed, name: str) -> str:
+    return next((c.value for c in p.criteria if c.criterion == name), "")
+
+
+ALGO_LINES = [
+    ("Travel time to help", "access to help"),
+    ("Life at risk", "life threat"),
+    ("Bandwidth", "bandwidth"),
+]
+
+
+def algo_lines(p: PrioritizedNeed) -> str:
+    """The deterministic results behind a rank: routing, evidence fusion, flow allocation."""
+    return "".join(
+        f'<div class="ll-small">{label}: {escape(crit(p, key))}</div>'
+        for label, key in ALGO_LINES
+        if crit(p, key)
+    )
 
 
 def priority_queue(engine: Engine) -> None:
@@ -774,10 +785,27 @@ def priority_queue(engine: Engine) -> None:
             f'<div class="pq-who">{escape(n.who)}</div>'
             f'<div class="ll-small">{escape(n.purpose)} · {escape(zones.get(n.zone_id or "", "location unknown"))}</div>'
             f'<div class="ll-small">Why this rank: {escape(p.tier_rule)}</div>'
-            + (
-                f'<div class="ll-small">Distance to help: {escape(access_text(p))}</div>'
-                if access_text(p)
-                else ""
-            )
+            + algo_lines(p)
             + f'<div class="pq-status" style="color:{scol}">● {status}</div>{jump_txt}</div></div>'
+        )
+    with st.expander("How the ranking is computed"):
+        html(
+            '<div class="ll-small"><b>AI</b> reads each message: what happened, where, how many '
+            "people, whether a life is at risk. It never ranks.</div>"
+            '<div class="ll-small"><b>Tier rules</b>: life at risk, then hospitals and rescuers, '
+            "then cut-off people, then degraded service, then everything else.</div>"
+            '<div class="ll-small"><b>Road routing</b>: a road graph between areas (minimum spanning '
+            "tree plus nearest neighbours), with blocked roads removed and damaged roads slowed. "
+            "Dijkstra gives travel time from the nearest hospital or rescue base. "
+            "Farther from help ranks higher.</div>"
+            '<div class="ll-small"><b>Evidence fusion</b>: Bayesian log-odds over independent '
+            "sources, weighted by reliability (rescuer &gt; facility &gt; citizen); repeats from one "
+            "phone count once. Marzullo's algorithm finds the people count most reports agree "
+            "on.</div>"
+            '<div class="ll-small"><b>Bandwidth</b>: a min-cost flow over core, backhaul, towers '
+            "and areas. Penalties grow with queue position, so capacity goes strictly to the top "
+            "of this list first where priority access is on; elsewhere traffic shares best effort."
+            "</div>"
+            '<div class="ll-small"><b>Plan search</b>: every combination of scarce resources is '
+            "simulated end to end and the plan serving the most life-safety needs wins.</div>"
         )

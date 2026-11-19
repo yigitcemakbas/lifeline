@@ -26,8 +26,8 @@ from lifeline.optimization.network import (
     need_served,
     power_problem,
 )
+from lifeline.optimization.routing import DETOUR, SPEED_KMH, RoadNetwork
 
-SPEED_KMH = {RoadAccess.OPEN: 40.0, RoadAccess.LIMITED: 15.0}
 SETUP_MIN = {"deploy_mobile_bs": 20.0, "activate_satellite": 10.0, "satellite_backhaul": 25.0}
 BRIDGE_RANGE_M = 3000.0
 SAT_RELOCATE_RANGE_M = 6000.0
@@ -51,6 +51,7 @@ def generate(
     unserved = [n for n in open_needs if not need_served(n, snap)]
     need_zones = sorted({n.zone_id for n in unserved if n.zone_id})
     out: list[Intervention] = []
+    roads = RoadNetwork.build(zones)
 
     # 1. priority access (QoS) for urgent traffic
     for zid in need_zones:
@@ -243,9 +244,8 @@ def generate(
             continue
         for zid in need_zones:
             z = zmap[zid]
-            d = distance_m(u.lat, u.lon, z.lat, z.lon) / 1000
-            road_ok = z.road_access != RoadAccess.BLOCKED
-            speed = SPEED_KMH.get(z.road_access, 15.0)
+            route, route_txt = roads.route(u.lat, u.lon, zid, u.depot or u.name)
+            drive = route.minutes if route else 0.0
             out.append(
                 Intervention(
                     id=f"MBS-{u.id}-{zid}",
@@ -256,9 +256,9 @@ def generate(
                     scarce=[u.id],
                     services=VOICE_DATA,
                     capacity_added=u.capacity,
-                    eta_min=round(SETUP_MIN["deploy_mobile_bs"] + d / speed * 60),
+                    eta_min=round(SETUP_MIN["deploy_mobile_bs"] + drive),
                     preconditions=[
-                        _pc("road access", road_ok, f"{z.name}: {z.road_access.value}"),
+                        _pc("road route (Dijkstra)", route is not None, route_txt),
                         _pc("self-backhaul", True, "microwave/satellite backhaul on unit"),
                         _pc("unit power", power_problem(u) is None, "generator on board"),
                     ],
@@ -275,7 +275,13 @@ def generate(
             continue
         for zid in radio_zones:
             z = zmap[zid]
-            blocked = z.road_access == RoadAccess.BLOCKED
+            route, route_txt = roads.route(r.lat, r.lon, zid, r.name)
+            if route is not None:
+                eta, how = 10 + route.minutes, f"vehicle: {route_txt}"
+            else:  # carried in on foot over the debris
+                walk = distance_m(r.lat, r.lon, z.lat, z.lon) * DETOUR / 1000
+                eta = 10 + walk / SPEED_KMH[RoadAccess.BLOCKED] * 60
+                how = f"carried in on foot ({walk:.1f} km): {route_txt}"
             out.append(
                 Intervention(
                     id=f"TETRA-{r.id}-{zid}",
@@ -286,13 +292,9 @@ def generate(
                     scarce=[r.id],
                     services=[Service.RESPONDER_RADIO],
                     capacity_added=r.capacity,
-                    eta_min=90 if blocked else 30,
+                    eta_min=round(eta),
                     preconditions=[
-                        _pc(
-                            "transport",
-                            True,
-                            "carried in by rescue team on foot" if blocked else "vehicle",
-                        ),
+                        _pc("transport", True, how),
                         _pc("battery", power_problem(r) is None, "portable battery pack"),
                     ],
                     effect=f"Responder radio coverage in {z.name}.",

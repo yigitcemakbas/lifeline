@@ -53,7 +53,7 @@ def test_blocked_road_makes_mobile_bs_infeasible_with_reason(valley: Scenario) -
         for r in e.recommendation.rejected
         if r.intervention.kind == "deploy_mobile_bs" and r.reason_kind == "infeasible"
     ]
-    assert blocked and all("road access" in r.detail for r in blocked)
+    assert blocked and all("no open road" in r.detail for r in blocked)
 
 
 def test_scarce_resource_alternatives_are_explained(city: Scenario) -> None:
