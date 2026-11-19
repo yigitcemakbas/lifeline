@@ -57,58 +57,58 @@ html, body, .stApp, .stApp *:not([data-testid="stIconMaterial"]):not([class*="ma
 :root { --bg:#0e1116; --panel:#151a21; --line:#252c36; --txt:#e6eaf0; --dim:#8a94a3; --acc:#4c8dff; }
 .stApp { background: var(--bg); }
 section[data-testid="stSidebar"] { background:#11151b; border-right:1px solid var(--line); }
-.block-container { padding-top: 1rem; padding-bottom: 2rem; max-width: 100%; }
+.block-container { padding-top: .6rem; padding-bottom: 2rem; max-width: 100%; }
 header[data-testid="stHeader"] { background: transparent; }
-.ll-head { display:flex; align-items:baseline; gap:18px; flex-wrap:wrap; padding:4px 0 14px 0;
-  border-bottom:1px solid var(--line); margin-bottom:14px; }
-.ll-logo { font-weight:900; font-size:1.45rem; color:var(--txt); letter-spacing:-.01em; }
-.ll-scn { font-size:1.05rem; color:var(--txt); font-weight:700; }
-.ll-dim { color: var(--dim); font-size:.88rem; }
-.ll-clock { font-size:1.05rem; color:var(--txt); font-weight:700; font-variant-numeric: tabular-nums; }
+.ll-head { display:flex; align-items:baseline; gap:18px; flex-wrap:wrap; padding:0 0 8px 0;
+  border-bottom:1px solid var(--line); margin-bottom:8px; }
+.ll-logo { font-weight:900; font-size:1.1rem; color:var(--txt); letter-spacing:-.01em; }
+.ll-scn { font-size:.88rem; color:var(--txt); font-weight:700; }
+.ll-dim { color: var(--dim); font-size:.78rem; }
+.ll-clock { font-size:.88rem; color:var(--txt); font-weight:700; font-variant-numeric: tabular-nums; }
 .ll-right { margin-left:auto; color:var(--dim); font-size:.8rem; }
 .ll-badge { display:inline-block; font-size:.74rem; padding:1px 7px; border-radius:4px;
   background:#1d232c; color:#aeb6c2 !important; margin-right:6px; white-space:nowrap; font-weight:400; }
-.ll-sev { display:inline-flex; align-items:center; gap:6px; font-size:.78rem; font-weight:700;
+.ll-sev { display:inline-flex; align-items:center; gap:5px; font-size:.7rem; font-weight:700;
   color:var(--txt); margin-right:8px; white-space:nowrap; }
 .ll-sev i { width:8px; height:8px; border-radius:50%; display:inline-block; }
 .ll-panel { background: var(--panel); border:1px solid var(--line); border-radius:6px;
-  padding:14px 16px; margin-bottom:10px; }
+  padding:8px 10px; margin-bottom:6px; }
 .ll-panel h4 { margin:0 0 8px 0; font-size:.8rem; color: var(--dim); font-weight:700; }
-.ll-summary { font-size:1.02rem; line-height:1.55; color:var(--txt); }
+.ll-summary { font-size:.85rem; line-height:1.55; color:var(--txt); }
 .ll-change { padding:4px 0; margin:2px 0; font-size:.88rem; color:#c9d0da; border-top:1px solid var(--line); }
-.ll-strip { display:grid; grid-template-columns: repeat(2, 1fr); gap:10px 16px; font-size:.85rem; color:var(--dim); }
-.ll-strip b { display:block; font-size:1.35rem; color:var(--txt); font-weight:900; }
+.ll-strip { display:grid; grid-template-columns: repeat(2, 1fr); gap:10px 16px; font-size:.75rem; color:var(--dim); }
+.ll-strip b { display:block; font-size:1rem; color:var(--txt); font-weight:900; }
 .ll-card { background:var(--panel); border:1px solid var(--line); border-radius:6px;
-  padding:12px 14px; margin:8px 0; }
-.ll-title { font-weight:700; font-size:.98rem; color:var(--txt); }
-.ll-small { font-size:.82rem; color: var(--dim); line-height:1.5; }
+  padding:6px 9px; margin:4px 0; }
+.ll-title { font-weight:700; font-size:.82rem; color:var(--txt); }
+.ll-small { font-size:.72rem; color: var(--dim); line-height:1.5; }
 .ll-pc-ok { color:#3dd68c; } .ll-pc-bad { color:#e5484d; }
 .ll-quote { font-size:.86rem; color:#c9d0da; border-left:2px solid var(--line); padding-left:10px; margin:6px 0; }
 .ll-quote mark { background:rgba(76,141,255,.22); color:#e6eaf0; padding:0 2px; border-radius:2px; }
 .ll-fact { font-size:.88rem; margin:4px 0; color:#d5dbe3; }
 .ll-chain { display:flex; flex-wrap:wrap; align-items:center; gap:6px; font-size:.85rem; color:#c9d0da; }
 .ll-chain span.step { border:1px solid var(--line); border-radius:4px; padding:3px 8px; }
-.ll-tl { font-size:.85rem; padding:6px 0; border-top:1px solid var(--line); color:#c9d0da; }
+.ll-tl { font-size:.75rem; padding:3px 0; border-top:1px solid var(--line); color:#c9d0da; }
 .ll-tl .ts { color: var(--dim); margin-right:10px; font-variant-numeric: tabular-nums; }
 .ll-bar { height:3px; background:var(--line); border-radius:2px; overflow:hidden; margin-top:4px; }
 .ll-bar > div { height:100%; background:var(--acc); }
-.ll-legend { font-size:.78rem; color: var(--dim); display:flex; gap:14px; flex-wrap:wrap; margin:6px 0 12px 0; }
+.ll-legend { font-size:.7rem; color: var(--dim); display:flex; gap:14px; flex-wrap:wrap; margin:6px 0 12px 0; }
 .ll-legend i { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:5px; vertical-align:middle; }
 div[data-testid="stTabs"] button p { font-size:.9rem; }
 </style>
 """
 EVENT_CSS = """
 <style>
-.ll-event { display:flex; gap:22px; background:var(--panel); border:1px solid var(--line);
-  border-radius:6px; padding:14px 18px; margin:0 0 14px 0; }
-.ll-event .when { min-width:86px; border-right:1px solid var(--line); padding-right:18px; }
-.ll-event .when b { font-size:1.7rem; font-weight:900; display:block; color:var(--txt);
+.ll-event { display:flex; gap:14px; background:var(--panel); border:1px solid var(--line);
+  border-radius:6px; padding:8px 12px; margin:0 0 8px 0; }
+.ll-event .when { min-width:58px; border-right:1px solid var(--line); padding-right:12px; }
+.ll-event .when b { font-size:1.1rem; font-weight:900; display:block; color:var(--txt);
   font-variant-numeric: tabular-nums; line-height:1.1; }
-.ll-event .what { font-size:1.08rem; color:var(--txt); line-height:1.45; }
-.ll-event .src { font-size:.8rem; color:var(--dim); margin-bottom:4px; }
-.ll-event .ai { margin-top:8px; font-size:.9rem; color:#c9d0da; }
+.ll-event .what { font-size:.86rem; color:var(--txt); line-height:1.45; }
+.ll-event .src { font-size:.7rem; color:var(--dim); margin-bottom:4px; }
+.ll-event .ai { margin-top:4px; font-size:.76rem; color:#c9d0da; }
 .ll-event .ai span { color:var(--acc); font-weight:700; margin-right:6px; }
-.ll-ai { border-bottom:1px solid var(--line); padding:4px 0 12px 0; margin-bottom:6px; }
-.ll-ai .ttl { font-weight:900; color:var(--txt); font-size:1rem; }
+.ll-ai { border-bottom:1px solid var(--line); padding:0 0 6px 0; margin-bottom:6px; }
+.ll-ai .ttl { font-weight:900; color:var(--txt); font-size:.85rem; }
 </style>
 """

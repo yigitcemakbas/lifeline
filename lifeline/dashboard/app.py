@@ -72,7 +72,7 @@ def sidebar(scenarios: list[Scenario]) -> tuple[Scenario, str, float]:
         sb.error("Set GROQ_API_KEY in .env for live AI. Using cached replay.")
         mode = MODES[0]
     sb.markdown("### Simulation")
-    speed = sb.slider("Seconds per update", 0.5, 6.0, 2.0, 0.5)
+    speed = sb.slider("Seconds per update", 2.0, 15.0, 6.0, 1.0)
     return scenario, mode, speed
 
 
@@ -116,9 +116,9 @@ def main() -> None:
 
     ui.header(engine, st.session_state.mode_label)
     ui.event_banner(engine)
-    left, right = st.columns([5, 4])
+    left, right = st.columns([3, 2])
     with left:
-        st.pydeck_chart(build_deck(engine), height=560, use_container_width=True)
+        st.pydeck_chart(build_deck(engine), height=440, use_container_width=True)
         ui.html(
             '<div class="ll-legend"><span><i style="background:#2ea078"></i>connected</span>'
             '<span><i style="background:#e3c84b"></i>congested</span>'
@@ -129,28 +129,7 @@ def main() -> None:
         )
         ui.overview(engine)
     with right:
-        tabs = st.tabs(
-            [
-                "AI decisions",
-                "Who needs help",
-                "What the AI understands",
-                "Options considered",
-                "Live feed",
-                "Timeline",
-            ]
-        )
-        with tabs[0]:
-            ui.ai_decisions(engine)
-        with tabs[1]:
-            ui.needs_panel(engine)
-        with tabs[2]:
-            ui.intelligence_panel(engine)
-        with tabs[3]:
-            ui.recommendations(engine)
-        with tabs[4]:
-            ui.feed(engine)
-        with tabs[5]:
-            ui.timeline(engine)
+        ui.ai_decisions(engine)
 
     if st.session_state.get("playing"):
         if engine.events_done and not engine.pending:
