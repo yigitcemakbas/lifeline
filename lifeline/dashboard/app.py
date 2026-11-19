@@ -72,7 +72,7 @@ def sidebar(scenarios: list[Scenario]) -> tuple[Scenario, str, float]:
         sb.error("Set GROQ_API_KEY in .env for live AI. Using cached replay.")
         mode = MODES[0]
     sb.markdown("### Simulation")
-    speed = sb.slider("Seconds per update", 2.0, 15.0, 6.0, 1.0)
+    speed = sb.slider("Reading time per update (seconds)", 6.0, 30.0, 12.0, 1.0)
     return scenario, mode, speed
 
 
@@ -130,12 +130,15 @@ def main() -> None:
         )
         ui.overview(engine)
     with right:
-        ui.ai_decisions(engine)
+        ui.priority_queue(engine)
+        with st.expander("Actions Lifeline has taken"):
+            ui.ai_decisions(engine)
 
     if st.session_state.get("playing"):
         if engine.events_done and not engine.pending:
             st.session_state.playing = False
         else:
-            time.sleep(speed)
+            # hold until the card animation (~3.5 s) has finished, then the reading time
+            time.sleep(3.5 + speed)
             engine.step()
             st.rerun()

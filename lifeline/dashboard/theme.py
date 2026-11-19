@@ -149,5 +149,15 @@ EVENT_CSS = """
 .wf-need { margin-bottom:5px; font-size:.75rem; color:var(--txt); }
 .wf-dec { font-size:.78rem; font-weight:700; color:var(--txt); margin-top:2px; }
 .wf-res { font-size:.74rem; color:#3dd68c; margin-bottom:3px; }
+.pq { display:flex; gap:10px; background:var(--panel); border:1px solid var(--line); border-radius:6px;
+  padding:7px 10px; margin:5px 0; animation: wfIn .5s ease both; }
+.pq-new { border-color:var(--acc); box-shadow:0 0 0 2px rgba(76,141,255,.25); animation: pqNew 1.2s ease both; }
+@keyframes pqNew { 0% { opacity:0; transform:translateX(24px); background:#1f2a3a; } 100% { opacity:1; transform:none; } }
+.pq-rank { font-size:1.2rem; font-weight:900; color:var(--txt); min-width:22px; }
+.pq-body { flex:1; min-width:0; }
+.pq-who { font-size:.82rem; font-weight:700; color:var(--txt); margin:2px 0; }
+.pq-status { font-size:.72rem; font-weight:700; margin-top:2px; }
+.pq-jump { font-size:.66rem; color:var(--acc); }
+.pq-newtag { font-size:.6rem; font-weight:900; color:var(--acc); border:1px solid var(--acc); border-radius:3px; padding:0 4px; }
 </style>
 """

@@ -725,3 +725,43 @@ def workflow(engine: Engine) -> None:
         )
         + "</div></div>"
     )
+
+
+def priority_queue(engine: Engine) -> None:
+    """The core of Lifeline: every situation ranked by urgency, most urgent first."""
+    pr = engine.priorities
+    html(
+        '<div class="ll-ai"><div class="ttl">Priority queue: most urgent first</div>'
+        '<div class="ll-small">Lifeline reads every report, judges how urgent it is, and gives scarce '
+        "network capacity to the top of this list first. Nothing is dropped; lower items wait.</div></div>"
+    )
+    if not pr:
+        html('<div class="ll-small">No situations yet.</div>')
+        return
+    arrival = sorted(pr, key=lambda p: p.need.first_seen_t)
+    arrival_rank = {p.need.id: i for i, p in enumerate(arrival, start=1)}
+    zones = {z.id: z.name for z in engine.scenario.zones}
+    for i, p in enumerate(pr, start=1):
+        n = p.need
+        is_new = n.first_seen_t == engine.t and engine.cp_index > 0
+        if p.served == "served":
+            status, scol = "Getting through", "#3dd68c"
+        elif p.served == "planned":
+            status, scol = "Help on the way", "#f5a524"
+        else:
+            status, scol = "Waiting for capacity", "#8a94a3"
+        jump = arrival_rank[n.id] - i
+        jump_txt = (
+            f'<span class="pq-jump">↑ {jump} place{"s" if jump > 1 else ""} ahead of arrival order</span>'
+            if jump > 0
+            else ""
+        )
+        html(
+            f'<div class="pq{" pq-new" if is_new else ""}" style="animation-delay:{0.05 * i:.2f}s">'
+            f'<div class="pq-rank">{i}</div><div class="pq-body">'
+            f"<div>{tier_chip(p.tier)}{'<span class=pq-newtag>NEW</span>' if is_new else ''}</div>"
+            f'<div class="pq-who">{escape(n.who)}</div>'
+            f'<div class="ll-small">{escape(n.purpose)} · {escape(zones.get(n.zone_id or "", "location unknown"))}</div>'
+            f'<div class="ll-small">Why this rank: {escape(p.tier_rule)}</div>'
+            f'<div class="pq-status" style="color:{scol}">● {status}</div>{jump_txt}</div></div>'
+        )
