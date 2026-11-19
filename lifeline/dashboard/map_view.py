@@ -217,14 +217,20 @@ def build_deck(engine: Engine) -> pdk.Deck:
             get_position="[lon, lat]",
             get_radius=28,
             radius_units="'pixels'",
+            transitions={"getRadius": 1200},
             filled=False,
             stroked=True,
             get_line_color=[255, 255, 255, 230],
             line_width_min_pixels=4,
         )
     )
+    focus = latest[0] if latest else {"lat": sc.meta.center_lat, "lon": sc.meta.center_lon}
     view = pdk.ViewState(
-        latitude=sc.meta.center_lat, longitude=sc.meta.center_lon, zoom=sc.meta.zoom, pitch=0
+        latitude=focus["lat"],
+        longitude=focus["lon"],
+        zoom=sc.meta.zoom + (0.5 if latest else 0),
+        pitch=0,
+        transition_duration=1500,
     )
     return pdk.Deck(
         layers=layers,

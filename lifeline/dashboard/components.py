@@ -709,18 +709,19 @@ def workflow(engine: Engine) -> None:
     if not res:
         res = '<div class="ll-small">Network state unchanged.</div>'
 
+    reasons = prio
+    if decisions:
+        reasons += '<div class="wf-note">Action taken:</div>' + dec
     stages = [
-        ("Message received", incoming),
-        ("AI interprets", ai),
-        ("Urgency assessed", prio),
-        ("Lifeline decides", dec),
-        ("Network result", res),
+        ("Report received", incoming),
+        ("AI interpretation and reasons", ai),
+        ("Resulting priority", reasons),
     ]
     html(
         f'<div class="wf" data-k="{key}"><div class="wf-title">Update at T+{t:.0f} min: how Lifeline '
         'handled it</div><div class="wf-row">'
         + '<div class="wf-arrow">›</div>'.join(
-            _stage(i + 1, title, body, i * 0.9, key) for i, (title, body) in enumerate(stages)
+            _stage(i + 1, title, body, i * 1.2, key) for i, (title, body) in enumerate(stages)
         )
         + "</div></div>"
     )
