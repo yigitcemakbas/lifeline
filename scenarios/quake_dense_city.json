@@ -5,58 +5,586 @@
     "description": "Aster City after a strong earthquake: towers offline, congestion, a degraded hospital, a collapsed apartment block and rescue teams on TETRA.",
     "hazard_label": "M6.9 earthquake",
     "category": "demo",
-    "center_lat": 38.432,
-    "center_lon": 27.147,
+    "center_lat": 37.872,
+    "center_lon": 32.492,
     "zoom": 12.6
   },
-  "dynamics": {"battery_drain_pct_per_min": 0.0, "demand_per_person": 0.01},
+  "dynamics": {
+    "battery_drain_pct_per_min": 0.0,
+    "demand_per_person": 0.01
+  },
   "zones": [
-    {"id": "Z-NORTH", "name": "North Residential", "lat": 38.455, "lon": 27.140, "radius_m": 900, "population": 18000, "road_access": "limited"},
-    {"id": "Z-OLD", "name": "Old Town", "lat": 38.436, "lon": 27.127, "radius_m": 800, "population": 12000, "road_access": "limited"},
-    {"id": "Z-MED", "name": "Medical District", "lat": 38.434, "lon": 27.162, "radius_m": 700, "population": 10000, "road_access": "open"},
-    {"id": "Z-STAD", "name": "Stadium Park", "lat": 38.414, "lon": 27.176, "radius_m": 700, "population": 3000, "road_access": "open"},
-    {"id": "Z-HILL", "name": "Hillside Quarter", "lat": 38.412, "lon": 27.118, "radius_m": 700, "population": 4000, "road_access": "limited"},
-    {"id": "Z-HARB", "name": "Harbour Front", "lat": 38.421, "lon": 27.146, "radius_m": 800, "population": 9000, "road_access": "open"}
+    {
+      "id": "Z-NORTH",
+      "name": "North Residential",
+      "lat": 37.895,
+      "lon": 32.485,
+      "radius_m": 900,
+      "population": 18000,
+      "road_access": "limited"
+    },
+    {
+      "id": "Z-OLD",
+      "name": "Old Town",
+      "lat": 37.876,
+      "lon": 32.472,
+      "radius_m": 800,
+      "population": 12000,
+      "road_access": "limited"
+    },
+    {
+      "id": "Z-MED",
+      "name": "Medical District",
+      "lat": 37.874,
+      "lon": 32.507,
+      "radius_m": 700,
+      "population": 10000,
+      "road_access": "open"
+    },
+    {
+      "id": "Z-STAD",
+      "name": "Stadium Park",
+      "lat": 37.854,
+      "lon": 32.521,
+      "radius_m": 700,
+      "population": 3000,
+      "road_access": "open"
+    },
+    {
+      "id": "Z-HILL",
+      "name": "Hillside Quarter",
+      "lat": 37.852,
+      "lon": 32.463,
+      "radius_m": 700,
+      "population": 4000,
+      "road_access": "limited"
+    },
+    {
+      "id": "Z-HARB",
+      "name": "Harbour Front",
+      "lat": 37.861,
+      "lon": 32.491,
+      "radius_m": 800,
+      "population": 9000,
+      "road_access": "open"
+    }
   ],
   "sites": [
-    {"id": "S-HOSP", "name": "Aster General Hospital", "kind": "hospital", "zone_id": "Z-MED", "critical": true},
-    {"id": "S-LALE", "name": "Lale Apartments", "kind": "residential", "zone_id": "Z-NORTH"},
-    {"id": "S-SQUARE", "name": "Old Town Square", "kind": "gathering_point", "zone_id": "Z-OLD"}
+    {
+      "id": "S-HOSP",
+      "name": "Aster General Hospital",
+      "kind": "hospital",
+      "zone_id": "Z-MED",
+      "critical": true
+    },
+    {
+      "id": "S-LALE",
+      "name": "Lale Apartments",
+      "kind": "residential",
+      "zone_id": "Z-NORTH"
+    },
+    {
+      "id": "S-SQUARE",
+      "name": "Old Town Square",
+      "kind": "gathering_point",
+      "zone_id": "Z-OLD"
+    }
   ],
   "assets": [
-    {"id": "CORE", "name": "Mobile core", "kind": "core", "lat": 38.428, "lon": 27.190},
-    {"id": "BH-N", "name": "North fibre ring", "kind": "backhaul_link", "lat": 38.447, "lon": 27.160, "links": ["CORE"]},
-    {"id": "BH-S", "name": "South fibre ring", "kind": "backhaul_link", "lat": 38.418, "lon": 27.160, "links": ["CORE"]},
-    {"id": "T1", "name": "T1 North-A", "kind": "cell_tower", "lat": 38.458, "lon": 27.134, "capacity": 60, "coverage_zones": ["Z-NORTH"], "links": ["BH-N"], "serves": ["voice", "data", "text"]},
-    {"id": "T2", "name": "T2 North-B", "kind": "cell_tower", "lat": 38.452, "lon": 27.147, "capacity": 60, "coverage_zones": ["Z-NORTH"], "links": ["BH-N"], "serves": ["voice", "data", "text"]},
-    {"id": "T3", "name": "T3 North-C", "kind": "cell_tower", "lat": 38.446, "lon": 27.131, "capacity": 60, "coverage_zones": ["Z-NORTH", "Z-OLD"], "links": ["BH-N"], "serves": ["voice", "data", "text"]},
-    {"id": "T4", "name": "T4 Medical-A", "kind": "cell_tower", "lat": 38.437, "lon": 27.166, "capacity": 60, "coverage_zones": ["Z-MED"], "links": ["BH-N"], "serves": ["voice", "data", "text"]},
-    {"id": "T5", "name": "T5 Medical-B", "kind": "cell_tower", "lat": 38.428, "lon": 27.158, "capacity": 60, "coverage_zones": ["Z-MED", "Z-STAD", "Z-OLD"], "links": ["BH-S"], "serves": ["voice", "data", "text"]},
-    {"id": "T6", "name": "T6 Old Town", "kind": "cell_tower", "lat": 38.434, "lon": 27.124, "capacity": 60, "coverage_zones": ["Z-OLD"], "links": ["BH-N"], "serves": ["voice", "data", "text"]},
-    {"id": "T7", "name": "T7 Stadium", "kind": "cell_tower", "lat": 38.411, "lon": 27.180, "capacity": 60, "coverage_zones": ["Z-STAD"], "links": ["BH-S"], "serves": ["voice", "data", "text"]},
-    {"id": "T8", "name": "T8 Ridge", "kind": "cell_tower", "lat": 38.416, "lon": 27.130, "capacity": 40, "coverage_zones": ["Z-HILL", "Z-HARB", "Z-STAD"], "links": ["BH-S"], "serves": ["voice", "data", "text"]},
-    {"id": "T9", "name": "T9 Harbour", "kind": "cell_tower", "lat": 38.420, "lon": 27.150, "capacity": 60, "coverage_zones": ["Z-HARB"], "links": ["BH-S"], "serves": ["voice", "data", "text"]},
-    {"id": "SAT-1", "name": "SAT-1 Stadium terminal", "kind": "sat_terminal", "lat": 38.420, "lon": 27.170, "status": "standby", "bandwidth": 40, "coverage_zones": ["Z-STAD", "Z-MED"], "serves": ["voice", "data", "text"]},
-    {"id": "M1", "name": "Mesh node Square", "kind": "mesh_node", "lat": 38.436, "lon": 27.128, "capacity": 4, "coverage_zones": ["Z-OLD"], "links": ["M2", "T6"], "serves": ["text"]},
-    {"id": "M2", "name": "Mesh node Bazaar", "kind": "mesh_node", "lat": 38.438, "lon": 27.122, "capacity": 4, "coverage_zones": ["Z-OLD"], "links": ["M1", "M3"], "serves": ["text"]},
-    {"id": "M3", "name": "Mesh node Mosque Lane", "kind": "mesh_node", "lat": 38.433, "lon": 27.131, "capacity": 4, "coverage_zones": ["Z-OLD"], "links": ["M2"], "serves": ["text"]},
-    {"id": "MBS-1", "name": "MBS-1 Mobile base station", "kind": "mobile_base_station", "lat": 38.408, "lon": 27.185, "status": "standby", "capacity": 80, "mobile": true, "depot": "Logistics yard (Stadium)", "links": ["CORE"], "serves": ["voice", "data", "text"]},
-    {"id": "TS-1", "name": "TETRA site Central", "kind": "tetra_site", "lat": 38.430, "lon": 27.150, "capacity": 20, "coverage_zones": ["Z-NORTH", "Z-OLD", "Z-MED", "Z-STAD", "Z-HILL", "Z-HARB"], "serves": ["responder_radio"]}
+    {
+      "id": "CORE",
+      "name": "Mobile core",
+      "kind": "core",
+      "lat": 37.868,
+      "lon": 32.535
+    },
+    {
+      "id": "BH-N",
+      "name": "North fibre ring",
+      "kind": "backhaul_link",
+      "lat": 37.887,
+      "lon": 32.505,
+      "links": [
+        "CORE"
+      ]
+    },
+    {
+      "id": "BH-S",
+      "name": "South fibre ring",
+      "kind": "backhaul_link",
+      "lat": 37.858,
+      "lon": 32.505,
+      "links": [
+        "CORE"
+      ]
+    },
+    {
+      "id": "T1",
+      "name": "T1 North-A",
+      "kind": "cell_tower",
+      "lat": 37.898,
+      "lon": 32.479,
+      "capacity": 60,
+      "coverage_zones": [
+        "Z-NORTH"
+      ],
+      "links": [
+        "BH-N"
+      ],
+      "serves": [
+        "voice",
+        "data",
+        "text"
+      ]
+    },
+    {
+      "id": "T2",
+      "name": "T2 North-B",
+      "kind": "cell_tower",
+      "lat": 37.892,
+      "lon": 32.492,
+      "capacity": 60,
+      "coverage_zones": [
+        "Z-NORTH"
+      ],
+      "links": [
+        "BH-N"
+      ],
+      "serves": [
+        "voice",
+        "data",
+        "text"
+      ]
+    },
+    {
+      "id": "T3",
+      "name": "T3 North-C",
+      "kind": "cell_tower",
+      "lat": 37.886,
+      "lon": 32.476,
+      "capacity": 60,
+      "coverage_zones": [
+        "Z-NORTH",
+        "Z-OLD"
+      ],
+      "links": [
+        "BH-N"
+      ],
+      "serves": [
+        "voice",
+        "data",
+        "text"
+      ]
+    },
+    {
+      "id": "T4",
+      "name": "T4 Medical-A",
+      "kind": "cell_tower",
+      "lat": 37.877,
+      "lon": 32.511,
+      "capacity": 60,
+      "coverage_zones": [
+        "Z-MED"
+      ],
+      "links": [
+        "BH-N"
+      ],
+      "serves": [
+        "voice",
+        "data",
+        "text"
+      ]
+    },
+    {
+      "id": "T5",
+      "name": "T5 Medical-B",
+      "kind": "cell_tower",
+      "lat": 37.868,
+      "lon": 32.503,
+      "capacity": 60,
+      "coverage_zones": [
+        "Z-MED",
+        "Z-STAD",
+        "Z-OLD"
+      ],
+      "links": [
+        "BH-S"
+      ],
+      "serves": [
+        "voice",
+        "data",
+        "text"
+      ]
+    },
+    {
+      "id": "T6",
+      "name": "T6 Old Town",
+      "kind": "cell_tower",
+      "lat": 37.874,
+      "lon": 32.469,
+      "capacity": 60,
+      "coverage_zones": [
+        "Z-OLD"
+      ],
+      "links": [
+        "BH-N"
+      ],
+      "serves": [
+        "voice",
+        "data",
+        "text"
+      ]
+    },
+    {
+      "id": "T7",
+      "name": "T7 Stadium",
+      "kind": "cell_tower",
+      "lat": 37.851,
+      "lon": 32.525,
+      "capacity": 60,
+      "coverage_zones": [
+        "Z-STAD"
+      ],
+      "links": [
+        "BH-S"
+      ],
+      "serves": [
+        "voice",
+        "data",
+        "text"
+      ]
+    },
+    {
+      "id": "T8",
+      "name": "T8 Ridge",
+      "kind": "cell_tower",
+      "lat": 37.856,
+      "lon": 32.475,
+      "capacity": 40,
+      "coverage_zones": [
+        "Z-HILL",
+        "Z-HARB",
+        "Z-STAD"
+      ],
+      "links": [
+        "BH-S"
+      ],
+      "serves": [
+        "voice",
+        "data",
+        "text"
+      ]
+    },
+    {
+      "id": "T9",
+      "name": "T9 Harbour",
+      "kind": "cell_tower",
+      "lat": 37.86,
+      "lon": 32.495,
+      "capacity": 60,
+      "coverage_zones": [
+        "Z-HARB"
+      ],
+      "links": [
+        "BH-S"
+      ],
+      "serves": [
+        "voice",
+        "data",
+        "text"
+      ]
+    },
+    {
+      "id": "SAT-1",
+      "name": "SAT-1 Stadium terminal",
+      "kind": "sat_terminal",
+      "lat": 37.86,
+      "lon": 32.515,
+      "status": "standby",
+      "bandwidth": 40,
+      "coverage_zones": [
+        "Z-STAD",
+        "Z-MED"
+      ],
+      "serves": [
+        "voice",
+        "data",
+        "text"
+      ]
+    },
+    {
+      "id": "M1",
+      "name": "Mesh node Square",
+      "kind": "mesh_node",
+      "lat": 37.876,
+      "lon": 32.473,
+      "capacity": 4,
+      "coverage_zones": [
+        "Z-OLD"
+      ],
+      "links": [
+        "M2",
+        "T6"
+      ],
+      "serves": [
+        "text"
+      ]
+    },
+    {
+      "id": "M2",
+      "name": "Mesh node Bazaar",
+      "kind": "mesh_node",
+      "lat": 37.878,
+      "lon": 32.467,
+      "capacity": 4,
+      "coverage_zones": [
+        "Z-OLD"
+      ],
+      "links": [
+        "M1",
+        "M3"
+      ],
+      "serves": [
+        "text"
+      ]
+    },
+    {
+      "id": "M3",
+      "name": "Mesh node Mosque Lane",
+      "kind": "mesh_node",
+      "lat": 37.873,
+      "lon": 32.476,
+      "capacity": 4,
+      "coverage_zones": [
+        "Z-OLD"
+      ],
+      "links": [
+        "M2"
+      ],
+      "serves": [
+        "text"
+      ]
+    },
+    {
+      "id": "MBS-1",
+      "name": "MBS-1 Mobile base station",
+      "kind": "mobile_base_station",
+      "lat": 37.848,
+      "lon": 32.53,
+      "status": "standby",
+      "capacity": 80,
+      "mobile": true,
+      "depot": "Logistics yard (Stadium)",
+      "links": [
+        "CORE"
+      ],
+      "serves": [
+        "voice",
+        "data",
+        "text"
+      ]
+    },
+    {
+      "id": "TS-1",
+      "name": "TETRA site Central",
+      "kind": "tetra_site",
+      "lat": 37.87,
+      "lon": 32.495,
+      "capacity": 20,
+      "coverage_zones": [
+        "Z-NORTH",
+        "Z-OLD",
+        "Z-MED",
+        "Z-STAD",
+        "Z-HILL",
+        "Z-HARB"
+      ],
+      "serves": [
+        "responder_radio"
+      ]
+    }
   ],
   "events": [
-    {"t": 0, "kind": "telemetry", "channel": "telemetry", "payload": {"id": "TM-1", "asset_id": "T1", "changes": {"status": "down"}, "note": "T1 North-A: loss of signal, cabinet alarm"}},
-    {"t": 0, "kind": "telemetry", "channel": "telemetry", "payload": {"id": "TM-2", "asset_id": "T2", "changes": {"status": "down"}, "note": "T2 North-B: loss of signal"}},
-    {"t": 0, "kind": "telemetry", "channel": "telemetry", "payload": {"id": "TM-3", "asset_id": "T4", "changes": {"status": "down"}, "note": "T4 Medical-A: power and transmission alarm"}},
-    {"t": 2, "kind": "comm", "channel": "citizen_app", "payload": {"id": "C-1", "source_id": "app-user-2231", "source_role": "citizen", "lat": 38.4562, "lon": 27.1395, "text": "The building at Lale Apartments block C has collapsed!! I can hear people shouting from inside. Please send help"}},
-    {"t": 3, "kind": "comm", "channel": "cellular", "payload": {"id": "C-2", "source_id": "+90-5xx-1187", "source_role": "citizen", "text": "my mother and 2 neighbours are inside lale apartments C block 3rd floor. she is not answering her phone. please someone go there", "delivery_status": "delivered after 4 retries"}},
-    {"t": 4, "kind": "comm", "channel": "facility", "payload": {"id": "F-1", "source_id": "aster-general-ops", "source_role": "facility", "lat": 38.4345, "lon": 27.1615, "text": "Aster General Hospital operations: our main fibre link is down and we are running on one degraded 4G router. We cannot reach the ambulance dispatch system or send imaging to other hospitals. 40 ICU patients on site and casualties are starting to arrive."}},
-    {"t": 5, "kind": "comm", "channel": "tetra", "payload": {"id": "R-1", "source_id": "rescue-team-3", "source_role": "responder", "lat": 38.4561, "lon": 27.1398, "text": "Control, Team 3 on site at Lale Apartments block C. Partial collapse, we have visual on six to ten people trapped under rubble, two confirmed alive by voice contact. Our data terminal cannot connect, we need a data link to the hospital for triage coordination. Over."}},
-    {"t": 6, "kind": "comm", "channel": "cellular", "payload": {"id": "C-3", "source_id": "+90-5xx-4410", "source_role": "citizen", "lat": 38.4118, "lon": 27.1189, "text": "grandfather trapped under the fallen garden wall on Ridge Lane, 2 kids with him, cant get through on 112 keeps dropping. my battery is 10%", "delivery_status": "delivered (SMS, weak signal)"}},
-    {"t": 7, "kind": "comm", "channel": "citizen_app", "payload": {"id": "C-4", "source_id": "app-user-0912", "source_role": "citizen", "lat": 38.4205, "lon": 27.1452, "text": "Roof tiles fell onto parked cars at the harbour front promenade, nobody hurt as far as I can see"}},
-    {"t": 8, "kind": "comm", "channel": "mesh", "payload": {"id": "MS-1", "source_id": "mesh-M1-user", "source_role": "citizen", "zone_hint": "Z-OLD", "text": "Sent from the old town mesh: about 30 of us gathered at the square, phones barely work. Need info on which shelters are open, some elderly with us"}},
-    {"t": 10, "kind": "comm", "channel": "citizen_app", "payload": {"id": "C-5", "source_id": "app-user-5520", "source_role": "citizen", "lat": 38.4559, "lon": 27.1401, "text": "Lale apartments block C - around 20 people live there, I don't know how many were home when it happened"}},
-    {"t": 12, "kind": "telemetry", "channel": "telemetry", "payload": {"id": "TM-4", "asset_id": "T5", "changes": {"load": 60}, "note": "T5 Medical-B: utilisation 100%, call setup failures rising"}},
-    {"t": 14, "kind": "comm", "channel": "tetra", "payload": {"id": "R-2", "source_id": "rescue-team-3", "source_role": "responder", "lat": 38.4561, "lon": 27.1398, "text": "Control, Team 3. Four people extracted alive from block C, at least three still trapped. We need ambulance coordination, mobile phones on site are useless. Over."}},
-    {"t": 15, "kind": "comm", "channel": "facility", "payload": {"id": "F-2", "source_id": "aster-general-ops", "source_role": "facility", "lat": 38.4345, "lon": 27.1615, "text": "Aster General update: staff are now using personal phones. We are not receiving patient pre-alerts from ambulances in the field."}}
+    {
+      "t": 0,
+      "kind": "telemetry",
+      "channel": "telemetry",
+      "payload": {
+        "id": "TM-1",
+        "asset_id": "T1",
+        "changes": {
+          "status": "down"
+        },
+        "note": "T1 North-A: loss of signal, cabinet alarm"
+      }
+    },
+    {
+      "t": 0,
+      "kind": "telemetry",
+      "channel": "telemetry",
+      "payload": {
+        "id": "TM-2",
+        "asset_id": "T2",
+        "changes": {
+          "status": "down"
+        },
+        "note": "T2 North-B: loss of signal"
+      }
+    },
+    {
+      "t": 0,
+      "kind": "telemetry",
+      "channel": "telemetry",
+      "payload": {
+        "id": "TM-3",
+        "asset_id": "T4",
+        "changes": {
+          "status": "down"
+        },
+        "note": "T4 Medical-A: power and transmission alarm"
+      }
+    },
+    {
+      "t": 2,
+      "kind": "comm",
+      "channel": "citizen_app",
+      "payload": {
+        "id": "C-1",
+        "source_id": "app-user-2231",
+        "source_role": "citizen",
+        "lat": 37.8962,
+        "lon": 32.4845,
+        "text": "The building at Lale Apartments block C has collapsed!! I can hear people shouting from inside. Please send help"
+      }
+    },
+    {
+      "t": 3,
+      "kind": "comm",
+      "channel": "cellular",
+      "payload": {
+        "id": "C-2",
+        "source_id": "+90-5xx-1187",
+        "source_role": "citizen",
+        "text": "my mother and 2 neighbours are inside lale apartments C block 3rd floor. she is not answering her phone. please someone go there",
+        "delivery_status": "delivered after 4 retries"
+      }
+    },
+    {
+      "t": 4,
+      "kind": "comm",
+      "channel": "facility",
+      "payload": {
+        "id": "F-1",
+        "source_id": "aster-general-ops",
+        "source_role": "facility",
+        "lat": 37.8745,
+        "lon": 32.5065,
+        "text": "Aster General Hospital operations: our main fibre link is down and we are running on one degraded 4G router. We cannot reach the ambulance dispatch system or send imaging to other hospitals. 40 ICU patients on site and casualties are starting to arrive."
+      }
+    },
+    {
+      "t": 5,
+      "kind": "comm",
+      "channel": "tetra",
+      "payload": {
+        "id": "R-1",
+        "source_id": "rescue-team-3",
+        "source_role": "responder",
+        "lat": 37.8961,
+        "lon": 32.4848,
+        "text": "Control, Team 3 on site at Lale Apartments block C. Partial collapse, we have visual on six to ten people trapped under rubble, two confirmed alive by voice contact. Our data terminal cannot connect, we need a data link to the hospital for triage coordination. Over."
+      }
+    },
+    {
+      "t": 6,
+      "kind": "comm",
+      "channel": "cellular",
+      "payload": {
+        "id": "C-3",
+        "source_id": "+90-5xx-4410",
+        "source_role": "citizen",
+        "lat": 37.8518,
+        "lon": 32.4639,
+        "text": "grandfather trapped under the fallen garden wall on Ridge Lane, 2 kids with him, cant get through on 112 keeps dropping. my battery is 10%",
+        "delivery_status": "delivered (SMS, weak signal)"
+      }
+    },
+    {
+      "t": 7,
+      "kind": "comm",
+      "channel": "citizen_app",
+      "payload": {
+        "id": "C-4",
+        "source_id": "app-user-0912",
+        "source_role": "citizen",
+        "lat": 37.8605,
+        "lon": 32.4902,
+        "text": "Roof tiles fell onto parked cars at the harbour front promenade, nobody hurt as far as I can see"
+      }
+    },
+    {
+      "t": 8,
+      "kind": "comm",
+      "channel": "mesh",
+      "payload": {
+        "id": "MS-1",
+        "source_id": "mesh-M1-user",
+        "source_role": "citizen",
+        "zone_hint": "Z-OLD",
+        "text": "Sent from the old town mesh: about 30 of us gathered at the square, phones barely work. Need info on which shelters are open, some elderly with us"
+      }
+    },
+    {
+      "t": 10,
+      "kind": "comm",
+      "channel": "citizen_app",
+      "payload": {
+        "id": "C-5",
+        "source_id": "app-user-5520",
+        "source_role": "citizen",
+        "lat": 37.8959,
+        "lon": 32.4851,
+        "text": "Lale apartments block C - around 20 people live there, I don't know how many were home when it happened"
+      }
+    },
+    {
+      "t": 12,
+      "kind": "telemetry",
+      "channel": "telemetry",
+      "payload": {
+        "id": "TM-4",
+        "asset_id": "T5",
+        "changes": {
+          "load": 60
+        },
+        "note": "T5 Medical-B: utilisation 100%, call setup failures rising"
+      }
+    },
+    {
+      "t": 14,
+      "kind": "comm",
+      "channel": "tetra",
+      "payload": {
+        "id": "R-2",
+        "source_id": "rescue-team-3",
+        "source_role": "responder",
+        "lat": 37.8961,
+        "lon": 32.4848,
+        "text": "Control, Team 3. Four people extracted alive from block C, at least three still trapped. We need ambulance coordination, mobile phones on site are useless. Over."
+      }
+    },
+    {
+      "t": 15,
+      "kind": "comm",
+      "channel": "facility",
+      "payload": {
+        "id": "F-2",
+        "source_id": "aster-general-ops",
+        "source_role": "facility",
+        "lat": 37.8745,
+        "lon": 32.5065,
+        "text": "Aster General update: staff are now using personal phones. We are not receiving patient pre-alerts from ambulances in the field."
+      }
+    }
   ]
 }

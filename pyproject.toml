@@ -31,6 +31,9 @@ target-version = "py312"
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP", "SIM"]
 
+[tool.ruff.lint.per-file-ignores]
+"lifeline/dashboard/*" = ["E501"]  # inline HTML templates
+
 [tool.mypy]
 python_version = "3.12"
 check_untyped_defs = true

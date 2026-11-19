@@ -384,3 +384,27 @@ class HeuristicInterpreter:
             confidence=0.3,
             verification_needed=True,
         )
+
+
+class FallbackInterpreter:
+    """Use the primary interpreter; on any LLM failure fall back (and record why)."""
+
+    def __init__(self, primary: Interpreter, fallback: Interpreter) -> None:
+        self.primary = primary
+        self.fallback = fallback
+        self.name = primary.name
+        self.errors: list[str] = []
+
+    def interpret(self, comm: Communication, context: dict[str, Any]) -> Interpretation:
+        try:
+            return self.primary.interpret(comm, context)
+        except Exception as e:  # noqa: BLE001 - any provider failure must not stop the picture
+            self.errors.append(f"interpret {comm.id}: {e}")
+            return self.fallback.interpret(comm, context)
+
+    def synthesize(self, payload: dict[str, Any]) -> SynthesisDelta:
+        try:
+            return self.primary.synthesize(payload)
+        except Exception as e:  # noqa: BLE001
+            self.errors.append(f"synthesis {payload.get('checkpoint')}: {e}")
+            return self.fallback.synthesize(payload)
