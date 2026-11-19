@@ -1,0 +1,7 @@
+# <type>(<scope>): <imperative summary, max 72 chars>
+#
+# Types:  feat | fix | docs | refactor | test | chore | ci | perf
+# Scopes: ingestion | ai | optimization | simulation | dashboard | scenarios | docs | ci
+#
+# Body (optional): why the change was made, not what the diff shows.
+# Footer (optional): BREAKING CHANGE: ..., Refs: ...
