@@ -536,3 +536,191 @@ def ai_decisions(engine: Engine) -> None:
                 f'<div class="ll-card"><span class="ll-sev"><i style="background:#f5a524"></i>En route</span>{escape(p.intervention.label)}, arrives '
                 f"T+{p.activate_t:.0f} min</div>"
             )
+
+
+# --------------------------------------------------------------------------- incident timeline + workflow
+
+
+def disaster_timeline(engine: Engine) -> None:
+    """Horizontal time axis: when the hazard struck, every event so far, and 'now'."""
+    m = engine.scenario.meta
+    end = max(max((e.t for e in engine.scenario.events), default=10.0), engine.t) + 5
+
+    def x(t: float) -> float:
+        return 2 + 96 * t / end
+
+    comms = {c.id: c for c in engine.comms}
+    marks = []
+    for ev in engine.scenario.events:
+        if ev.t > engine.t or engine.cp_index == 0:
+            continue
+        eid = str(ev.payload["id"])
+        if ev.kind == "telemetry":
+            color, label = "#f5a524", str(ev.payload.get("note", ""))
+        else:
+            c = comms.get(eid)
+            color = "#e5484d" if c and c.triage_floor.value == "life_safety" else "#6b8fc7"
+            label = str(ev.payload.get("text", ""))
+        marks.append(
+            f'<div class="tl-dot" title="T+{ev.t:.0f}: {escape(label[:120])}" '
+            f'style="left:{x(ev.t):.1f}%;background:{color}"></div>'
+        )
+    started = engine.cp_index > 0
+    onset = (
+        f'<div class="tl-onset" style="left:{x(0):.1f}%"></div>'
+        f'<div class="tl-onset-lbl" style="left:{x(0):.1f}%">{escape(m.hazard_label)} strikes · T+0</div>'
+        if started
+        else ""
+    )
+    now = f'<div class="tl-now" style="left:{x(engine.t):.1f}%"><span>now T+{engine.t:.0f} min</span></div>'
+    status = (
+        f'<span class="tl-alert">{escape(m.hazard_label)} struck {engine.t:.0f} min ago</span>'
+        if started
+        else '<span class="ll-small">Normal operations. Press ▶ to start the incident.</span>'
+    )
+    html(
+        f'<div class="tl-wrap"><div class="tl-head">{status}'
+        '<span class="ll-small">'
+        '<i class="dot" style="background:#f5a524"></i>infrastructure alert '
+        '<i class="dot" style="background:#e5484d"></i>life-threatening message '
+        '<i class="dot" style="background:#6b8fc7"></i>other message</span></div>'
+        f'<div class="tl-axis">{onset}{"".join(marks)}{now}</div></div>'
+    )
+
+
+def _stage(n: int, title: str, body: str, delay: float, key: str) -> str:
+    return (
+        f'<div class="wf-step" data-k="{key}" style="animation-delay:{delay:.1f}s">'
+        f'<div class="wf-n">{n}</div><div class="wf-t">{title}</div><div class="wf-b">{body}</div></div>'
+    )
+
+
+def workflow(engine: Engine) -> None:
+    """The pipeline for the latest update, revealed stage by stage."""
+    if engine.cp_index == 0:
+        html(
+            '<div class="wf-empty">Lifeline is idle. When the incident starts, each update is '
+            "shown here as it moves through the platform: message received → AI interpretation → "
+            "priority → decision → network result.</div>"
+        )
+        return
+    key = f"{engine.scenario.meta.id}-{engine.cp_index}-{len(engine.applied)}"
+    comms = {c.id: c for c in engine.comms}
+    tel = {e.id: e for e in engine.telemetry}
+    ids = engine.last_event_ids
+    new_comms = [comms[i] for i in ids if i in comms]
+    new_tel = [tel[i] for i in ids if i in tel]
+    zones = {z.id: z.name for z in engine.scenario.zones}
+    t = engine.t
+
+    # 1. incoming
+    if new_comms:
+        c = sorted(new_comms, key=lambda c: c.triage_floor.value != "life_safety")[0]
+        incoming = (
+            f'<div class="wf-src">{escape(c.channel.value.replace("_", " "))} · {escape(c.source_role.value)}'
+            f' · {escape(c.delivery_status)}</div><div class="wf-msg">“{escape(c.text)}”</div>'
+        )
+    else:
+        c = None
+        incoming = "".join(
+            f'<div class="wf-src">network telemetry · {escape(e.asset_id)}</div>'
+            f'<div class="wf-msg">{escape(e.note)}</div>'
+            for e in new_tel[:3]
+        )
+
+    # 2. AI interpretation
+    changes = [e for e in engine.timeline if e.kind == "intelligence" and e.t == t]
+    it = engine.intel.interpretations.get(c.id) if c else None
+    if it:
+        lt = {"yes": "#e5484d", "no": "#3dd68c", "unknown": "#8a94a3"}[it.life_threat.value]
+        people = fmt_range(it.people_min, it.people_max)
+        facts = "".join(
+            f'<div class="wf-fact"><span class="fs">{f.status.value}</span>{escape(f.claim)}</div>'
+            for f in it.facts[:3]
+        )
+        ai = (
+            f'<div class="wf-kv"><span>Life threat</span><b style="color:{lt}">{it.life_threat.value}</b>'
+            f"<span>Where</span><b>{escape(zones.get(it.zone_id or '', 'unknown'))}</b>"
+            f"<span>People</span><b>{escape(people)}</b>"
+            f"<span>Confidence</span><b>{it.confidence:.0%}</b></div>{facts}"
+        )
+    else:
+        ai = (
+            '<div class="wf-msg">'
+            + escape(changes[0].text if changes else engine.intel.picture.summary)
+            + "</div>"
+        )
+    if changes and it:
+        ai += f'<div class="wf-note">Picture updated: {escape(changes[0].text)}</div>'
+
+    # 3. priority
+    linked = [
+        p for p in engine.priorities if c and (any(r.source_id == c.id for r in p.need.evidence))
+    ] or [p for p in engine.priorities if p.need.first_seen_t == t]
+    if linked:
+        prio = "".join(
+            f'<div class="wf-need">{tier_chip(p.tier)}<div>{escape(p.need.who)}</div>'
+            f'<div class="ll-small">{escape(zones.get(p.need.zone_id or "", "location unknown"))} · '
+            f"needs {escape(p.need.service.value.replace('_', ' '))} · {escape(p.served)}</div></div>"
+            for p in linked[:2]
+        )
+    else:
+        prio = '<div class="ll-small">No new communication need identified.</div>'
+
+    # 4. decision
+    decisions = [e for e in engine.timeline if e.kind == "decision" and e.t == t]
+    if decisions:
+        dec = ""
+        for d in decisions[:2]:
+            body = d.text.replace("Lifeline AUTO-APPROVED: ", "")
+            action, _, why = body.partition(". Reason: ")
+            dec += (
+                f'<div class="wf-dec">{escape(action.rstrip("."))}</div>'
+                f'<div class="ll-small">Why: {escape(why)}</div>'
+            )
+    else:
+        covered = [p for p in linked if p.served in ("planned", "served")]
+        if covered:
+            p0 = covered[0]
+            how = ", ".join(p0.served_by) if p0.served_by else "existing network capacity"
+            dec = (
+                f'<div class="wf-dec">No new action needed</div><div class="ll-small">'
+                f"{escape(p0.need.who)} is already covered by {escape(how)}.</div>"
+            )
+        elif linked:
+            dec = (
+                '<div class="wf-dec">No feasible action yet</div><div class="ll-small">'
+                "Need stays open and visible; Lifeline re-plans as resources change.</div>"
+            )
+        else:
+            dec = '<div class="ll-small">No action required for this update.</div>'
+
+    # 5. result
+    outcomes = [e for e in engine.timeline if e.kind == "outcome" and e.t == t]
+    res = "".join(
+        f'<div class="wf-res">{escape(o.text.replace("Simulated effect applied: ", ""))}</div>'
+        for o in outcomes[:2]
+    )
+    res += "".join(
+        f'<div class="wf-res">En route: {escape(p.intervention.label)}, arrives T+{p.activate_t:.0f} min</div>'
+        for p in engine.pending
+        if p.approved_t == t
+    )
+    if not res:
+        res = '<div class="ll-small">Network state unchanged.</div>'
+
+    stages = [
+        ("Message received", incoming),
+        ("AI interprets", ai),
+        ("Urgency assessed", prio),
+        ("Lifeline decides", dec),
+        ("Network result", res),
+    ]
+    html(
+        f'<div class="wf" data-k="{key}"><div class="wf-title">Update at T+{t:.0f} min: how Lifeline '
+        'handled it</div><div class="wf-row">'
+        + '<div class="wf-arrow">›</div>'.join(
+            _stage(i + 1, title, body, i * 0.9, key) for i, (title, body) in enumerate(stages)
+        )
+        + "</div></div>"
+    )

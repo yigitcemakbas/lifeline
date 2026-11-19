@@ -115,7 +115,8 @@ def main() -> None:
     controls(engine)
 
     ui.header(engine, st.session_state.mode_label)
-    ui.event_banner(engine)
+    ui.disaster_timeline(engine)
+    ui.workflow(engine)
     left, right = st.columns([3, 2])
     with left:
         st.pydeck_chart(build_deck(engine), height=440, use_container_width=True)
