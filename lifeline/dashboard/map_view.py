@@ -198,6 +198,29 @@ def build_deck(engine: Engine) -> pdk.Deck:
             get_pixel_offset=[0, 12],
         ),
     ]
+    latest = []
+    latest_pos = {c.id: (c.lon, c.lat) for c in engine.comms if c.lat is not None}
+    tel_asset = {e.id: e.asset_id for e in engine.telemetry}
+    for eid in engine.last_event_ids:
+        if eid in latest_pos:
+            lon, lat = latest_pos[eid]
+            latest.append({"lon": lon, "lat": lat})
+        elif eid in tel_asset and tel_asset[eid] in by_id:
+            a = by_id[tel_asset[eid]]
+            latest.append({"lon": a.lon, "lat": a.lat})
+    layers.append(
+        pdk.Layer(
+            "ScatterplotLayer",
+            latest,
+            get_position="[lon, lat]",
+            get_radius=28,
+            radius_units="'pixels'",
+            filled=False,
+            stroked=True,
+            get_line_color=[255, 255, 255, 230],
+            line_width_min_pixels=4,
+        )
+    )
     view = pdk.ViewState(
         latitude=sc.meta.center_lat, longitude=sc.meta.center_lon, zoom=sc.meta.zoom, pitch=30
     )

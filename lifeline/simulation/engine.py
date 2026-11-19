@@ -54,6 +54,8 @@ class Engine:
     rejected_ids: set[str] = field(default_factory=set)
     checkpoint_times: list[float] = field(default_factory=list)
     cp_index: int = 0
+    autopilot: bool = False  # AI-led mode: Lifeline approves its own plan by priority
+    last_event_ids: list[str] = field(default_factory=list)
 
     def __post_init__(self) -> None:
         self.assets = [a.model_copy(deep=True) for a in self.scenario.assets]
@@ -92,8 +94,10 @@ class Engine:
         self._advance_clock(target)
         if self.events_done:
             self.recompute()
+            self.run_autopilot()
             return
         new_comms: list[Communication] = []
+        self.last_event_ids = [str(e.payload["id"]) for e in self.scenario.events if e.t == target]
         for ev in [e for e in self.scenario.events if e.t == target]:
             item = ingest(ev)
             if isinstance(item, Communication):
@@ -118,6 +122,32 @@ class Engine:
         for ch in changes:
             self.log(target, "intelligence", ch.summary, ch.caused_by + ch.needs_affected)
         self.recompute()
+        self.run_autopilot()
+
+    def run_autopilot(self) -> None:
+        """AI-led mode: approve the plan in priority order, logging the reason for each."""
+        if not self.autopilot:
+            return
+        tiers = {p.need.id: p for p in self.priorities}
+        for _ in range(10):
+            plan = [
+                i for i in self.recommendation.plan if i.intervention.id not in self.rejected_ids
+            ]
+            if not plan:
+                return
+            item = plan[0]
+            served = [tiers[n] for n in item.needs_served if n in tiers]
+            why = "; ".join(f"{p.need.who} ({p.tier_rule})" for p in served[:3]) or item.rationale
+            self.log(
+                self.t,
+                "decision",
+                f"Lifeline AUTO-APPROVED: {item.intervention.label}. Reason: {why}",
+                [item.intervention.id],
+            )
+            before = len(self.applied) + len(self.pending)
+            self.approve(item.intervention.id, auto=True)
+            if len(self.applied) + len(self.pending) == before:
+                return
 
     def _advance_clock(self, target: float) -> None:
         dt = max(0.0, target - self.t)
@@ -149,7 +179,7 @@ class Engine:
 
     # ------------------------------------------------------------------ decisions
 
-    def approve(self, iv_id: str) -> None:
+    def approve(self, iv_id: str, auto: bool = False) -> None:
         iv = next(
             (i.intervention for i in self.recommendation.plan if i.intervention.id == iv_id), None
         )
@@ -164,9 +194,13 @@ class Engine:
             )
         if iv is None:
             return
-        self.log(
-            self.t, "decision", f"Operator APPROVED: {iv.label} (ETA {iv.eta_min:.0f} min)", [iv.id]
-        )
+        if not auto:
+            self.log(
+                self.t,
+                "decision",
+                f"Operator APPROVED: {iv.label} (ETA {iv.eta_min:.0f} min)",
+                [iv.id],
+            )
         p = Pending(iv, self.t, self.t + iv.eta_min)
         if iv.eta_min <= 5:
             self._activate(p)

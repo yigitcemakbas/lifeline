@@ -13,6 +13,7 @@ from lifeline.dashboard.theme import (
     CONN_COLOR,
     FACT_COLOR,
     TIER_COLOR,
+    TIER_LABEL,
     TIMELINE_COLOR,
 )
 from lifeline.models import (
@@ -31,7 +32,7 @@ def html(s: str) -> None:
 
 
 def tier_chip(t: int) -> str:
-    return f'<span class="ll-chip" style="background:{TIER_COLOR[t]}">T{t}</span>'
+    return f'<span class="ll-chip" style="background:{TIER_COLOR[t]}">{TIER_LABEL[t]}</span>'
 
 
 def badge(text: str, color: str) -> str:
@@ -97,7 +98,7 @@ def header(engine: Engine, mode_label: str) -> None:
     m = engine.scenario.meta
     total = len(engine.checkpoint_times)
     html(
-        f'<div class="ll-head"><span class="ll-logo">LIFELINE</span>'
+        f'<div class="ll-head"><span class="ll-logo">Lifeline</span>'
         f'<span class="ll-scn">{escape(m.name)}</span>'
         f'<span class="ll-dim">{escape(m.hazard_label)}</span>'
         f'<span class="ll-clock">T+{engine.t:05.1f} min</span>'
@@ -452,3 +453,67 @@ def timeline(engine: Engine) -> None:
             f'<span class="ts">T+{e.t:.0f}</span>{badge(e.kind, TIMELINE_COLOR[e.kind])}'
             f"{escape(e.text)}</div>"
         )
+
+
+def event_banner(engine: Engine) -> None:
+    """Exactly what just happened, when and where."""
+    if not engine.last_event_ids:
+        html(
+            '<div class="ll-event" style="border-left-color:#3fb6a8"><div class="what">'
+            "Waiting for the first event. Press ▶ Play.</div></div>"
+        )
+        return
+    comms = {c.id: c for c in engine.comms}
+    tel = {e.id: e for e in engine.telemetry}
+    zones = {z.id: z.name for z in engine.scenario.zones}
+    for eid in engine.last_event_ids[:3]:
+        if eid in tel:
+            e = tel[eid]
+            html(
+                f'<div class="ll-event" style="border-left-color:#ff9f1a"><div class="when">'
+                f'<span class="src">time</span><b>T+{e.t:.0f}</b><span class="src">min</span></div>'
+                f'<div><div class="src">INFRASTRUCTURE ALERT · network telemetry · {escape(e.asset_id)}</div>'
+                f'<div class="what">{escape(e.note)}</div></div></div>'
+            )
+        elif eid in comms:
+            c = comms[eid]
+            it = engine.intel.interpretations.get(c.id)
+            where = zones.get(it.zone_id or "", "location unknown") if it else ""
+            ai = (
+                f'<div style="margin-top:6px;color:#cdb8ff"><b>AI reads this as:</b> {escape(it.summary)} '
+                f"· life threat: <b>{it.life_threat.value}</b> · {escape(where)} "
+                f"· confidence {it.confidence:.0%}</div>"
+                if it
+                else ""
+            )
+            color = "#ff4d4f" if c.triage_floor.value == "life_safety" else "#5aa9e6"
+            html(
+                f'<div class="ll-event" style="border-left-color:{color}"><div class="when">'
+                f'<span class="src">time</span><b>T+{c.t:.0f}</b><span class="src">min</span></div>'
+                f'<div><div class="src">INCOMING {escape(c.channel.value.replace("_", " ").upper())} '
+                f"· from {escape(c.source_role.value)}</div>"
+                f'<div class="what">“{escape(c.text)}”</div>{ai}</div></div>'
+            )
+
+
+def ai_decisions(engine: Engine) -> None:
+    decisions = [e for e in engine.timeline if e.kind in ("decision", "outcome")][::-1]
+    html(
+        '<div class="ll-ai"><div class="ttl">Lifeline AI is coordinating</div>'
+        '<div class="ll-small">The AI reads every message and decides what matters most. Lifeline then '
+        "carries out the best feasible actions, most urgent first. Each decision shows its reason.</div></div>"
+    )
+    if not decisions:
+        html('<div class="ll-small">No actions yet.</div>')
+    for e in decisions[:12]:
+        icon = "✅" if e.kind == "outcome" else "🤖"
+        html(
+            f'<div class="ll-card t9"><span class="ll-small">T+{e.t:.0f} min</span><br/>{icon} '
+            f"{escape(e.text)}</div>"
+        )
+    if engine.pending:
+        for p in engine.pending:
+            html(
+                f'<div class="ll-card t2">🚚 En route: {escape(p.intervention.label)}: arrives '
+                f"T+{p.activate_t:.0f} min</div>"
+            )

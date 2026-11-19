@@ -18,7 +18,7 @@ from lifeline.ai.interpreter import (
 )
 from lifeline.dashboard import components as ui
 from lifeline.dashboard.map_view import build_deck
-from lifeline.dashboard.theme import CSS
+from lifeline.dashboard.theme import CSS, EVENT_CSS
 from lifeline.models import Scenario
 from lifeline.simulation.engine import Engine
 from lifeline.simulation.scenario import list_scenarios
@@ -41,7 +41,7 @@ def get_engine(scenario: Scenario, mode: str) -> Engine:
     key = (scenario.meta.id, mode)
     if st.session_state.get("engine_key") != key:
         interp, label = make_interpreter(mode, scenario)
-        st.session_state.engine = Engine(scenario, interp)
+        st.session_state.engine = Engine(scenario, interp, autopilot=True)
         st.session_state.engine_key = key
         st.session_state.mode_label = label
         st.session_state.playing = False
@@ -108,44 +108,48 @@ def main() -> None:
     load_dotenv()
     st.set_page_config(page_title="Lifeline", page_icon="📡", layout="wide")
     ui.html(CSS)
+    ui.html(EVENT_CSS)
     scenarios = list_scenarios()
     scenario, mode, speed = sidebar(scenarios)
     engine = get_engine(scenario, mode)
     controls(engine)
 
     ui.header(engine, st.session_state.mode_label)
-    ui.overview(engine)
+    ui.event_banner(engine)
     left, right = st.columns([5, 4])
     with left:
-        st.pydeck_chart(build_deck(engine), height=520, use_container_width=True)
+        st.pydeck_chart(build_deck(engine), height=560, use_container_width=True)
         ui.html(
             '<div class="ll-legend"><span><i style="background:#2ea078"></i>connected</span>'
             '<span><i style="background:#e3c84b"></i>congested</span>'
             '<span><i style="background:#ff8c28"></i>degraded</span>'
-            '<span><i style="background:#e63c3c"></i>isolated</span>'
-            '<span><i style="background:#3fb6a8"></i>asset usable</span>'
-            '<span><i style="background:#b48ef0"></i>standby resource</span>'
-            '<span><i style="background:#ff4d4f;border:2px solid #fff"></i>need (size = tier)</span>'
-            "<span>arcs: yellow en route · teal applied</span></div>"
+            '<span><i style="background:#e63c3c"></i>cut off</span>'
+            '<span><i style="background:#b48ef0"></i>spare resource</span>'
+            '<span><i style="border:3px solid #fff;background:transparent"></i>latest event</span></div>'
         )
+        ui.overview(engine)
     with right:
-        tabs = st.tabs(["Recommendations", "Needs & priority", "Intelligence", "Channels"])
+        tabs = st.tabs(
+            [
+                "AI decisions",
+                "Who needs help",
+                "What the AI understands",
+                "Options considered",
+                "Live feed",
+                "Timeline",
+            ]
+        )
         with tabs[0]:
-            ui.recommendations(engine)
+            ui.ai_decisions(engine)
         with tabs[1]:
             ui.needs_panel(engine)
         with tabs[2]:
             ui.intelligence_panel(engine)
         with tabs[3]:
-            ui.channels_panel(engine)
-    f, t = st.columns([1, 1])
-    with f:
-        st.markdown("##### Incoming communications")
-        with st.container(height=420):
+            ui.recommendations(engine)
+        with tabs[4]:
             ui.feed(engine)
-    with t:
-        st.markdown("##### Timeline")
-        with st.container(height=420):
+        with tabs[5]:
             ui.timeline(engine)
 
     if st.session_state.get("playing"):
