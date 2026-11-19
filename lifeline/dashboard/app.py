@@ -72,7 +72,7 @@ def sidebar(scenarios: list[Scenario]) -> tuple[Scenario, str, float]:
         sb.error("Set GROQ_API_KEY in .env for live AI. Using cached replay.")
         mode = MODES[0]
     sb.markdown("### Simulation")
-    speed = sb.slider("Reading time per update (seconds)", 6.0, 30.0, 12.0, 1.0)
+    speed = sb.slider("Reading time per update (seconds)", 2.0, 30.0, 2.0, 1.0)
     return scenario, mode, speed
 
 
@@ -139,6 +139,6 @@ def main() -> None:
             st.session_state.playing = False
         else:
             # hold until the card animation (~3.5 s) has finished, then the reading time
-            time.sleep(3.5 + speed)
+            time.sleep(3.5 + speed if speed > 2 else speed)
             engine.step()
             st.rerun()
