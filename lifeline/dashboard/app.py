@@ -123,8 +123,8 @@ def main() -> None:
             '<div class="ll-legend"><span><i style="background:#2ea078"></i>connected</span>'
             '<span><i style="background:#e3c84b"></i>congested</span>'
             '<span><i style="background:#ff8c28"></i>degraded</span>'
-            '<span><i style="background:#e63c3c"></i>cut off</span>'
-            '<span><i style="background:#b48ef0"></i>spare resource</span>'
+            '<span><i style="background:#e63c3c"></i>cut off</span><span><i style="background:#c8d0da"></i>working site</span>'
+            '<span><i style="background:#4c8dff"></i>available resource</span>'
             '<span><i style="border:3px solid #fff;background:transparent"></i>latest event</span></div>'
         )
         ui.overview(engine)

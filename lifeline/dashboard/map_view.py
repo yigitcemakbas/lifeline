@@ -11,9 +11,9 @@ from lifeline.models import AssetKind, AssetStatus
 from lifeline.simulation.engine import Engine
 
 ASSET_RGB = {
-    "usable": [63, 182, 168],
-    "unusable": [230, 60, 60],
-    "standby": [180, 142, 240],
+    "usable": [200, 208, 218],
+    "unusable": [229, 72, 77],
+    "standby": [76, 141, 255],
 }
 KIND_LABEL = {
     AssetKind.CELL_TOWER: "Cell tower",
@@ -39,8 +39,8 @@ def build_deck(engine: Engine) -> pdk.Deck:
                 "lon": z.lon,
                 "lat": z.lat,
                 "r": z.radius_m,
-                "fill": [*rgb, 55],
-                "line": [*rgb, 200],
+                "fill": [*rgb, 0 if zs.state.value == "connected" else 38],
+                "line": [*rgb, 90 if zs.state.value == "connected" else 170],
                 "name": z.name,
                 "tip": f"<b>{z.name}</b><br/>{zs.state.value.upper()} · pop {z.population:,}"
                 f"<br/>capacity {zs.capacity:.0f} / demand {zs.demand:.0f}"
@@ -135,7 +135,7 @@ def build_deck(engine: Engine) -> pdk.Deck:
             get_fill_color="fill",
             get_line_color="line",
             stroked=True,
-            line_width_min_pixels=1.5,
+            line_width_min_pixels=1,
             pickable=True,
         ),
         pdk.Layer(
@@ -185,7 +185,8 @@ def build_deck(engine: Engine) -> pdk.Deck:
             get_position="[lon, lat]",
             get_text="t",
             get_size=13,
-            get_color=[215, 224, 234, 210],
+            font_family="Arial",
+            get_color=[230, 234, 240, 220],
             get_pixel_offset=[0, -26],
         ),
         pdk.Layer(
@@ -194,7 +195,8 @@ def build_deck(engine: Engine) -> pdk.Deck:
             get_position="[lon, lat]",
             get_text="label",
             get_size=10,
-            get_color=[160, 175, 190, 200],
+            font_family="Arial",
+            get_color=[138, 148, 163, 200],
             get_pixel_offset=[0, 12],
         ),
     ]
@@ -222,7 +224,7 @@ def build_deck(engine: Engine) -> pdk.Deck:
         )
     )
     view = pdk.ViewState(
-        latitude=sc.meta.center_lat, longitude=sc.meta.center_lon, zoom=sc.meta.zoom, pitch=30
+        latitude=sc.meta.center_lat, longitude=sc.meta.center_lon, zoom=sc.meta.zoom, pitch=0
     )
     return pdk.Deck(
         layers=layers,

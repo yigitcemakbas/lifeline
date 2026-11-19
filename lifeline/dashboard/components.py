@@ -32,7 +32,11 @@ def html(s: str) -> None:
 
 
 def tier_chip(t: int) -> str:
-    return f'<span class="ll-chip" style="background:{TIER_COLOR[t]}">{TIER_LABEL[t]}</span>'
+    return f'<span class="ll-sev"><i style="background:{TIER_COLOR[t]}"></i>{TIER_LABEL[t]}</span>'
+
+
+def tier_dot(color: str) -> str:
+    return f'<span class="ll-sev"><i style="background:{color}"></i></span>'
 
 
 def badge(text: str, color: str) -> str:
@@ -83,7 +87,7 @@ def evidence_block(engine: Engine, refs: list[EvidenceRef]) -> str:
 
 def fact_line(engine: Engine, f: Fact) -> str:
     color = FACT_COLOR[f.status]
-    flag = f' <span class="ll-small">⚠ {escape(f.flagged)}</span>' if f.flagged else ""
+    flag = f' <span class="ll-small">{escape(f.flagged)}</span>' if f.flagged else ""
     srcs = ", ".join(sorted({r.source_id for r in f.evidence})) or "no evidence"
     return (
         f'<div class="ll-fact">{badge(f.status.value, color)}{escape(f.claim)}'
@@ -101,10 +105,9 @@ def header(engine: Engine, mode_label: str) -> None:
         f'<div class="ll-head"><span class="ll-logo">Lifeline</span>'
         f'<span class="ll-scn">{escape(m.name)}</span>'
         f'<span class="ll-dim">{escape(m.hazard_label)}</span>'
-        f'<span class="ll-clock">T+{engine.t:05.1f} min</span>'
-        f'<span class="ll-dim">update {min(engine.cp_index, total)}/{total}</span>'
-        f"{badge('AI: ' + mode_label, '#b48ef0')}"
-        f"{badge('ALL NETWORK INTEGRATIONS SIMULATED', '#ff9f1a')}</div>"
+        f'<span class="ll-clock">T+{engine.t:.0f} min</span>'
+        f'<span class="ll-dim">update {min(engine.cp_index, total)} of {total}</span>'
+        f'<span class="ll-right">AI: {escape(mode_label)} · network actions simulated</span></div>'
     )
 
 
@@ -171,7 +174,7 @@ def recommendations(engine: Engine) -> None:
     if engine.pending:
         for p in engine.pending:
             html(
-                f'<div class="ll-card t9"><span class="ll-title">⏳ {escape(p.intervention.label)}'
+                f'<div class="ll-card t9"><span class="ll-title">{escape(p.intervention.label)}'
                 f'</span><div class="ll-small">approved T+{p.approved_t:.0f} · active at '
                 f"T+{p.activate_t:.0f} ({max(0.0, p.activate_t - engine.t):.0f} min)</div></div>"
             )
@@ -275,7 +278,7 @@ def need_card(engine: Engine, rank: int, p: PrioritizedNeed) -> None:
     served_color = {"served": "#2ea078", "planned": "#ffd250", "unserved": "#ff4d4f"}[p.served]
     crit = " · ".join(f"{c.criterion}: <b>{escape(c.value)}</b>" for c in p.criteria)
     flags = "".join(
-        f'<div class="ll-small" style="color:#ff9f1a">⚠ {escape(f)}</div>' for f in p.flags
+        f'<div class="ll-small" style="color:#ff9f1a">{escape(f)}</div>' for f in p.flags
     )
     html(
         f'<div class="ll-card t{p.tier}"><span class="ll-title">{rank}. {tier_chip(p.tier)}'
@@ -470,9 +473,9 @@ def event_banner(engine: Engine) -> None:
         if eid in tel:
             e = tel[eid]
             html(
-                f'<div class="ll-event" style="border-left-color:#ff9f1a"><div class="when">'
-                f'<span class="src">time</span><b>T+{e.t:.0f}</b><span class="src">min</span></div>'
-                f'<div><div class="src">INFRASTRUCTURE ALERT · network telemetry · {escape(e.asset_id)}</div>'
+                f'<div class="ll-event"><div class="when">'
+                f'<b>T+{e.t:.0f}</b><span class="src">minutes</span></div>'
+                f'<div><div class="src">Infrastructure alert · network telemetry · {escape(e.asset_id)}</div>'
                 f'<div class="what">{escape(e.note)}</div></div></div>'
             )
         elif eid in comms:
@@ -480,17 +483,17 @@ def event_banner(engine: Engine) -> None:
             it = engine.intel.interpretations.get(c.id)
             where = zones.get(it.zone_id or "", "location unknown") if it else ""
             ai = (
-                f'<div style="margin-top:6px;color:#cdb8ff"><b>AI reads this as:</b> {escape(it.summary)} '
+                f'<div class="ai"><span>AI interpretation</span>{escape(it.summary)} '
                 f"· life threat: <b>{it.life_threat.value}</b> · {escape(where)} "
                 f"· confidence {it.confidence:.0%}</div>"
                 if it
                 else ""
             )
-            color = "#ff4d4f" if c.triage_floor.value == "life_safety" else "#5aa9e6"
+            color = "#e5484d" if c.triage_floor.value == "life_safety" else "#6b8fc7"
             html(
-                f'<div class="ll-event" style="border-left-color:{color}"><div class="when">'
-                f'<span class="src">time</span><b>T+{c.t:.0f}</b><span class="src">min</span></div>'
-                f'<div><div class="src">INCOMING {escape(c.channel.value.replace("_", " ").upper())} '
+                f'<div class="ll-event"><div class="when">'
+                f'<b>T+{c.t:.0f}</b><span class="src">minutes</span></div>'
+                f'<div><div class="src">{tier_dot(color)}Incoming {escape(c.channel.value.replace("_", " "))} message '
                 f"· from {escape(c.source_role.value)}</div>"
                 f'<div class="what">“{escape(c.text)}”</div>{ai}</div></div>'
             )
@@ -499,21 +502,33 @@ def event_banner(engine: Engine) -> None:
 def ai_decisions(engine: Engine) -> None:
     decisions = [e for e in engine.timeline if e.kind in ("decision", "outcome")][::-1]
     html(
-        '<div class="ll-ai"><div class="ttl">Lifeline AI is coordinating</div>'
+        '<div class="ll-ai"><div class="ttl">Autonomous coordination</div>'
         '<div class="ll-small">The AI reads every message and decides what matters most. Lifeline then '
         "carries out the best feasible actions, most urgent first. Each decision shows its reason.</div></div>"
     )
     if not decisions:
         html('<div class="ll-small">No actions yet.</div>')
     for e in decisions[:12]:
-        icon = "✅" if e.kind == "outcome" else "🤖"
+        if e.kind == "outcome":
+            body = e.text.replace("Simulated effect applied: ", "")
+            action, _, result = body.partition(". ")
+            html(
+                f'<div class="ll-tl"><span class="ts">T+{e.t:.0f}</span>'
+                f'<span class="ll-sev"><i style="background:#3dd68c"></i>In effect</span>'
+                f'<div class="ll-small" style="margin-top:2px">{escape(result or action)}</div></div>'
+            )
+            continue
+        body = e.text.replace("Lifeline AUTO-APPROVED: ", "").replace("Operator APPROVED: ", "")
+        action, _, reason = body.partition(". Reason: ")
         html(
-            f'<div class="ll-card t9"><span class="ll-small">T+{e.t:.0f} min</span><br/>{icon} '
-            f"{escape(e.text)}</div>"
+            f'<div class="ll-card"><div class="ll-small">T+{e.t:.0f} min · decided by Lifeline</div>'
+            f'<div class="ll-title" style="margin:2px 0 4px 0">{escape(action.rstrip("."))}</div>'
+            f'<div class="ll-small"><b style="color:#c9d0da">Why:</b> '
+            f"{escape(reason or 'operator decision')}</div></div>"
         )
     if engine.pending:
         for p in engine.pending:
             html(
-                f'<div class="ll-card t2">🚚 En route: {escape(p.intervention.label)}: arrives '
+                f'<div class="ll-card"><span class="ll-sev"><i style="background:#f5a524"></i>En route</span>{escape(p.intervention.label)}, arrives '
                 f"T+{p.activate_t:.0f} min</div>"
             )
