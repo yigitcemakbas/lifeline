@@ -21,7 +21,7 @@ def load_scenario(path: Path | str) -> Scenario:
 
 def list_scenarios(directory: Path = SCENARIO_DIR) -> list[Scenario]:
     out = [load_scenario(p) for p in sorted(directory.glob("*.json"))]
-    return sorted(out, key=lambda s: (s.meta.category != "demo", s.meta.id))
+    return sorted(out, key=lambda s: (s.meta.category != "demo", s.meta.order, s.meta.id))
 
 
 def _check_integrity(s: Scenario) -> None:

@@ -148,6 +148,7 @@ class ScenarioMeta(BaseModel):
     description: str
     hazard_label: str  # display only; the engine never branches on it
     category: Literal["demo", "validation"] = "demo"
+    order: int = 99
     center_lat: float
     center_lon: float
     zoom: float = 12.5

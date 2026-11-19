@@ -5,49 +5,447 @@
     "description": "Kara Valley after an earthquake: sparse towers, landslides blocking roads, villages cut off, mountain rescue on TETRA, satellite and mesh as lifelines.",
     "hazard_label": "M6.4 earthquake",
     "category": "demo",
+    "order": 2,
     "center_lat": 38.612,
     "center_lon": 39.415,
     "zoom": 11.8
   },
-  "dynamics": {"battery_drain_pct_per_min": 0.4, "demand_per_person": 0.012},
+  "dynamics": {
+    "battery_drain_pct_per_min": 0.4,
+    "demand_per_person": 0.012
+  },
   "zones": [
-    {"id": "Z-TOWN", "name": "Valley Town", "lat": 38.600, "lon": 39.400, "radius_m": 1200, "population": 6000, "road_access": "open"},
-    {"id": "Z-UPPER", "name": "Yaylakoy Village", "lat": 38.640, "lon": 39.452, "radius_m": 800, "population": 900, "road_access": "blocked"},
-    {"id": "Z-RIDGE", "name": "Ridge Hamlets", "lat": 38.570, "lon": 39.468, "radius_m": 900, "population": 400, "road_access": "blocked"},
-    {"id": "Z-PASS", "name": "Mountain Pass Road", "lat": 38.652, "lon": 39.352, "radius_m": 1000, "population": 150, "road_access": "limited"}
+    {
+      "id": "Z-TOWN",
+      "name": "Valley Town",
+      "lat": 38.6,
+      "lon": 39.4,
+      "radius_m": 1200,
+      "population": 6000,
+      "road_access": "open"
+    },
+    {
+      "id": "Z-UPPER",
+      "name": "Yaylakoy Village",
+      "lat": 38.64,
+      "lon": 39.452,
+      "radius_m": 800,
+      "population": 900,
+      "road_access": "blocked"
+    },
+    {
+      "id": "Z-RIDGE",
+      "name": "Ridge Hamlets",
+      "lat": 38.57,
+      "lon": 39.468,
+      "radius_m": 900,
+      "population": 400,
+      "road_access": "blocked"
+    },
+    {
+      "id": "Z-PASS",
+      "name": "Mountain Pass Road",
+      "lat": 38.652,
+      "lon": 39.352,
+      "radius_m": 1000,
+      "population": 150,
+      "road_access": "limited"
+    }
   ],
   "sites": [
-    {"id": "S-CLINIC", "name": "Yaylakoy Clinic", "kind": "clinic", "zone_id": "Z-UPPER", "critical": true},
-    {"id": "S-SCHOOL", "name": "Yaylakoy School", "kind": "gathering_point", "zone_id": "Z-UPPER"},
-    {"id": "S-FIRE", "name": "Valley Town Fire Station", "kind": "emergency_base", "zone_id": "Z-TOWN"}
+    {
+      "id": "S-CLINIC",
+      "name": "Yaylakoy Clinic",
+      "kind": "clinic",
+      "zone_id": "Z-UPPER",
+      "critical": true
+    },
+    {
+      "id": "S-SCHOOL",
+      "name": "Yaylakoy School",
+      "kind": "gathering_point",
+      "zone_id": "Z-UPPER"
+    },
+    {
+      "id": "S-FIRE",
+      "name": "Valley Town Fire Station",
+      "kind": "emergency_base",
+      "zone_id": "Z-TOWN"
+    }
   ],
   "assets": [
-    {"id": "CORE", "name": "Regional core", "kind": "core", "lat": 38.560, "lon": 39.330},
-    {"id": "MW-1", "name": "MW-1 Town microwave", "kind": "backhaul_link", "lat": 38.585, "lon": 39.370, "links": ["CORE"]},
-    {"id": "MW-2", "name": "MW-2 Ridge microwave", "kind": "backhaul_link", "lat": 38.590, "lon": 39.440, "links": ["MW-1"]},
-    {"id": "V1", "name": "V1 Valley Town", "kind": "cell_tower", "lat": 38.602, "lon": 39.398, "capacity": 50, "coverage_zones": ["Z-TOWN"], "links": ["MW-1"], "serves": ["voice", "data", "text"]},
-    {"id": "V2", "name": "V2 Upper Ridge", "kind": "cell_tower", "lat": 38.645, "lon": 39.410, "capacity": 40, "coverage_zones": ["Z-UPPER", "Z-PASS"], "links": ["MW-2"], "serves": ["voice", "data", "text"]},
-    {"id": "V3", "name": "V3 Ridge Hamlets", "kind": "cell_tower", "lat": 38.578, "lon": 39.455, "capacity": 30, "coverage_zones": ["Z-RIDGE"], "links": ["MW-2"], "serves": ["voice", "data", "text"]},
-    {"id": "V4", "name": "V4 Town South", "kind": "cell_tower", "lat": 38.592, "lon": 39.405, "capacity": 40, "coverage_zones": ["Z-TOWN"], "links": ["MW-1"], "serves": ["voice", "data", "text"]},
-    {"id": "SAT-A", "name": "SAT-A Clinic terminal", "kind": "sat_terminal", "lat": 38.641, "lon": 39.450, "status": "standby", "bandwidth": 15, "power": "battery", "battery_pct": 90, "coverage_zones": ["Z-UPPER"], "serves": ["voice", "data", "text"]},
-    {"id": "SAT-B", "name": "SAT-B Fire station terminal", "kind": "sat_terminal", "lat": 38.603, "lon": 39.405, "status": "standby", "bandwidth": 20, "mobile": true, "coverage_zones": ["Z-TOWN"], "serves": ["voice", "data", "text"]},
-    {"id": "N1", "name": "Mesh node School", "kind": "mesh_node", "lat": 38.639, "lon": 39.454, "capacity": 3, "power": "battery", "battery_pct": 80, "coverage_zones": ["Z-UPPER"], "links": ["N2"], "serves": ["text"]},
-    {"id": "N2", "name": "Mesh node Mosque", "kind": "mesh_node", "lat": 38.642, "lon": 39.448, "capacity": 3, "power": "battery", "battery_pct": 75, "coverage_zones": ["Z-UPPER"], "links": ["N1"], "serves": ["text"]},
-    {"id": "MBS-1", "name": "MBS-1 Mobile base station", "kind": "mobile_base_station", "lat": 38.598, "lon": 39.392, "status": "standby", "capacity": 60, "mobile": true, "depot": "Valley Town depot", "links": ["CORE"], "serves": ["voice", "data", "text"]},
-    {"id": "TS-V", "name": "TETRA site Valley", "kind": "tetra_site", "lat": 38.605, "lon": 39.395, "capacity": 15, "coverage_zones": ["Z-TOWN"], "serves": ["responder_radio"]},
-    {"id": "TR-1", "name": "TR-1 Portable TETRA repeater", "kind": "tetra_site", "lat": 38.604, "lon": 39.402, "status": "standby", "capacity": 10, "mobile": true, "power": "battery", "battery_pct": 100, "serves": ["responder_radio"]}
+    {
+      "id": "CORE",
+      "name": "Regional core",
+      "kind": "core",
+      "lat": 38.56,
+      "lon": 39.33
+    },
+    {
+      "id": "MW-1",
+      "name": "MW-1 Town microwave",
+      "kind": "backhaul_link",
+      "lat": 38.585,
+      "lon": 39.37,
+      "links": [
+        "CORE"
+      ]
+    },
+    {
+      "id": "MW-2",
+      "name": "MW-2 Ridge microwave",
+      "kind": "backhaul_link",
+      "lat": 38.59,
+      "lon": 39.44,
+      "links": [
+        "MW-1"
+      ]
+    },
+    {
+      "id": "V1",
+      "name": "V1 Valley Town",
+      "kind": "cell_tower",
+      "lat": 38.602,
+      "lon": 39.398,
+      "capacity": 50,
+      "coverage_zones": [
+        "Z-TOWN"
+      ],
+      "links": [
+        "MW-1"
+      ],
+      "serves": [
+        "voice",
+        "data",
+        "text"
+      ]
+    },
+    {
+      "id": "V2",
+      "name": "V2 Upper Ridge",
+      "kind": "cell_tower",
+      "lat": 38.645,
+      "lon": 39.41,
+      "capacity": 40,
+      "coverage_zones": [
+        "Z-UPPER",
+        "Z-PASS"
+      ],
+      "links": [
+        "MW-2"
+      ],
+      "serves": [
+        "voice",
+        "data",
+        "text"
+      ]
+    },
+    {
+      "id": "V3",
+      "name": "V3 Ridge Hamlets",
+      "kind": "cell_tower",
+      "lat": 38.578,
+      "lon": 39.455,
+      "capacity": 30,
+      "coverage_zones": [
+        "Z-RIDGE"
+      ],
+      "links": [
+        "MW-2"
+      ],
+      "serves": [
+        "voice",
+        "data",
+        "text"
+      ]
+    },
+    {
+      "id": "V4",
+      "name": "V4 Town South",
+      "kind": "cell_tower",
+      "lat": 38.592,
+      "lon": 39.405,
+      "capacity": 40,
+      "coverage_zones": [
+        "Z-TOWN"
+      ],
+      "links": [
+        "MW-1"
+      ],
+      "serves": [
+        "voice",
+        "data",
+        "text"
+      ]
+    },
+    {
+      "id": "SAT-A",
+      "name": "SAT-A Clinic terminal",
+      "kind": "sat_terminal",
+      "lat": 38.641,
+      "lon": 39.45,
+      "status": "standby",
+      "bandwidth": 15,
+      "power": "battery",
+      "battery_pct": 90,
+      "coverage_zones": [
+        "Z-UPPER"
+      ],
+      "serves": [
+        "voice",
+        "data",
+        "text"
+      ]
+    },
+    {
+      "id": "SAT-B",
+      "name": "SAT-B Fire station terminal",
+      "kind": "sat_terminal",
+      "lat": 38.603,
+      "lon": 39.405,
+      "status": "standby",
+      "bandwidth": 20,
+      "mobile": true,
+      "coverage_zones": [
+        "Z-TOWN"
+      ],
+      "serves": [
+        "voice",
+        "data",
+        "text"
+      ]
+    },
+    {
+      "id": "N1",
+      "name": "Mesh node School",
+      "kind": "mesh_node",
+      "lat": 38.639,
+      "lon": 39.454,
+      "capacity": 3,
+      "power": "battery",
+      "battery_pct": 80,
+      "coverage_zones": [
+        "Z-UPPER"
+      ],
+      "links": [
+        "N2"
+      ],
+      "serves": [
+        "text"
+      ]
+    },
+    {
+      "id": "N2",
+      "name": "Mesh node Mosque",
+      "kind": "mesh_node",
+      "lat": 38.642,
+      "lon": 39.448,
+      "capacity": 3,
+      "power": "battery",
+      "battery_pct": 75,
+      "coverage_zones": [
+        "Z-UPPER"
+      ],
+      "links": [
+        "N1"
+      ],
+      "serves": [
+        "text"
+      ]
+    },
+    {
+      "id": "MBS-1",
+      "name": "MBS-1 Mobile base station",
+      "kind": "mobile_base_station",
+      "lat": 38.598,
+      "lon": 39.392,
+      "status": "standby",
+      "capacity": 60,
+      "mobile": true,
+      "depot": "Valley Town depot",
+      "links": [
+        "CORE"
+      ],
+      "serves": [
+        "voice",
+        "data",
+        "text"
+      ]
+    },
+    {
+      "id": "TS-V",
+      "name": "TETRA site Valley",
+      "kind": "tetra_site",
+      "lat": 38.605,
+      "lon": 39.395,
+      "capacity": 15,
+      "coverage_zones": [
+        "Z-TOWN"
+      ],
+      "serves": [
+        "responder_radio"
+      ]
+    },
+    {
+      "id": "TR-1",
+      "name": "TR-1 Portable TETRA repeater",
+      "kind": "tetra_site",
+      "lat": 38.604,
+      "lon": 39.402,
+      "status": "standby",
+      "capacity": 10,
+      "mobile": true,
+      "power": "battery",
+      "battery_pct": 100,
+      "serves": [
+        "responder_radio"
+      ]
+    }
   ],
   "events": [
-    {"t": 0, "kind": "telemetry", "channel": "telemetry", "payload": {"id": "TM-1", "asset_id": "V2", "changes": {"status": "down"}, "note": "V2 Upper Ridge: power and transmission lost; access road reported blocked"}},
-    {"t": 0, "kind": "telemetry", "channel": "telemetry", "payload": {"id": "TM-2", "asset_id": "MW-2", "changes": {"status": "down"}, "note": "MW-2 Ridge microwave: loss of frame. V3 Ridge Hamlets still powered but cut off from the core"}},
-    {"t": 0, "kind": "telemetry", "channel": "telemetry", "payload": {"id": "TM-3", "asset_id": "V4", "changes": {"status": "down"}, "note": "V4 Town South: cabinet alarm, off air"}},
-    {"t": 3, "kind": "comm", "channel": "satellite", "payload": {"id": "S-1", "source_id": "yaylakoy-clinic-sat", "source_role": "facility", "lat": 38.6408, "lon": 39.4502, "text": "Yaylakoy clinic: 2 nurses, 11 injured villagers brought in. One man with a crushed leg needs evacuation. Road to town blocked by landslide. No phone signal here."}},
-    {"t": 5, "kind": "comm", "channel": "tetra", "payload": {"id": "R-1", "source_id": "mountain-rescue-2", "source_role": "responder", "lat": 38.6525, "lon": 39.3545, "text": "Mountain Rescue Unit 2 at km 14 on the pass road. Landslide covered the road, at least one car buried, we can hear a horn. We lose radio contact with base beyond the bend, need a relay."}},
-    {"t": 6, "kind": "comm", "channel": "mesh", "payload": {"id": "M-1", "source_id": "mesh-school-teacher", "source_role": "citizen", "zone_hint": "Z-UPPER", "delivery_status": "store-and-forward via passing vehicle, ~40 min delay", "text": "This is the school teacher in Yaylakoy. Families gathered in the school yard, 60-70 people, it will be cold tonight, we need blankets. Some elderly are not accounted for."}},
-    {"t": 8, "kind": "comm", "channel": "cellular", "payload": {"id": "C-1", "source_id": "+90-5xx-7781", "source_role": "citizen", "lat": 38.6012, "lon": 39.3991, "text": "My sister lives in the Ridge Hamlets, I have not heard from her since the shaking. Nobody there answers their phone."}},
-    {"t": 10, "kind": "telemetry", "channel": "telemetry", "payload": {"id": "TM-4", "asset_id": "V3", "changes": {"power": "battery", "battery_pct": 55}, "note": "V3 Ridge Hamlets: mains lost, on battery 55%, still no backhaul"}},
-    {"t": 12, "kind": "comm", "channel": "tetra", "payload": {"id": "R-2", "source_id": "mountain-rescue-2", "source_role": "responder", "lat": 38.6525, "lon": 39.3545, "text": "Unit 2: one person extracted from the buried car, hypothermic but alive. A second vehicle may be under the debris, unconfirmed."}},
-    {"t": 14, "kind": "comm", "channel": "satellite", "payload": {"id": "S-2", "source_id": "yaylakoy-clinic-sat", "source_role": "facility", "lat": 38.6408, "lon": 39.4502, "text": "Yaylakoy clinic: crushed leg patient deteriorating. We need a doctor on the line for guidance, the satellite messenger only allows short texts."}},
-    {"t": 16, "kind": "comm", "channel": "cellular", "payload": {"id": "C-2", "source_id": "+90-5xx-2290", "source_role": "citizen", "lat": 38.5998, "lon": 39.4012, "text": "Valley Town: calls keep dropping near the market, everyone is trying to reach relatives in the villages."}}
+    {
+      "t": 0,
+      "kind": "telemetry",
+      "channel": "telemetry",
+      "payload": {
+        "id": "TM-1",
+        "asset_id": "V2",
+        "changes": {
+          "status": "down"
+        },
+        "note": "V2 Upper Ridge: power and transmission lost; access road reported blocked"
+      }
+    },
+    {
+      "t": 0,
+      "kind": "telemetry",
+      "channel": "telemetry",
+      "payload": {
+        "id": "TM-2",
+        "asset_id": "MW-2",
+        "changes": {
+          "status": "down"
+        },
+        "note": "MW-2 Ridge microwave: loss of frame. V3 Ridge Hamlets still powered but cut off from the core"
+      }
+    },
+    {
+      "t": 0,
+      "kind": "telemetry",
+      "channel": "telemetry",
+      "payload": {
+        "id": "TM-3",
+        "asset_id": "V4",
+        "changes": {
+          "status": "down"
+        },
+        "note": "V4 Town South: cabinet alarm, off air"
+      }
+    },
+    {
+      "t": 3,
+      "kind": "comm",
+      "channel": "satellite",
+      "payload": {
+        "id": "S-1",
+        "source_id": "yaylakoy-clinic-sat",
+        "source_role": "facility",
+        "lat": 38.6408,
+        "lon": 39.4502,
+        "text": "Yaylakoy clinic: 2 nurses, 11 injured villagers brought in. One man with a crushed leg needs evacuation. Road to town blocked by landslide. No phone signal here."
+      }
+    },
+    {
+      "t": 5,
+      "kind": "comm",
+      "channel": "tetra",
+      "payload": {
+        "id": "R-1",
+        "source_id": "mountain-rescue-2",
+        "source_role": "responder",
+        "lat": 38.6525,
+        "lon": 39.3545,
+        "text": "Mountain Rescue Unit 2 at km 14 on the pass road. Landslide covered the road, at least one car buried, we can hear a horn. We lose radio contact with base beyond the bend, need a relay."
+      }
+    },
+    {
+      "t": 6,
+      "kind": "comm",
+      "channel": "mesh",
+      "payload": {
+        "id": "M-1",
+        "source_id": "mesh-school-teacher",
+        "source_role": "citizen",
+        "zone_hint": "Z-UPPER",
+        "delivery_status": "store-and-forward via passing vehicle, ~40 min delay",
+        "text": "This is the school teacher in Yaylakoy. Families gathered in the school yard, 60-70 people, it will be cold tonight, we need blankets. Some elderly are not accounted for."
+      }
+    },
+    {
+      "t": 8,
+      "kind": "comm",
+      "channel": "cellular",
+      "payload": {
+        "id": "C-1",
+        "source_id": "+90-5xx-7781",
+        "source_role": "citizen",
+        "lat": 38.6012,
+        "lon": 39.3991,
+        "text": "My sister lives in the Ridge Hamlets, I have not heard from her since the shaking. Nobody there answers their phone."
+      }
+    },
+    {
+      "t": 10,
+      "kind": "telemetry",
+      "channel": "telemetry",
+      "payload": {
+        "id": "TM-4",
+        "asset_id": "V3",
+        "changes": {
+          "power": "battery",
+          "battery_pct": 55
+        },
+        "note": "V3 Ridge Hamlets: mains lost, on battery 55%, still no backhaul"
+      }
+    },
+    {
+      "t": 12,
+      "kind": "comm",
+      "channel": "tetra",
+      "payload": {
+        "id": "R-2",
+        "source_id": "mountain-rescue-2",
+        "source_role": "responder",
+        "lat": 38.6525,
+        "lon": 39.3545,
+        "text": "Unit 2: one person extracted from the buried car, hypothermic but alive. A second vehicle may be under the debris, unconfirmed."
+      }
+    },
+    {
+      "t": 14,
+      "kind": "comm",
+      "channel": "satellite",
+      "payload": {
+        "id": "S-2",
+        "source_id": "yaylakoy-clinic-sat",
+        "source_role": "facility",
+        "lat": 38.6408,
+        "lon": 39.4502,
+        "text": "Yaylakoy clinic: crushed leg patient deteriorating. We need a doctor on the line for guidance, the satellite messenger only allows short texts."
+      }
+    },
+    {
+      "t": 16,
+      "kind": "comm",
+      "channel": "cellular",
+      "payload": {
+        "id": "C-2",
+        "source_id": "+90-5xx-2290",
+        "source_role": "citizen",
+        "lat": 38.5998,
+        "lon": 39.4012,
+        "text": "Valley Town: calls keep dropping near the market, everyone is trying to reach relatives in the villages."
+      }
+    }
   ]
 }

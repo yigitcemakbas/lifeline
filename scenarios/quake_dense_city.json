@@ -5,6 +5,7 @@
     "description": "Aster City after a strong earthquake: towers offline, congestion, a degraded hospital, a collapsed apartment block and rescue teams on TETRA.",
     "hazard_label": "M6.9 earthquake",
     "category": "demo",
+    "order": 1,
     "center_lat": 37.872,
     "center_lon": 32.492,
     "zoom": 12.6
