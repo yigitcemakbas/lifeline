@@ -13,8 +13,9 @@ scenario events ─► simulated channel adapters ─► Communication / Telemet
    ─► AI synthesis → OperationalPicture┘ No ranking, no capacity maths, no feasibility.
    ─► network analysis (NetworkX)      (deterministic: what is usable, where, and why)
    ─► priority policy                  (explicit tiers + ordering criteria → ordered needs)
+   ─► bandwidth allocation             (urgency-ordered min-cost flow)
    ─► optimizer                        (lexicographic search over feasible plans)
-   ─► operator approve / reject ─► simulation applies effects ─► everything re-evaluated
+   ─► approval (operator or automatic) ─► simulation applies effects ─► everything re-evaluated
 ```
 
 | Layer | Module | Deterministic? |
@@ -30,7 +31,8 @@ scenario events ─► simulated channel adapters ─► Communication / Telemet
 - **Interpretation** turns each communication into facts (each `verified`/`reported`/`inferred`, with verbatim evidence), needs mentioned, location, people range, life threat (`yes`/`no`/`unknown`), affected operations, missing information and confidence.
 - **Synthesis** runs once per checkpoint (a batch of events at the same scenario time). It receives the previous picture, the new interpretations, deterministic correlation hints, verified network facts and operator decisions, and it **updates** the operational picture: incidents and how they relate, communication needs, dependency chains (e.g. backhaul cut → towers isolated → hospital link down), contradictions, information gaps, and a change log that names the evidence behind each change.
 - **Guards** (deterministic, after every LLM call): every quote must be a verbatim substring of the referenced communication, otherwise it is removed and the fact downgraded to `inferred`. People counts are merged as the max of overlapping ranges, never summed. Every communication stays attached to the picture.
-- **Interpreters**: `GroqInterpreter` (free Groq API, JSON-schema output, validated by pydantic), `CachedInterpreter` (default; replays real Groq outputs from `scenarios/cache/`), and `HeuristicInterpreter` (rule-based fallback, low confidence, clearly labelled).
+- **Interpreters**: `GroqInterpreter` (Groq API, JSON-schema output validated by pydantic, one corrective retry on validation errors, backoff on rate limits), `CachedInterpreter` (default; replays recorded Groq outputs from `scenarios/cache/`, only when the stored input hash matches the current input) and `HeuristicInterpreter` (rule-based fallback, confidence ≤ 0.3, clearly labelled). Every fallback is listed in the dashboard sidebar.
+- **Request budget**: synthesis sends full message text only for new reports and the earlier reports hinted to match them; older messages are already summarised in the previous picture. The output-token budget shrinks as the prompt grows so that every request fits the provider's per-minute token limit.
 
 ## Deterministic layer
 
@@ -42,15 +44,23 @@ scenario events ─► simulated channel adapters ─► Communication / Telemet
   - **T4** degraded population service;
   - **T5** non-urgent.
 
-  Within a tier, needs are ordered lexicographically by access to help (road travel time band from the nearest hospital, clinic or rescue base; farther first, since people close to help can reach it or be reached more easily; unreachable or unknown location counts as farthest; not applied to T2, where the need is the facility itself), then the fused probability that the life threat is real, then connectivity state, then the conservative upper bound of people affected, then time waiting. Bands keep small numeric differences from flipping the order. Pre-triage life-safety flags hold a need at T1 or above until a human reviews it. Uncertainty adds `verification_needed`; it never lowers priority.
+  Within a tier, needs are ordered lexicographically by access to help (road travel time band from the nearest hospital, clinic or rescue base; farther first, since people close to help can reach it or be reached more easily; unreachable or unknown location counts as farthest; not applied to T2, where the need is the facility itself), then the fused probability that the life threat is real, then connectivity state, then the conservative upper bound of people affected, then time waiting. Bands keep small numeric differences from flipping the order. Pre-triage life-safety flags hold a need at T1 until a person reviews it. Uncertainty adds `verification_needed`; it never lowers priority.
 - **Road routing** (`optimization/routing.py`): scenarios describe zones, not streets, so the road network is derived: the Euclidean minimum spanning tree (Kruskal with union-find, guarantees connectivity) plus each zone's 3 nearest neighbours (redundant routes). Edge length is great-circle distance × 1.3 detour; an edge takes the worse road condition of its two zones (blocked: removed; limited: 15 km/h; open: 40 km/h). One multi-source Dijkstra with per-source start offsets gives every zone its travel time from the nearest help site. Single-source Dijkstra routes mobile base stations and TETRA repeaters from their depot, which sets their ETA; when no route exists, the precondition names the blocked zones on the shortest route of the undamaged network.
 - **Evidence fusion** (`optimization/fusion.py`): the probability that a life threat is real is a Bayesian update in log-odds: prior 0.2, then each independent source adds signal × ln(likelihood ratio of its role) (responder 9, facility 6, operator 4, citizen 3). The signal is the AI's per-message reading (+1 yes, −1 no) or the pre-triage flag (+0.5); when they disagree the source is neutral and the need is flagged. Repeated messages from one source count once. People affected: Marzullo's algorithm finds the range the most reports agree on and flags outliers; ranking still uses the maximum over all reports.
 - **Bandwidth allocation** (`optimization/flow.py`): a min-cost flow solved with network simplex on integer units. Source → core → backhaul → access assets (node-split so each asset's capacity caps everything through it; radio capacity shared across covered zones) → zones → traffic classes → sink. In a zone with priority access (and capacity ≥25% of demand), each urgent voice/data need is its own class; everything else shares a best-effort pool, split proportionally. Each class has a bypass edge from the source whose cost is the penalty for unmet demand: P_r = (D+1)^(N−r) by queue position r, pools cost 1. Minimising cost is therefore exactly lexicographic: the top of the queue is served as fully as physically possible before the next item gets anything. A voice/data need counts as served only if the flow carries its full demand (population needs: half).
 - **Optimizer**: candidate interventions are generated from the scenario's assets: traffic rebalancing, priority access, satellite activation, mesh bridging, mobile base station deployment, TETRA relay and satellite backhaul. Each candidate is checked against its preconditions. The optimizer then searches, simulating each plan end to end (apply effects → network analysis → min-cost flow), the combinations of scarce resources for the plan that maximises (T1 served, T2 served, …, T5 served) lexicographically, preferring fewer resources and then a shorter ETA. Rejected alternatives are reported as *infeasible* (naming the failing precondition) or *dominated* (naming the better use of the resource).
 
+## Decisions and simulation
+
+The engine (`simulation/engine.py`) releases scenario events checkpoint by checkpoint and re-runs the full pipeline after each one. Interventions are approved by an operator (`approve` / `reject`) or, with `auto_approve`, by the engine in plan order. Each decision is logged with its actor and reason. An approved intervention is pending until its ETA, then its simulated effect is applied to the assets, and everything is re-evaluated. Battery drain and scheduled telemetry come from the scenario data.
+
+## Evaluation
+
+`lifeline/evaluation.py` (`make evaluate`) compares Lifeline's allocation policy with two baselines on the same network state and the same min-cost flow: first come, first served (every need reserved in arrival order) and best effort (no reservation, proportional sharing). It reports need-minutes fully served across each scenario replay, and the share of life-safety needs served in seeded contention trials, where many needs compete for one congested cell.
+
 ## Safety principles
 
 - AI never invents facts, never computes capacity or feasibility, and never acts.
-- All interventions are simulated and need operator approval.
+- All interventions are simulated. Every decision, automatic or by an operator, is logged with its reason.
 - Nothing is discarded: low-priority needs and all communications stay visible.
 - Uncertainty and conflicts are shown, not hidden.
