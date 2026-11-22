@@ -42,6 +42,7 @@ def test_unanalysed_session_is_held_above_routine_traffic() -> None:
     )
     tier, rule, _ = assign_tier(need, ConnState.CONGESTED, {"c1": _comm(TriageFloor.NONE)})
     assert tier == 3 and "awaiting analysis" in rule
+    assert assign_tier(need, ConnState.CONGESTED, {"c1": _comm(TriageFloor.ELEVATED)})[0] == 3
     assert assign_tier(need, ConnState.CONGESTED, {"c1": _comm(TriageFloor.LIFE_SAFETY)})[0] == 1
 
 

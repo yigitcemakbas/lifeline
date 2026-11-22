@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import json
 import os
+import time
 from typing import Any, Literal, Protocol
 
 from lifeline.ai.cache import AICache, input_hash
@@ -105,6 +106,14 @@ class GroqInterpreter:
     @property
     def tokens_used(self) -> int:
         return sum(b.tokens_used for b in self.backends.values())
+
+    def unavailable(self, stage: Stage) -> str:
+        """Why a stage cannot run at all right now ("" if it can)."""
+        if self._backend(stage) is not None:
+            return ""
+        wait = min(b.exhausted_until for b in self.chains[stage]) - time.monotonic()
+        models = ", ".join(b.model for b in self.chains[stage])
+        return f"daily token quota used up on {models}; back in about {max(1, wait / 60):.0f} min"
 
     def _backend(self, stage: Stage) -> GroqBackend | None:
         return next((b for b in self.chains[stage] if b.available), None)

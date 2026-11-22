@@ -5,7 +5,7 @@ Tiers (the first rule that matches applies):
      flag on the session or any report of the same incident (fail-safe: AI uncertainty cannot
      lower this).
   T2 Critical facility or emergency operation disrupted (or, before analysis completes, a
-     responder or facility source, or an elevated pre-triage flag).
+     responder or facility source).
   T3 Isolated population, or a session still awaiting analysis: held above routine traffic
      until the AI has read it.
   T4 Routine population traffic.
@@ -132,11 +132,8 @@ def assign_tier(
         return 1, "life threat reported or flagged", flags
     if not need.analysed:
         own = comms.get(need.id)
-        if own and (
-            own.triage_floor == TriageFloor.ELEVATED
-            or own.source_role in (SourceRole.RESPONDER, SourceRole.FACILITY)
-        ):
-            return 2, "awaiting analysis; responder, facility or elevated pre-triage", flags
+        if own and own.source_role in (SourceRole.RESPONDER, SourceRole.FACILITY):
+            return 2, "awaiting analysis; responder or facility source", flags
         return 3, "awaiting analysis; held above routine traffic", flags
     if need.category in ("critical_facility", "emergency_operation"):
         return 2, f"{need.category.replace('_', ' ')} disrupted", flags

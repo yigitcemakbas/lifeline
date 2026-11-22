@@ -58,6 +58,7 @@ class AnalysisStatus:
     pending_interpretation: list[str] = field(default_factory=list)
     pending_synthesis: list[str] = field(default_factory=list)
     errors: list[str] = field(default_factory=list)  # most recent first
+    notice: str = ""  # why analysis is waiting right now, if it is
 
     def error(self, t: float, msg: str) -> None:
         self.errors = [f"T+{t:.0f}: {msg}", *self.errors][:MAX_ERRORS]
@@ -110,6 +111,10 @@ class IntelligenceEngine:
 
     # ------------------------------------------------------------------ stages
 
+    def _explain(self, stage: str) -> None:
+        reason = getattr(self.interpreter, "unavailable", lambda _s: "")(stage)
+        self.status.notice = reason or "waiting for the per-minute token budget"
+
     def transcribe(self, t: float, comms: dict[str, Communication]) -> list[str]:
         """Transcribe pending voice sessions in place; returns the ids transcribed now."""
         done = []
@@ -129,11 +134,13 @@ class IntelligenceEngine:
     def interpret(self, t: float, comms: dict[str, Communication]) -> list[str]:
         """Interpret pending sessions in batches; returns the ids interpreted now."""
         pending = processing_order([comms[i] for i in self.status.pending_interpretation])
+        self.status.notice = ""
         done: list[str] = []
         for start in range(0, len(pending), MAX_BATCH):
             batch = pending[start : start + MAX_BATCH]
             size = sum(len(c.text) + INTERPRET_OUTPUT_CHARS for c in batch)
             if self.defer and not self.interpreter.ready("interpret", size):
+                self._explain("interpret")
                 break  # sessions stay held with their pre-triage floor; batched next update
             context = {
                 "zones": self.zones_context(),
@@ -143,6 +150,7 @@ class IntelligenceEngine:
                 items = self.interpreter.interpret(batch, context)
             except Exception as e:  # noqa: BLE001 - provider failure: retry next update
                 self.status.error(t, f"interpretation of {', '.join(c.id for c in batch)}: {e}")
+                self.status.notice = f"the last request failed ({str(e)[:160]}); retrying"
                 break
             by_id = {it.comm_id: it for it in items}
             for c in batch:
@@ -180,6 +188,7 @@ class IntelligenceEngine:
         recent = [e for e in telemetry if e.id in set(self._unsynth_telemetry)]
         payload = self.build_payload(t, new, all_comms, recent, self.checkpoint + 1)
         if self.defer and not self.interpreter.ready("synthesis", payload_chars(payload)):
+            self._explain("synthesis")
             return []
         try:
             delta = self.interpreter.synthesize(payload)

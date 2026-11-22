@@ -158,6 +158,7 @@ def test_live_mode_defers_requests_until_budget_and_then_batches(city: Scenario)
     for _ in range(5):
         e.step()
     assert not ai.calls and e.intel.status.pending_interpretation
+    assert e.intel.status.notice
     ai.budget = True
     e.step()
     assert len(ai.calls[0]) > 1, "pending sessions go out together"

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+import threading
 import time
 
 import streamlit as st
@@ -26,8 +27,10 @@ def get_engine(scenario: Scenario, auto_approve: bool) -> Engine:
         fresh = Engine(scenario, interp, stt, auto_approve=auto_approve, live=True, compare=True)
         # deep link: ?update=N opens the run at update N, e.g. to share a specific state
         target = st.query_params.get("update", "0")
+        fresh.intel.defer = False  # fast-forward: wait for budget, as real time would allow
         for _ in range(int(target) if target.isdigit() else 0):
             fresh.step()
+        fresh.intel.defer = True
         st.session_state.engine = fresh
         st.session_state.engine_key = scenario.meta.id
         st.session_state.ai_label = f"{stt.name} · {interp.name}"
@@ -35,6 +38,29 @@ def get_engine(scenario: Scenario, auto_approve: bool) -> Engine:
     engine: Engine = st.session_state.engine
     engine.auto_approve = auto_approve
     return engine
+
+
+def advance(engine: Engine) -> None:
+    """Run one engine step to completion. Streamlit interrupts the script as soon as the
+    operator clicks something; a step cut off halfway would leave the engine inconsistent, so
+    it runs in a worker thread that finishes even if this script run is interrupted. Every run
+    waits for an in-flight step before reading the engine (`wait_for_step`)."""
+    lock: threading.Lock = st.session_state.setdefault("step_lock", threading.Lock())
+
+    def run() -> None:
+        with lock:
+            engine.step()
+
+    worker = threading.Thread(target=run, daemon=True)
+    worker.start()
+    worker.join()
+
+
+def wait_for_step() -> None:
+    lock: threading.Lock | None = st.session_state.get("step_lock")
+    if lock is not None:
+        with lock:
+            pass
 
 
 def sidebar(scenarios: list[Scenario]) -> tuple[Scenario, str, float]:
@@ -69,7 +95,7 @@ def controls(engine: Engine) -> None:
     c = sb.columns(2)
     if c[0].button("Step", use_container_width=True):
         with st.spinner("Analysing intercepted sessions"):
-            engine.step()
+            advance(engine)
     if c[1].button("Reset", use_container_width=True):
         st.session_state.engine_key = None
         st.rerun()
@@ -100,10 +126,18 @@ def main() -> None:
     if not os.getenv("GROQ_API_KEY"):
         missing_key()
     scenario, decision_mode, speed = sidebar(list_scenarios())
+    wait_for_step()
     engine = get_engine(scenario, auto_approve=decision_mode == AUTO)
     controls(engine)
 
     ui.header(engine, st.session_state.ai_label)
+    if engine.intel.status.notice and engine.intel.status.backlog:
+        st.warning(
+            f"AI analysis is waiting: {engine.intel.status.notice}. "
+            f"{engine.intel.status.backlog} session(s) are held on their pre-triage floor and "
+            "will be analysed together when it is available.",
+            icon=":material/hourglass_top:",
+        )
     ui.incident_timeline(engine)
     ui.latest_interception(engine)
     left, right = st.columns([3, 2])
@@ -131,5 +165,5 @@ def main() -> None:
             st.session_state.playing = False
         else:
             time.sleep(speed)
-            engine.step()
+            advance(engine)
             st.rerun()
