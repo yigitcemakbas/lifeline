@@ -1,4 +1,4 @@
-"""Channel → adapter registry. Real integrations would be registered here."""
+"""Channel → adapter registry. Every `Channel` must have exactly one adapter (tested)."""
 
 from __future__ import annotations
 
@@ -18,11 +18,11 @@ REGISTRY: dict[Channel, ChannelAdapter] = {
     a.channel: a
     for a in (
         CellularAdapter(),
-        SatelliteAdapter(),
-        MeshAdapter(),
-        TetraAdapter(),
         CitizenAppAdapter(),
         FacilityAdapter(),
+        TetraAdapter(),
+        MeshAdapter(),
+        SatelliteAdapter(),
         TelemetryAdapter(),
     )
 }

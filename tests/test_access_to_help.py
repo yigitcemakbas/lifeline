@@ -1,7 +1,6 @@
 """Distance to help: a deterministic tie-breaker inside a priority tier."""
 
 from lifeline.models import (
-    Channel,
     CommNeed,
     Communication,
     ConnState,
@@ -10,11 +9,11 @@ from lifeline.models import (
     RoadAccess,
     Service,
     Site,
-    SourceRole,
     Zone,
     ZoneState,
 )
 from lifeline.optimization.prioritizer import access_to_help, prioritize
+from tests.fakes import make_comm
 
 # Two zones about 5.5 km apart; the hospital sits in NEAR.
 NEAR = Zone(id="NEAR", name="Near", lat=47.53, lon=21.62, radius_m=800, population=1000)
@@ -23,17 +22,7 @@ HOSPITAL = Site(id="H", name="General Hospital", kind="hospital", zone_id="NEAR"
 
 
 def _comm(cid: str, zone: Zone) -> Communication:
-    return Communication(
-        id=cid,
-        t=0,
-        channel=Channel.CELLULAR,
-        adapter="x",
-        source_id=cid,
-        source_role=SourceRole.CITIZEN,
-        lat=zone.lat,
-        lon=zone.lon,
-        text="person trapped",
-    )
+    return make_comm(cid, "person trapped", lat=zone.lat, lon=zone.lon)
 
 
 def _need(nid: str, cid: str, zone_id: str | None, category: str = "life_safety") -> CommNeed:

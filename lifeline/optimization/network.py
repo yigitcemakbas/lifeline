@@ -19,14 +19,12 @@ from lifeline.models import (
     CommNeed,
     ConnState,
     NetworkSnapshot,
-    Service,
     Zone,
     ZoneState,
 )
 
 ACCESS_KINDS = {AssetKind.CELL_TOWER, AssetKind.MOBILE_BS}
-URGENT_CATEGORIES = {"life_safety", "critical_facility", "emergency_operation"}
-PRIORITY_MIN_RATIO = 0.25
+URGENT_CATEGORIES = frozenset({"life_safety", "critical_facility", "emergency_operation"})
 
 
 def distance_m(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
@@ -76,9 +74,7 @@ def analyse(
     assets: list[Asset],
     zones: list[Zone],
     demand_per_person: float,
-    priority_zones: set[str] | None = None,
 ) -> NetworkSnapshot:
-    priority_zones = priority_zones or set()
     by_id = {a.id: a for a in assets}
     g = build_graph(assets)
     alive_nodes = [n for n, d in g.nodes(data=True) if d["alive"]]
@@ -192,32 +188,11 @@ def analyse(
             demand=round(demand, 2),
             channels={k: round(v, 2) for k, v in ch.items()},
             causes=causes,
-            priority_access=z.id in priority_zones,
         )
     return NetworkSnapshot(zones=states, usable_assets=sorted(usable), unusable=unusable)
 
 
 def need_served(need: CommNeed, snap: NetworkSnapshot) -> bool:
-    """Deterministic test: does the zone's current connectivity meet this need's service?"""
-    if need.zone_id is None or need.zone_id not in snap.zones:
-        return False
-    zs = snap.zones[need.zone_id]
-    ch = zs.channels
-    if need.service == Service.RESPONDER_RADIO:
-        return ch["tetra"] > 0
-    if need.service == Service.TEXT:
-        return zs.capacity > 0 or ch["mesh"] > 0
+    """Whether the admission flow (lifeline.optimization.flow) can carry this session."""
     alloc = snap.allocation.get(need.id)
-    if alloc is not None:  # min-cost flow result (lifeline.optimization.flow)
-        if need.category in URGENT_CATEGORIES:
-            return zs.capacity > 0 and alloc.fraction >= 0.999
-        if need.category == "population":
-            return alloc.fraction >= 0.5
-    if need.category in URGENT_CATEGORIES:
-        # priority access can only protect urgent traffic if enough residual capacity remains
-        return zs.capacity > 0 and (
-            zs.ratio >= 1.0 or (zs.priority_access and zs.ratio >= PRIORITY_MIN_RATIO)
-        )
-    if need.category == "population":
-        return zs.ratio >= 0.5
-    return zs.capacity > 0 or ch["mesh"] > 0
+    return alloc is not None and alloc.fraction >= 0.999

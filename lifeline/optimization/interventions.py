@@ -13,6 +13,7 @@ from lifeline.models import (
     AssetStatus,
     CommNeed,
     Intervention,
+    NetworkFamily,
     NetworkSnapshot,
     Precondition,
     RoadAccess,
@@ -20,7 +21,6 @@ from lifeline.models import (
     Zone,
 )
 from lifeline.optimization.network import (
-    PRIORITY_MIN_RATIO,
     covers,
     distance_m,
     need_served,
@@ -43,49 +43,21 @@ def generate(
     assets: list[Asset],
     snap: NetworkSnapshot,
     needs: list[CommNeed],
-    priority_zones: set[str],
 ) -> list[Intervention]:
+    """Candidates for the zones where some intercepted session cannot be carried."""
     by_id = {a.id: a for a in assets}
     zmap = {z.id: z for z in zones}
-    open_needs = [n for n in needs if n.status == "open" and n.zone_id in zmap]
-    unserved = [n for n in open_needs if not need_served(n, snap)]
-    need_zones = sorted({n.zone_id for n in unserved if n.zone_id})
+    unserved = [n for n in needs if n.zone_id in zmap and not need_served(n, snap)]
+
+    def zones_of(family: NetworkFamily) -> list[str]:
+        return sorted({n.zone_id for n in unserved if n.zone_id and n.family == family})
+
+    need_zones = zones_of(NetworkFamily.CELLULAR)
+    mesh_zones = zones_of(NetworkFamily.MESH)
     out: list[Intervention] = []
     roads = RoadNetwork.build(zones)
 
-    # 1. priority access (QoS) for urgent traffic
-    for zid in need_zones:
-        if zid in priority_zones:
-            continue
-        if not any(
-            n.zone_id == zid and n.category != "population" and n.service != Service.RESPONDER_RADIO
-            for n in unserved
-        ):
-            continue
-        zs = snap.zones[zid]
-        out.append(
-            Intervention(
-                id=f"QOS-{zid}",
-                kind="priority_access",
-                label=f"Priority access for emergency traffic in {zmap[zid].name}",
-                target_zone=zid,
-                asset_ids=[],
-                services=VOICE_DATA,
-                eta_min=2,
-                preconditions=[
-                    _pc("usable access capacity", zs.capacity > 0, f"{zs.capacity:.0f} units"),
-                    _pc(
-                        "residual capacity to protect",
-                        zs.ratio >= PRIORITY_MIN_RATIO,
-                        f"capacity is {min(zs.ratio, 9.99):.0%} of demand "
-                        f"(needs ≥{PRIORITY_MIN_RATIO:.0%})",
-                    ),
-                ],
-                effect="Reserve cell capacity for responders, facilities and emergency calls.",
-            )
-        )
-
-    # 2. traffic rebalancing from towers whose zones have headroom
+    # 1. traffic rebalancing from towers whose zones have headroom
     for zid in need_zones:
         z = zmap[zid]
         for a in assets:
@@ -121,7 +93,7 @@ def generate(
                 )
             )
 
-    # 3/4. satellite terminals: local access or tower backhaul
+    # 2/3. satellite terminals: local access or tower backhaul
     for s in assets:
         if s.kind != AssetKind.SAT_TERMINAL or s.status != AssetStatus.STANDBY:
             continue
@@ -187,7 +159,7 @@ def generate(
                 )
             )
 
-    # 5. mesh bridging
+    # 4. mesh bridging
     mesh_islands = [
         a
         for a in assets
@@ -200,7 +172,7 @@ def generate(
             continue
         seen_clusters.add(cluster)
         czones = sorted({z.id for z in zones for nid in cluster if covers(by_id[nid], z)})
-        if not any(z in need_zones for z in czones):
+        if not any(z in mesh_zones for z in czones):
             continue
         for g in assets:
             gateway_ok = g.id in snap.usable_assets and g.kind in (
@@ -238,7 +210,7 @@ def generate(
                 )
             )
 
-    # 6. mobile base station deployment
+    # 5. mobile base station deployment
     for u in assets:
         if u.kind != AssetKind.MOBILE_BS or u.status != AssetStatus.STANDBY:
             continue
@@ -266,10 +238,8 @@ def generate(
                 )
             )
 
-    # 7. portable TETRA repeaters for responder radio gaps
-    radio_zones = sorted(
-        {n.zone_id for n in unserved if n.service == Service.RESPONDER_RADIO and n.zone_id}
-    )
+    # 6. portable TETRA repeaters for responder radio gaps
+    radio_zones = zones_of(NetworkFamily.TETRA)
     for r in assets:
         if r.kind != AssetKind.TETRA_SITE or r.status != AssetStatus.STANDBY:
             continue
@@ -314,18 +284,13 @@ def _mesh_cluster(start: Asset, by_id: dict[str, Asset]) -> frozenset[str]:
     return frozenset(seen)
 
 
-def apply(
-    iv: Intervention, assets: list[Asset], zones: list[Zone], priority_zones: set[str]
-) -> tuple[list[Asset], set[str]]:
-    """Return copies of assets/priority zones with the intervention's simulated effect applied."""
+def apply(iv: Intervention, assets: list[Asset], zones: list[Zone]) -> list[Asset]:
+    """Return copies of the assets with the intervention's simulated effect applied."""
     out = [a.model_copy(deep=True) for a in assets]
     by_id = {a.id: a for a in out}
-    pz = set(priority_zones)
     zmap = {z.id: z for z in zones}
     core = next(a.id for a in out if a.kind == AssetKind.CORE)
-    if iv.kind == "priority_access":
-        pz.add(iv.target_zone)
-    elif iv.kind == "rebalance_traffic":
+    if iv.kind == "rebalance_traffic":
         by_id[iv.asset_ids[0]].extra_zones.append(iv.target_zone)
     elif iv.kind == "activate_satellite":
         s = by_id[iv.asset_ids[0]]
@@ -358,4 +323,4 @@ def apply(
         z = zmap[iv.target_zone]
         r.status, r.lat, r.lon = AssetStatus.UP, z.lat, z.lon
         r.coverage_zones = [z.id]
-    return out, pz
+    return out

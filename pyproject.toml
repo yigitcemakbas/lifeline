@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "lifeline"
 version = "0.1.0"
-description = "Urgency-aware communications orchestration for degraded networks"
+description = "AI gateway that admits calls to congested networks in order of urgency"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [

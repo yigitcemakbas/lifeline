@@ -1,12 +1,15 @@
-"""Transparent priority policy. No weighted scores.
+"""Transparent priority policy for intercepted sessions. No weighted scores.
 
 Tiers (the first rule that matches applies):
   T1 Life safety: AI category life_safety, life threat "yes", or a pre-triage life-safety
-     flag on any supporting message (fail-safe: AI uncertainty cannot lower this).
-  T2 Critical facility or emergency operation disrupted.
-  T3 Isolated population (zone has no usable voice/data or bridged mesh).
-  T4 Degraded population service.
-  T5 Non-urgent (damage reports, information requests).
+     flag on the session or any report of the same incident (fail-safe: AI uncertainty cannot
+     lower this).
+  T2 Critical facility or emergency operation disrupted (or, before analysis completes, a
+     responder or facility source, or an elevated pre-triage flag).
+  T3 Isolated population, or a session still awaiting analysis: held above routine traffic
+     until the AI has read it.
+  T4 Routine population traffic.
+  T5 Non-urgent (damage reports, information requests, routine business).
 
 Inside a tier, needs are ordered lexicographically by:
   1. Access to help: road travel time from the nearest hospital, clinic or rescue base
@@ -16,7 +19,7 @@ Inside a tier, needs are ordered lexicographically by:
   2. Probability the life threat is real (Bayesian evidence fusion, lifeline.optimization.fusion).
   3. Connectivity severity of the zone.
   4. Upper bound of people affected over all reports (conservative).
-  5. Time waiting, longest first.
+  5. Time waiting, longest first (arrival order).
 Bands keep small numeric differences from flipping the order on noise.
 """
 
@@ -33,6 +36,7 @@ from lifeline.models import (
     NetworkSnapshot,
     PrioritizedNeed,
     Site,
+    SourceRole,
     Tri,
     TriageFloor,
     Zone,
@@ -44,8 +48,8 @@ from lifeline.optimization.routing import HelpTable, RoadNetwork
 TIER_NAMES = {
     1: "Life safety",
     2: "Critical facility / emergency operation",
-    3: "Isolated population",
-    4: "Degraded population service",
+    3: "Isolated or awaiting analysis",
+    4: "Routine traffic",
     5: "Non-urgent",
 }
 NEAR_MIN, FAR_MIN = 10.0, 30.0
@@ -63,6 +67,9 @@ def need_location(
     ]
     if pts:
         return sum(p[0] for p in pts) / len(pts), sum(p[1] for p in pts) / len(pts)
+    if need.location_zone_id and need.location_zone_id != need.zone_id:
+        lz = zones.get(need.location_zone_id)
+        return (lz.lat, lz.lon) if lz else None
     z = zones.get(need.zone_id) if need.zone_id else None
     return (z.lat, z.lon) if z else None
 
@@ -80,7 +87,7 @@ def access_to_help(
     if not table.any_sites:
         return 3, "no hospital or rescue base on the map"
     loc = need_location(need, comms, zones)
-    zone_id = need.zone_id
+    zone_id = need.location_zone_id or need.zone_id
     if zone_id is None and loc is not None:
         zone_id = table.net.nearest_zone(*loc).id
     if loc is None or zone_id is None:
@@ -116,18 +123,27 @@ def assign_tier(
 ) -> tuple[int, str, list[str]]:
     flags: list[str] = []
     ids = support if support is not None else [r.source_id for r in need.evidence]
+    ids = list(dict.fromkeys([need.id, *ids]))
     rule_life = any(comms[i].triage_floor == TriageFloor.LIFE_SAFETY for i in ids if i in comms)
-    ai_life = need.category == "life_safety" or need.life_threat == Tri.YES
+    ai_life = need.analysed and (need.category == "life_safety" or need.life_threat == Tri.YES)
     if ai_life or rule_life:
-        if rule_life and not ai_life:
+        if rule_life and not ai_life and need.analysed:
             flags.append("pre-triage flagged life safety; AI did not. Held at T1 for review")
         return 1, "life threat reported or flagged", flags
+    if not need.analysed:
+        own = comms.get(need.id)
+        if own and (
+            own.triage_floor == TriageFloor.ELEVATED
+            or own.source_role in (SourceRole.RESPONDER, SourceRole.FACILITY)
+        ):
+            return 2, "awaiting analysis; responder, facility or elevated pre-triage", flags
+        return 3, "awaiting analysis; held above routine traffic", flags
     if need.category in ("critical_facility", "emergency_operation"):
         return 2, f"{need.category.replace('_', ' ')} disrupted", flags
     if need.category == "population":
         if conn == ConnState.ISOLATED:
             return 3, "population in isolated zone", flags
-        return 4, "population service degraded", flags
+        return 4, "routine population traffic", flags
     return 5, "non-urgent", flags
 
 
@@ -140,22 +156,24 @@ def prioritize(
     sites: list[Site] | None = None,
     interpretations: dict[str, Interpretation] | None = None,
     incidents: list[Incident] | None = None,
+    connected: set[str] | None = None,
 ) -> list[PrioritizedNeed]:
     planned = planned or {}
+    connected = connected or set()
     interps = interpretations or {}
     zmap = {z.id: z for z in zones or []}
     table = RoadNetwork.build(zones).help_routes(sites or []) if zones else None
     keys: dict[str, tuple[int, int, int, int, int, float]] = {}
     out: list[PrioritizedNeed] = []
     for n in needs:
-        if n.status != "open":
-            continue
         zs = snapshot.zones.get(n.zone_id) if n.zone_id else None
         conn = zs.state if zs else None
         support = supporting_comms(n, incidents or [])
         tier, rule, flags = assign_tier(n, conn, comms, support)
         if n.zone_id is None:
-            flags.append("location unknown: cannot target interventions until verified")
+            flags.append("network location unknown: cannot be routed until verified")
+        if not n.analysed:
+            flags.append("awaiting AI analysis")
         if n.verification_needed:
             flags.append("verification needed")
         threat = fusion.life_threat(support, comms, interps)
@@ -173,31 +191,26 @@ def prioritize(
             CriterionTrace(criterion="life threat", value=threat.describe()),
             CriterionTrace(criterion="connectivity", value=conn.value if conn else "unknown"),
             CriterionTrace(criterion="people", value=ppl.describe()),
-            CriterionTrace(criterion="first reported", value=f"T+{n.first_seen_t:.0f} min"),
+            CriterionTrace(criterion="arrived", value=f"T+{n.first_seen_t:.0f} min"),
         ]
         alloc = snapshot.allocation.get(n.id)
-        if alloc is not None:
-            how = (
-                "reserved by priority access"
-                if alloc.mode == "priority"
-                else f"best effort, zone pool at {alloc.pool_fraction or 0:.0%}"
-            )
+        if alloc is not None and n.id not in connected:
             criteria.append(
                 CriterionTrace(
-                    criterion="bandwidth",
-                    value=f"{alloc.allocated:g} of {alloc.demand:g} units ({how})",
+                    criterion="capacity",
+                    value=f"{alloc.allocated:g} of {alloc.demand:g} units routable in queue order",
                 )
             )
-        served = "served" if need_served(n, snapshot) else "unserved"
-        if served == "unserved" and n.id in planned:
-            served = "planned"
+        status = "connected" if n.id in connected else "held"
+        if status == "held" and n.id in planned and not need_served(n, snapshot):
+            status = "planned"
         p = PrioritizedNeed(
             need=n,
             tier=tier,
             tier_rule=rule,
             criteria=criteria,
             connectivity=conn or ConnState.DEGRADED,
-            served=served,  # type: ignore[arg-type]
+            status=status,  # type: ignore[arg-type]
             served_by=planned.get(n.id, []),
             flags=flags,
         )

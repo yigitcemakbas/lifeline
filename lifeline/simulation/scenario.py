@@ -4,7 +4,10 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from lifeline.models import AssetKind, Scenario
+from lifeline.ai.correlator import resolve_zone
+from lifeline.ingestion.adapters import AdapterError
+from lifeline.ingestion.registry import REGISTRY, ingest
+from lifeline.models import AssetKind, Communication, Scenario
 
 SCENARIO_DIR = Path(__file__).resolve().parents[2] / "scenarios"
 
@@ -44,3 +47,20 @@ def _check_integrity(s: Scenario) -> None:
         ids.add(eid)
         if e.kind == "telemetry" and e.payload.get("asset_id") not in asset_ids:
             raise ScenarioError(f"{s.meta.id}: telemetry {eid} targets unknown asset")
+        if e.channel not in REGISTRY:
+            raise ScenarioError(f"{s.meta.id}: no adapter for channel {e.channel.value}")
+        if (e.kind == "telemetry") != (e.channel.value == "telemetry"):
+            raise ScenarioError(f"{s.meta.id}: {eid} kind does not match channel")
+        try:
+            item = ingest(e)
+        except (AdapterError, KeyError, ValueError) as err:
+            raise ScenarioError(f"{s.meta.id}: {err}") from err
+        if not isinstance(item, Communication):
+            continue
+        if item.cell_id is not None and item.cell_id not in asset_ids:
+            raise ScenarioError(f"{s.meta.id}: {eid} names unknown cell {item.cell_id}")
+        if item.audio is not None and not (SCENARIO_DIR / item.audio).is_file():
+            raise ScenarioError(f"{s.meta.id}: {eid} audio missing ({item.audio}); make audio")
+        # the gateway always knows where a session attaches from
+        if resolve_zone(item.model_copy(update={"text": ""}), s) is None:
+            raise ScenarioError(f"{s.meta.id}: {eid} has no cell, coordinates or zone hint")

@@ -1,4 +1,4 @@
-"""PyDeck map of zones, infrastructure, needs and interventions."""
+"""PyDeck map of zones, infrastructure, intercepted sessions and interventions."""
 
 from __future__ import annotations
 
@@ -60,6 +60,9 @@ def build_deck(engine: Engine) -> pdk.Deck:
             state = "unusable"
         why = snap.unusable.get(a.id, "")
         batt = f"<br/>battery {a.battery_pct:.0f}%" if a.battery_pct is not None else ""
+        if a.id in engine.gateway.loads and engine.gateway.loads[a.id][1] > 0:
+            used, cap = engine.gateway.loads[a.id]
+            batt += f"<br/>load {used:.0f} of {cap:.0f} units"
         asset_rows.append(
             {
                 "lon": a.lon,
@@ -84,11 +87,12 @@ def build_deck(engine: Engine) -> pdk.Deck:
                 }
             )
 
-    comm_pos = {c.id: (c.lon, c.lat) for c in engine.comms if c.lat is not None}
+    comm_pos = {c.id: (c.lon, c.lat) for c in engine.comms.values() if c.lat is not None}
+    ring = {"held": [255, 255, 255], "planned": [245, 165, 36], "connected": [46, 160, 120]}
     need_rows = []
     for i, p in enumerate(engine.priorities):
         n = p.need
-        pos = next((comm_pos[r.source_id] for r in n.evidence if r.source_id in comm_pos), None)
+        pos = comm_pos.get(n.id)
         if pos is None and n.zone_id in zmap:
             z = zmap[n.zone_id]
             pos = (z.lon + 0.0012 * ((i % 3) - 1), z.lat + 0.0009 * ((i % 2) * 2 - 1))
@@ -100,9 +104,9 @@ def build_deck(engine: Engine) -> pdk.Deck:
                 "lat": pos[1],
                 "color": [*TIER_RGB[p.tier], 235],
                 "r": {1: 16, 2: 13, 3: 11, 4: 9, 5: 7}[p.tier],
-                "line": [255, 255, 255] if p.served != "served" else [46, 160, 120],
+                "line": ring[p.status],
                 "tip": f"<b>T{p.tier} · {n.id}</b><br/>{n.who}<br/>{n.purpose}"
-                f"<br/>service: {n.service.value} · {p.served}",
+                f"<br/>{n.service.value.replace('_', ' ')} · {p.status}",
             }
         )
 
@@ -178,7 +182,7 @@ def build_deck(engine: Engine) -> pdk.Deck:
         ),
     ]
     latest = []
-    latest_pos = {c.id: (c.lon, c.lat) for c in engine.comms if c.lat is not None}
+    latest_pos = dict(comm_pos)
     tel_asset = {e.id: e.asset_id for e in engine.telemetry}
     for eid in engine.last_event_ids:
         if eid in latest_pos:

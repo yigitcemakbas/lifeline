@@ -1,13 +1,13 @@
 from lifeline.ingestion.pretriage import pretriage, processing_order
-from lifeline.models import Channel, Communication, SourceRole, TriageFloor
+from lifeline.models import Channel, Communication, SessionKind, SourceRole, TriageFloor
+from tests.fakes import make_comm
 
 
 def comm(
     text: str, role: SourceRole = SourceRole.CITIZEN, ch: Channel = Channel.CELLULAR, t: float = 0
 ) -> Communication:
-    return Communication(
-        id=text[:8], t=t, channel=ch, adapter="x", source_id="s", source_role=role, text=text
-    )
+    kind = SessionKind.MESSAGE if ch == Channel.MESH else SessionKind.SMS
+    return make_comm(text[:8], text, t=t, channel=ch, role=role, kind=kind)
 
 
 def test_life_safety_terms() -> None:

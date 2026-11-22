@@ -1,22 +1,30 @@
-"""Evolving situational intelligence.
+"""Analysis of intercepted sessions and the evolving operational picture.
 
-`IntelligenceEngine` keeps the operational picture up to date: it interprets new messages
-(in pre-triage order), asks the interpreter for a delta against the previous picture, merges
-it, and applies deterministic guards (evidence must be verbatim, "verified" needs an
-authoritative or corroborated source, unknown zones are flagged, no communication is dropped).
+`IntelligenceEngine` runs the AI stages for every intercepted session:
+
+1. transcription of voice sessions (calls, TETRA transmissions);
+2. interpretation, one request per update covering every session ready for it (up to
+   `MAX_BATCH`), in pre-triage order;
+3. synthesis: a delta against the previous operational picture (incidents, dependency chains,
+   contradictions, gaps), merged under deterministic guards.
+
+Guards: evidence must be verbatim, "verified" needs an authoritative or corroborated source,
+unknown zones are rejected, and no session is dropped. A failed AI request never blocks the
+gateway: the session stays queued with its pre-triage floor and is retried on the next update.
 """
 
 from __future__ import annotations
 
 import re
+from dataclasses import dataclass, field
 from typing import Any
 
 from lifeline.ai.correlator import correlation_hints, resolve_zone
-from lifeline.ai.interpreter import Interpreter
-from lifeline.ingestion.pretriage import processing_order
+from lifeline.ai.interpreter import Interpreter, payload_chars
+from lifeline.ai.transcriber import Transcriber
+from lifeline.ingestion.pretriage import pretriage, processing_order
 from lifeline.models import (
     ChangeEntry,
-    CommNeed,
     Communication,
     EvidenceRef,
     Fact,
@@ -30,53 +38,158 @@ from lifeline.models import (
 )
 
 AUTHORITATIVE_ROLES = {SourceRole.RESPONDER, SourceRole.FACILITY, SourceRole.OPERATOR}
+MAX_BATCH = 6  # sessions per interpretation request
+MAX_SYNTHESIS_NEW = 4  # new sessions per synthesis request; the rest go into the next one
+SYNTHESIS_MAX_GAP_MIN = 10.0  # routine-only material waits at most this long for synthesis
+ROUTINE = frozenset({"population", "non_urgent"})
+INTERPRET_OUTPUT_CHARS = 1350  # room for one interpretation in the output (~450 tokens)
+MAX_ERRORS = 20
 
 
 def _norm(s: str) -> str:
     return re.sub(r"\s+", " ", s).strip().lower().strip(".,;:!?\"'")
 
 
+@dataclass
+class AnalysisStatus:
+    """What the AI stages still owe, and why (shown to the operator)."""
+
+    pending_transcripts: list[str] = field(default_factory=list)
+    pending_interpretation: list[str] = field(default_factory=list)
+    pending_synthesis: list[str] = field(default_factory=list)
+    errors: list[str] = field(default_factory=list)  # most recent first
+
+    def error(self, t: float, msg: str) -> None:
+        self.errors = [f"T+{t:.0f}: {msg}", *self.errors][:MAX_ERRORS]
+
+    @property
+    def backlog(self) -> int:
+        return len(self.pending_transcripts) + len(self.pending_interpretation)
+
+
 class IntelligenceEngine:
-    def __init__(self, scenario: Scenario, interpreter: Interpreter) -> None:
+    def __init__(
+        self,
+        scenario: Scenario,
+        interpreter: Interpreter,
+        transcriber: Transcriber,
+        defer: bool = False,
+    ) -> None:
         self.scenario = scenario
         self.interpreter = interpreter
+        self.transcriber = transcriber
+        self.defer = defer  # live: wait for rate-limit budget instead of blocking the gateway
         self.picture = OperationalPicture()
         self.interpretations: dict[str, Interpretation] = {}
         self.comm_zone: dict[str, str | None] = {}
         self.checkpoint = 0
+        self.status = AnalysisStatus()
+        self._unsynth_telemetry: list[str] = []
+        self._last_synthesis_t = 0.0
 
-    # ------------------------------------------------------------------ public
+    # ------------------------------------------------------------------ context
 
     def zones_context(self) -> list[dict[str, Any]]:
         return [
             {
                 "id": z.id,
                 "name": z.name,
-                "population": z.population,
                 "sites": [s.name for s in self.scenario.sites if s.zone_id == z.id],
             }
             for z in self.scenario.zones
         ]
 
-    def process(
+    def intercept(self, comm: Communication) -> Communication:
+        """Register a new session: resolve its network zone and queue it for analysis."""
+        self.comm_zone[comm.id] = resolve_zone(comm, self.scenario)
+        if comm.awaiting_transcript:
+            self.status.pending_transcripts.append(comm.id)
+            return comm
+        self.status.pending_interpretation.append(comm.id)
+        return pretriage(comm)
+
+    # ------------------------------------------------------------------ stages
+
+    def transcribe(self, t: float, comms: dict[str, Communication]) -> list[str]:
+        """Transcribe pending voice sessions in place; returns the ids transcribed now."""
+        done = []
+        for cid in list(self.status.pending_transcripts):
+            c = comms[cid]
+            try:
+                tr = self.transcriber.transcribe(c)
+            except Exception as e:  # noqa: BLE001 - provider failure: retry next update
+                self.status.error(t, f"transcription of {cid} failed: {e}")
+                continue
+            comms[cid] = pretriage(c.model_copy(update={"transcript": tr, "text": tr.text}))
+            self.status.pending_transcripts.remove(cid)
+            self.status.pending_interpretation.append(cid)
+            done.append(cid)
+        return done
+
+    def interpret(self, t: float, comms: dict[str, Communication]) -> list[str]:
+        """Interpret pending sessions in batches; returns the ids interpreted now."""
+        pending = processing_order([comms[i] for i in self.status.pending_interpretation])
+        done: list[str] = []
+        for start in range(0, len(pending), MAX_BATCH):
+            batch = pending[start : start + MAX_BATCH]
+            size = sum(len(c.text) + INTERPRET_OUTPUT_CHARS for c in batch)
+            if self.defer and not self.interpreter.ready("interpret", size):
+                break  # sessions stay held with their pre-triage floor; batched next update
+            context = {
+                "zones": self.zones_context(),
+                "zone_ids": {c.id: self.comm_zone.get(c.id) for c in batch},
+            }
+            try:
+                items = self.interpreter.interpret(batch, context)
+            except Exception as e:  # noqa: BLE001 - provider failure: retry next update
+                self.status.error(t, f"interpretation of {', '.join(c.id for c in batch)}: {e}")
+                break
+            by_id = {it.comm_id: it for it in items}
+            for c in batch:
+                it = by_id.get(c.id)
+                if it is None:
+                    self.status.error(t, f"interpretation returned no result for {c.id}")
+                    continue
+                self.interpretations[c.id] = self._guard_interpretation(it, c)
+                self.status.pending_interpretation.remove(c.id)
+                self.status.pending_synthesis.append(c.id)
+                done.append(c.id)
+        return done
+
+    def synthesize(
         self,
         t: float,
-        new_comms: list[Communication],
-        all_comms: list[Communication],
+        comms: dict[str, Communication],
         telemetry: list[TelemetryEvent],
+        new_telemetry: list[str],
     ) -> list[ChangeEntry]:
-        """Run one checkpoint. Returns the change entries for the timeline."""
-        self.checkpoint += 1
-        zones = self.zones_context()
-        for c in processing_order(new_comms):
-            zid = resolve_zone(c, self.scenario)
-            self.comm_zone[c.id] = zid
-            it = self.interpreter.interpret(c, {"zones": zones, "zone_id": zid})
-            self.interpretations[c.id] = self._guard_interpretation(it, c)
-        if not new_comms and not telemetry:
+        """Update the operational picture when it matters: a new urgent session, a full batch,
+        or `SYNTHESIS_MAX_GAP_MIN` since the last update for routine sessions and telemetry.
+        In live mode, also only when the synthesis model has budget; otherwise the update is
+        deferred, never lost."""
+        self._unsynth_telemetry += new_telemetry
+        pending = self.status.pending_synthesis
+        urgent = any(self.interpretations[i].category not in ROUTINE for i in pending)
+        overdue = t - self._last_synthesis_t >= SYNTHESIS_MAX_GAP_MIN
+        if not (urgent or len(pending) >= MAX_SYNTHESIS_NEW or (overdue and pending)) and not (
+            overdue and self._unsynth_telemetry and self.picture.version
+        ):
             return []
-        payload = self.build_payload(t, new_comms, all_comms, telemetry)
-        delta = self.interpreter.synthesize(payload)
+        all_comms = [c for c in comms.values() if c.text]
+        new = [comms[i] for i in self.status.pending_synthesis[:MAX_SYNTHESIS_NEW]]
+        recent = [e for e in telemetry if e.id in set(self._unsynth_telemetry)]
+        payload = self.build_payload(t, new, all_comms, recent, self.checkpoint + 1)
+        if self.defer and not self.interpreter.ready("synthesis", payload_chars(payload)):
+            return []
+        try:
+            delta = self.interpreter.synthesize(payload)
+        except Exception as e:  # noqa: BLE001 - provider failure: retry next update
+            self.status.error(t, f"synthesis: {e}")
+            return []
+        self.checkpoint += 1
+        self._last_synthesis_t = t
+        self.status.pending_synthesis = self.status.pending_synthesis[len(new) :]
+        self._unsynth_telemetry = []
         return self.merge(delta, t, all_comms, telemetry)
 
     def build_payload(
@@ -85,19 +198,21 @@ class IntelligenceEngine:
         new_comms: list[Communication],
         all_comms: list[Communication],
         telemetry: list[TelemetryEvent],
+        checkpoint: int,
     ) -> dict[str, Any]:
+        """`telemetry`: the notes not yet seen by synthesis. Only new sessions, the earlier ones
+        hinted to match them and new telemetry are sent; everything older is already summarised
+        in the previous picture. This keeps each request a constant size as the scenario grows,
+        inside the provider's per-minute token limit."""
         p = self.picture
-        # Full text only for new messages and the earlier reports hinted to match them; older
-        # messages are already summarised in the previous picture. This keeps every request
-        # inside the provider's per-minute token budget as the scenario grows.
-        hints = correlation_hints(all_comms, self.scenario)
         relevant = {c.id for c in new_comms}
+        hints = [
+            h for h in correlation_hints(all_comms, self.scenario) if set(h["comm_ids"]) & relevant
+        ]
         for h in hints:
-            members = set(h["comm_ids"])
-            if members & relevant:
-                relevant |= members
+            relevant |= set(h["comm_ids"])
         return {
-            "checkpoint": self.checkpoint,
+            "checkpoint": checkpoint,
             "time_min": t,
             "zones": self.zones_context(),
             "previous_picture": {
@@ -113,60 +228,46 @@ class IntelligenceEngine:
                     }
                     for i in p.incidents
                 ],
-                "needs": [
-                    {
-                        "id": n.id,
-                        "who": n.who,
-                        "zone_id": n.zone_id,
-                        "service": n.service.value,
-                        "category": n.category,
-                        "people": [n.people_min, n.people_max],
-                        "status": n.status,
-                    }
-                    for n in p.needs
-                ],
                 "dependencies": [{"id": d.id, "title": d.title} for d in p.dependencies],
                 "contradictions": [
                     {"id": c.id, "description": c.description} for c in p.contradictions
                 ],
                 "gaps": [{"id": g.id, "question": g.question} for g in p.gaps],
             },
-            "new_communications": [
+            "new_sessions": [
                 {
                     "id": c.id,
                     "interpretation": self.interpretations[c.id].model_dump(
                         mode="json",
-                        include={
+                        include={  # facts are left out: the text itself is in sessions
                             "summary",
-                            "facts",
+                            "category",
                             "people_min",
                             "people_max",
                             "life_threat",
                             "operations_affected",
-                            "missing_info",
                             "zone_id",
                         },
                     ),
                 }
                 for c in new_comms
             ],
-            "all_communications": [self._comm_entry(c, c.id in relevant) for c in all_comms],
+            "sessions": [self._comm_entry(c) for c in all_comms if c.id in relevant],
             "telemetry": [{"id": e.id, "asset_id": e.asset_id, "note": e.note} for e in telemetry],
             "correlation_hints": hints,
         }
 
-    def _comm_entry(self, c: Communication, with_text: bool) -> dict[str, Any]:
-        entry: dict[str, Any] = {
+    def _comm_entry(self, c: Communication) -> dict[str, Any]:
+        it = self.interpretations.get(c.id)
+        return {
             "id": c.id,
             "t": c.t,
             "channel": c.channel.value,
             "source_role": c.source_role.value,
-            "zone_id": self.comm_zone.get(c.id),
-            "triage_floor": c.triage_floor.value,
+            "network_zone": self.comm_zone.get(c.id),
+            "category": it.category if it else None,
+            "text": c.text,
         }
-        if with_text:
-            entry["text"] = c.text
-        return entry
 
     # ------------------------------------------------------------------ guards + merge
 
@@ -210,7 +311,7 @@ class IntelligenceEngine:
         sources = {c.id: (c.text, c.source_role)}
         facts = [self._guard_fact(f, sources, notes) for f in it.facts]
         zone_ids = {z.id for z in self.scenario.zones}
-        zone = it.zone_id if it.zone_id in zone_ids else self.comm_zone.get(c.id)
+        zone = it.zone_id if it.zone_id in zone_ids else None
         return it.model_copy(update={"facts": facts, "zone_id": zone, "comm_id": c.id})
 
     def merge(
@@ -241,26 +342,6 @@ class IntelligenceEngine:
             )
         p.incidents = upsert(p.incidents, incidents)
 
-        prev_needs = {n.id: n for n in p.needs}
-        needs: list[CommNeed] = []
-        for n in delta.needs:
-            refs = self._valid_refs(n.evidence, sources, notes)
-            update: dict[str, Any] = {"evidence": refs}
-            if n.zone_id not in zone_ids:
-                update["zone_id"] = None
-                update["verification_needed"] = True
-            if not refs:
-                update["verification_needed"] = True
-                notes.append(f"{n.id}: no valid evidence, marked for verification")
-            update["first_seen_t"] = prev_needs[n.id].first_seen_t if n.id in prev_needs else t
-            needs.append(n.model_copy(update=update))
-        p.needs = upsert(p.needs, needs)
-        for nid in delta.resolved_need_ids:
-            for n in p.needs:
-                if n.id == nid:
-                    n.status = "resolved"
-                    n.resolution = "resolved per new evidence"
-
         deps = []
         for d in delta.dependencies:
             steps = [
@@ -285,7 +366,6 @@ class IntelligenceEngine:
         p.version += 1
         p.interpreter = self.interpreter.name
         linked = {c for i in p.incidents for c in i.comm_ids}
-        linked |= {r.source_id for n in p.needs for r in n.evidence}
         p.unlinked_comm_ids = [c.id for c in all_comms if c.id not in linked]
         p.guard_notes = (notes + p.guard_notes)[:30]
         self.picture = p

@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from lifeline.simulation.scenario import SCENARIO_DIR, list_scenarios
+from lifeline.simulation.scenario import SCENARIO_DIR, list_scenarios, load_scenario
 from tests.conftest import run
 
 FORBIDDEN = ("earthquake", "quake", "seismic")
@@ -26,22 +26,35 @@ def test_core_has_no_hazard_specific_code() -> None:
 
 @pytest.mark.parametrize("path", sorted(SCENARIO_DIR.glob("*.json")), ids=lambda p: p.stem)
 def test_every_scenario_runs_end_to_end(path: Path) -> None:
-    from lifeline.simulation.scenario import load_scenario
-
-    e = run(load_scenario(path))
-    assert e.events_done
-    assert e.priorities, "needs identified"
-    assert e.recommendation.plan, "interventions recommended"
-    # nothing silently dropped: every communication is linked or listed as unlinked
+    e = run(load_scenario(path), auto_approve=True, compare=True, baseline_seeds=2)
+    assert e.events_done and e.finished
+    assert set(e.gateway.states) == set(e.specs), "every session reached the gateway"
+    assert set(e.intel.interpretations) == set(e.specs), "every session was analysed"
+    # nothing silently dropped: every session is in an incident, listed as unlinked, or
+    # visibly awaiting the next (batched) synthesis
     pic = e.intel.picture
     linked = {c for i in pic.incidents for c in i.comm_ids} | set(pic.unlinked_comm_ids)
-    linked |= {r.source_id for n in pic.needs for r in n.evidence}
-    assert {c.id for c in e.comms} <= linked
+    linked |= set(e.intel.status.pending_synthesis)
+    assert set(e.comms) <= linked
+    # every life-safety session is connected by the end, or held for a stated reason
+    for sid, tier in e.tiers.items():
+        st = e.gateway.states[sid]
+        if tier == 1 and st.first_connected_t is None:
+            assert sid in e.recommendation.unserved_needs or e.pending
+
+
+def test_lifeline_never_makes_urgent_sessions_wait_longer_than_fcfs(city) -> None:  # type: ignore[no-untyped-def]
+    from lifeline.evaluation import controller_waits
+
+    e = run(city, auto_approve=True, compare=True, baseline_seeds=2)
+    waits = controller_waits(e)
+    urgent = [s for s, t in e.tiers.items() if t <= 2]
+    assert sum(waits["lifeline"][s] for s in urgent) < sum(waits["arrival"][s] for s in urgent)
+    for s in urgent:
+        assert waits["lifeline"][s] <= waits["arrival"][s]
 
 
 def test_non_disaster_outage_is_handled_by_same_engine() -> None:
-    from lifeline.simulation.scenario import load_scenario
-
     e = run(load_scenario(SCENARIO_DIR / "fibre_cut_outage.json"))
     kinds = {i.intervention.kind for i in e.recommendation.plan}
     assert kinds & {"activate_satellite", "deploy_mobile_bs", "satellite_backhaul"}

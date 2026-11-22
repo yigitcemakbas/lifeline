@@ -1,11 +1,12 @@
-"""Deterministic resource allocation. Every candidate plan is evaluated end to end: apply its
-simulated effects, re-run the network analysis, then re-run the urgency-ordered min-cost flow
-(lifeline.optimization.flow) to see which needs actually get their bandwidth. Searches
-combinations of scarce resources (mobile base stations, satellite terminals, portable
-repeaters) and picks the plan that serves the most T1 needs, then T2, ..., T5 (lexicographic),
-preferring fewer scarce resources and then a shorter ETA. Non-scarce actions (priority access,
-rebalancing, mesh bridging via existing gateways) are added where they help. Every candidate
-that is not chosen is reported with the reason.
+"""Capacity planning. The gateway orders traffic; it cannot carry sessions where there is no
+capacity at all. Every candidate plan is evaluated end to end: apply its simulated effects,
+re-run the network analysis, then route every open session in queue order through the capacity
+network (lifeline.optimization.flow) to see which sessions it could carry. Searches combinations
+of scarce resources (mobile base stations, satellite terminals, portable repeaters) and picks
+the plan that carries the most T1 sessions, then T2, ..., T5 (lexicographic), preferring fewer
+scarce resources and then a shorter ETA. Non-scarce actions (traffic rebalancing, mesh bridging
+via existing gateways) are added where they help. Every candidate that is not chosen is
+reported with the reason.
 """
 
 from __future__ import annotations
@@ -33,15 +34,14 @@ def _served(
     plan: list[Intervention],
     assets: list[Asset],
     zones: list[Zone],
-    priority_zones: set[str],
     needs: list[PrioritizedNeed],
     demand_per_person: float,
 ) -> set[str]:
-    a, pz = assets, priority_zones
+    a = assets
     for iv in plan:
-        a, pz = apply(iv, a, zones, pz)
-    snap = analyse(a, zones, demand_per_person, pz)
-    snap = with_allocation(snap, a, zones, [p.need for p in needs], demand_per_person, pz)
+        a = apply(iv, a, zones)
+    snap = analyse(a, zones, demand_per_person)
+    snap = with_allocation(snap, a, zones, [p.need for p in needs])
     return {p.need.id for p in needs if need_served(p.need, snap)}
 
 
@@ -53,7 +53,6 @@ def recommend(
     candidates: list[Intervention],
     assets: list[Asset],
     zones: list[Zone],
-    priority_zones: set[str],
     needs: list[PrioritizedNeed],
     demand_per_person: float,
     operator_rejected: set[str] | None = None,
@@ -76,7 +75,7 @@ def recommend(
             feasible.append(c)
 
     def served(plan: list[Intervention]) -> set[str]:
-        return _served(plan, assets, zones, priority_zones, needs, demand_per_person)
+        return _served(plan, assets, zones, needs, demand_per_person)
 
     non_scarce = [c for c in feasible if not c.scarce]
     groups: dict[str, list[Intervention]] = defaultdict(list)
@@ -134,7 +133,7 @@ def recommend(
         marginal = sorted(best_served - without, key=lambda nid: tier_of.get(nid, 9))
         tiers = sorted({tier_of[n] for n in marginal})
         rationale = (
-            f"Enables {len(marginal)} need(s), highest tier T{tiers[0]}"
+            f"Carries {len(marginal)} held session(s), highest tier T{tiers[0]}"
             if tiers
             else "Supports other plan items"
         )
@@ -152,15 +151,15 @@ def recommend(
             other = used[c.scarce[0]]
             ts = sorted({tier_of[n] for n in other.needs_served})
             detail = f"{c.scarce[0]} is better used for '{other.intervention.label}'" + (
-                f" (enables T{ts[0]} needs)" if ts else ""
+                f" (carries T{ts[0]} sessions)" if ts else ""
             )
             rejected.append(Rejected(intervention=c, reason_kind="dominated", detail=detail))
         else:
             gain = served([*best_plan, c]) - best_served
             detail = (
-                "would not serve any additional need"
+                "would not carry any additional session"
                 if not gain
-                else f"lower value than chosen plan (would add {len(gain)} need(s))"
+                else f"lower value than chosen plan (would add {len(gain)} session(s))"
             )
             rejected.append(Rejected(intervention=c, reason_kind="no_need", detail=detail))
 

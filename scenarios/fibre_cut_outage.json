@@ -1,279 +1,381 @@
 {
-  "meta": {
-    "id": "fibre_cut_outage",
-    "name": "Metro fibre cut (non-disaster)",
-    "description": "Northgate: roadworks cut a metro fibre feeding the business district and a care home. No disaster: the same engine handles a routine infrastructure outage.",
-    "hazard_label": "Fibre cut (roadworks)",
-    "category": "validation",
-    "order": 4,
-    "center_lat": 51.512,
-    "center_lon": -0.1,
-    "zoom": 13.4
+ "meta": {
+  "id": "fibre_cut_outage",
+  "name": "Metro fibre cut (non-disaster)",
+  "description": "Northgate: roadworks cut a metro fibre feeding the business district and a care home. No disaster: the same engine handles a routine infrastructure outage.",
+  "hazard_label": "Fibre cut (roadworks)",
+  "category": "validation",
+  "order": 4,
+  "center_lat": 51.512,
+  "center_lon": -0.1,
+  "zoom": 13.4
+ },
+ "dynamics": {
+  "battery_drain_pct_per_min": 0.0,
+  "demand_per_person": 0.01
+ },
+ "zones": [
+  {
+   "id": "Z-BIZ",
+   "name": "Business District",
+   "lat": 51.515,
+   "lon": -0.095,
+   "radius_m": 600,
+   "population": 15000,
+   "road_access": "open"
   },
-  "dynamics": {
-    "battery_drain_pct_per_min": 0.0,
-    "demand_per_person": 0.008
+  {
+   "id": "Z-CARE",
+   "name": "Elm Park (care home)",
+   "lat": 51.508,
+   "lon": -0.11,
+   "radius_m": 500,
+   "population": 2000,
+   "road_access": "open"
   },
-  "zones": [
-    {
-      "id": "Z-BIZ",
-      "name": "Business District",
-      "lat": 51.515,
-      "lon": -0.095,
-      "radius_m": 600,
-      "population": 15000,
-      "road_access": "open"
+  {
+   "id": "Z-RES",
+   "name": "Riverside Residential",
+   "lat": 51.506,
+   "lon": -0.09,
+   "radius_m": 600,
+   "population": 8000,
+   "road_access": "open"
+  }
+ ],
+ "sites": [
+  {
+   "id": "S-CARE",
+   "name": "Elm Park Care Home",
+   "kind": "care_home",
+   "zone_id": "Z-CARE",
+   "critical": true
+  }
+ ],
+ "assets": [
+  {
+   "id": "CORE",
+   "name": "Metro core",
+   "kind": "core",
+   "lat": 51.52,
+   "lon": -0.08
+  },
+  {
+   "id": "FB-1",
+   "name": "FB-1 Metro fibre (north)",
+   "kind": "backhaul_link",
+   "lat": 51.514,
+   "lon": -0.1,
+   "links": [
+    "CORE"
+   ]
+  },
+  {
+   "id": "FB-2",
+   "name": "FB-2 Metro fibre (south)",
+   "kind": "backhaul_link",
+   "lat": 51.507,
+   "lon": -0.095,
+   "links": [
+    "CORE"
+   ]
+  },
+  {
+   "id": "B1",
+   "name": "B1 Business-A",
+   "kind": "cell_tower",
+   "lat": 51.516,
+   "lon": -0.097,
+   "capacity": 60,
+   "coverage_zones": [
+    "Z-BIZ"
+   ],
+   "links": [
+    "FB-1"
+   ],
+   "serves": [
+    "voice",
+    "data",
+    "text"
+   ]
+  },
+  {
+   "id": "B2",
+   "name": "B2 Business-B",
+   "kind": "cell_tower",
+   "lat": 51.513,
+   "lon": -0.092,
+   "capacity": 60,
+   "coverage_zones": [
+    "Z-BIZ"
+   ],
+   "links": [
+    "FB-1"
+   ],
+   "serves": [
+    "voice",
+    "data",
+    "text"
+   ]
+  },
+  {
+   "id": "B3",
+   "name": "B3 Elm Park",
+   "kind": "cell_tower",
+   "lat": 51.509,
+   "lon": -0.106,
+   "capacity": 30,
+   "coverage_zones": [
+    "Z-CARE",
+    "Z-BIZ"
+   ],
+   "links": [
+    "FB-1"
+   ],
+   "serves": [
+    "voice",
+    "data",
+    "text"
+   ]
+  },
+  {
+   "id": "B4",
+   "name": "B4 Riverside",
+   "kind": "cell_tower",
+   "lat": 51.506,
+   "lon": -0.091,
+   "capacity": 70,
+   "coverage_zones": [
+    "Z-RES"
+   ],
+   "links": [
+    "FB-2"
+   ],
+   "serves": [
+    "voice",
+    "data",
+    "text"
+   ]
+  },
+  {
+   "id": "SAT-N",
+   "name": "SAT-N Telco van terminal",
+   "kind": "sat_terminal",
+   "lat": 51.505,
+   "lon": -0.085,
+   "status": "standby",
+   "bandwidth": 25,
+   "mobile": true,
+   "coverage_zones": [
+    "Z-CARE"
+   ],
+   "serves": [
+    "voice",
+    "data",
+    "text"
+   ]
+  },
+  {
+   "id": "MBS-N",
+   "name": "MBS-N Cell on wheels",
+   "kind": "mobile_base_station",
+   "lat": 51.503,
+   "lon": -0.08,
+   "status": "standby",
+   "capacity": 60,
+   "mobile": true,
+   "depot": "Telco depot",
+   "links": [
+    "CORE"
+   ],
+   "serves": [
+    "voice",
+    "data",
+    "text"
+   ]
+  },
+  {
+   "id": "TS-N",
+   "name": "TETRA site Northgate",
+   "kind": "tetra_site",
+   "lat": 51.511,
+   "lon": -0.098,
+   "capacity": 15,
+   "coverage_zones": [
+    "Z-BIZ",
+    "Z-CARE",
+    "Z-RES"
+   ],
+   "serves": [
+    "responder_radio"
+   ]
+  }
+ ],
+ "events": [
+  {
+   "t": 0,
+   "kind": "telemetry",
+   "channel": "telemetry",
+   "payload": {
+    "id": "TM-1",
+    "asset_id": "FB-1",
+    "changes": {
+     "status": "down"
     },
-    {
-      "id": "Z-CARE",
-      "name": "Elm Park (care home)",
-      "lat": 51.508,
-      "lon": -0.11,
-      "radius_m": 500,
-      "population": 2000,
-      "road_access": "open"
-    },
-    {
-      "id": "Z-RES",
-      "name": "Riverside Residential",
-      "lat": 51.506,
-      "lon": -0.09,
-      "radius_m": 600,
-      "population": 8000,
-      "road_access": "open"
-    }
-  ],
-  "sites": [
-    {
-      "id": "S-CARE",
-      "name": "Elm Park Care Home",
-      "kind": "care_home",
-      "zone_id": "Z-CARE",
-      "critical": true
-    }
-  ],
-  "assets": [
-    {
-      "id": "CORE",
-      "name": "Metro core",
-      "kind": "core",
-      "lat": 51.52,
-      "lon": -0.08
-    },
-    {
-      "id": "FB-1",
-      "name": "FB-1 Metro fibre (north)",
-      "kind": "backhaul_link",
-      "lat": 51.514,
-      "lon": -0.1,
-      "links": [
-        "CORE"
-      ]
-    },
-    {
-      "id": "FB-2",
-      "name": "FB-2 Metro fibre (south)",
-      "kind": "backhaul_link",
-      "lat": 51.507,
-      "lon": -0.095,
-      "links": [
-        "CORE"
-      ]
-    },
-    {
-      "id": "B1",
-      "name": "B1 Business-A",
-      "kind": "cell_tower",
-      "lat": 51.516,
-      "lon": -0.097,
-      "capacity": 60,
-      "coverage_zones": [
-        "Z-BIZ"
-      ],
-      "links": [
-        "FB-1"
-      ],
-      "serves": [
-        "voice",
-        "data",
-        "text"
-      ]
-    },
-    {
-      "id": "B2",
-      "name": "B2 Business-B",
-      "kind": "cell_tower",
-      "lat": 51.513,
-      "lon": -0.092,
-      "capacity": 60,
-      "coverage_zones": [
-        "Z-BIZ"
-      ],
-      "links": [
-        "FB-1"
-      ],
-      "serves": [
-        "voice",
-        "data",
-        "text"
-      ]
-    },
-    {
-      "id": "B3",
-      "name": "B3 Elm Park",
-      "kind": "cell_tower",
-      "lat": 51.509,
-      "lon": -0.106,
-      "capacity": 30,
-      "coverage_zones": [
-        "Z-CARE",
-        "Z-BIZ"
-      ],
-      "links": [
-        "FB-1"
-      ],
-      "serves": [
-        "voice",
-        "data",
-        "text"
-      ]
-    },
-    {
-      "id": "B4",
-      "name": "B4 Riverside",
-      "kind": "cell_tower",
-      "lat": 51.506,
-      "lon": -0.091,
-      "capacity": 70,
-      "coverage_zones": [
-        "Z-RES"
-      ],
-      "links": [
-        "FB-2"
-      ],
-      "serves": [
-        "voice",
-        "data",
-        "text"
-      ]
-    },
-    {
-      "id": "SAT-N",
-      "name": "SAT-N Telco van terminal",
-      "kind": "sat_terminal",
-      "lat": 51.505,
-      "lon": -0.085,
-      "status": "standby",
-      "bandwidth": 25,
-      "mobile": true,
-      "coverage_zones": [
-        "Z-CARE"
-      ],
-      "serves": [
-        "voice",
-        "data",
-        "text"
-      ]
-    },
-    {
-      "id": "MBS-N",
-      "name": "MBS-N Cell on wheels",
-      "kind": "mobile_base_station",
-      "lat": 51.503,
-      "lon": -0.08,
-      "status": "standby",
-      "capacity": 60,
-      "mobile": true,
-      "depot": "Telco depot",
-      "links": [
-        "CORE"
-      ],
-      "serves": [
-        "voice",
-        "data",
-        "text"
-      ]
-    },
-    {
-      "id": "TS-N",
-      "name": "TETRA site Northgate",
-      "kind": "tetra_site",
-      "lat": 51.511,
-      "lon": -0.098,
-      "capacity": 15,
-      "coverage_zones": [
-        "Z-BIZ",
-        "Z-CARE",
-        "Z-RES"
-      ],
-      "serves": [
-        "responder_radio"
-      ]
-    }
-  ],
-  "events": [
-    {
-      "t": 0,
-      "kind": "telemetry",
-      "channel": "telemetry",
-      "payload": {
-        "id": "TM-1",
-        "asset_id": "FB-1",
-        "changes": {
-          "status": "down"
-        },
-        "note": "FB-1 metro fibre: loss of light at 10:05; contractor reports excavator strike at roadworks"
-      }
-    },
-    {
-      "t": 3,
-      "kind": "comm",
-      "channel": "facility",
-      "payload": {
-        "id": "F-1",
-        "source_id": "elm-park-care-home",
-        "source_role": "facility",
-        "lat": 51.5082,
-        "lon": -0.1101,
-        "text": "Elm Park Care Home: our nurse call and telecare alarm platform has been offline since 10:05. 64 residents, 2 of them on remote oxygen monitoring."
-      }
-    },
-    {
-      "t": 5,
-      "kind": "comm",
-      "channel": "cellular",
-      "payload": {
-        "id": "C-1",
-        "source_id": "+44-7xxx-2210",
-        "source_role": "citizen",
-        "lat": 51.5152,
-        "lon": -0.0948,
-        "text": "Card payments and phones are down across the business district, shops are closing early."
-      }
-    },
-    {
-      "t": 8,
-      "kind": "comm",
-      "channel": "citizen_app",
-      "payload": {
-        "id": "C-2",
-        "source_id": "app-user-7781",
-        "source_role": "citizen",
-        "lat": 51.5149,
-        "lon": -0.0962,
-        "text": "Cannot reach the office VPN from here, any estimate on when the repair will be done? Nobody is hurt, just annoying."
-      }
-    },
-    {
-      "t": 12,
-      "kind": "telemetry",
-      "channel": "telemetry",
-      "payload": {
-        "id": "TM-2",
-        "asset_id": "B4",
-        "changes": {},
-        "note": "B4 Riverside: utilisation rising as devices roam from the business district"
-      }
-    }
-  ]
+    "note": "FB-1 metro fibre: loss of light at 10:05; contractor reports excavator strike at roadworks"
+   }
+  },
+  {
+   "t": 3,
+   "kind": "comm",
+   "channel": "facility",
+   "payload": {
+    "id": "F-1",
+    "source_id": "elm-park-care-home",
+    "source_role": "facility",
+    "lat": 51.5082,
+    "lon": -0.1101,
+    "text": "Elm Park Care Home: our nurse call and telecare alarm platform has been offline since 10:05. 64 residents, 2 of them on remote oxygen monitoring.",
+    "duration_min": null
+   }
+  },
+  {
+   "t": 5,
+   "kind": "comm",
+   "channel": "cellular",
+   "payload": {
+    "id": "C-1",
+    "source_id": "+44-7xxx-2210",
+    "source_role": "citizen",
+    "session": "call",
+    "cell": "B4",
+    "audio": "audio/fibre_cut_outage/C-1.ogg",
+    "script": "Hi, it's me. Card payments and phones are down across the whole business district, so the shops are closing early. I'm walking over to Riverside to get signal.",
+    "lat": 51.5062,
+    "lon": -0.0905
+   }
+  },
+  {
+   "t": 6,
+   "kind": "comm",
+   "channel": "cellular",
+   "payload": {
+    "id": "C-3",
+    "source_id": "+44-7xxx-5530",
+    "source_role": "citizen",
+    "session": "call",
+    "cell": "B4",
+    "audio": "audio/fibre_cut_outage/C-3.ogg",
+    "script": "Hello, I'm at the Riverside pharmacy and the card machine is down. Could you send me some money by bank transfer so I can pay for the prescription?"
+   }
+  },
+  {
+   "t": 8,
+   "kind": "comm",
+   "channel": "citizen_app",
+   "payload": {
+    "id": "C-2",
+    "source_id": "app-user-7781",
+    "source_role": "citizen",
+    "lat": 51.5061,
+    "lon": -0.0912,
+    "text": "Cannot reach the office VPN from here, any estimate on when the repair will be done? Nobody is hurt, just annoying."
+   }
+  },
+  {
+   "t": 9,
+   "kind": "comm",
+   "channel": "cellular",
+   "payload": {
+    "id": "C-4",
+    "source_id": "+44-7xxx-0172",
+    "source_role": "citizen",
+    "session": "call",
+    "cell": "B4",
+    "audio": "audio/fibre_cut_outage/C-4.ogg",
+    "script": "My mother lives at Elm Park care home and I can't get through to them at all. She's on oxygen monitoring. Is anyone actually checking on the residents?"
+   }
+  },
+  {
+   "t": 10,
+   "kind": "comm",
+   "channel": "tetra",
+   "payload": {
+    "id": "R-1",
+    "source_id": "police-unit-14",
+    "source_role": "responder",
+    "lat": 51.5148,
+    "lon": -0.0951,
+    "audio": "audio/fibre_cut_outage/R-1.ogg",
+    "script": "Control, unit one four. Traffic signals are out at the junction of King Street and Mill Lane. Requesting a second unit for traffic control. Over."
+   }
+  },
+  {
+   "t": 11,
+   "kind": "comm",
+   "channel": "cellular",
+   "payload": {
+    "id": "C-5",
+    "source_id": "+44-7xxx-8841",
+    "source_role": "citizen",
+    "session": "call",
+    "cell": "B4",
+    "audio": "audio/fibre_cut_outage/C-5.ogg",
+    "script": "There's a man collapsed at the bus stop on River Street. He's not responding and I don't think he's breathing. Please send an ambulance.",
+    "lat": 51.5058,
+    "lon": -0.0898
+   }
+  },
+  {
+   "t": 12,
+   "kind": "telemetry",
+   "channel": "telemetry",
+   "payload": {
+    "id": "TM-2",
+    "asset_id": "B4",
+    "changes": {},
+    "note": "B4 Riverside: utilisation rising as devices roam from the business district"
+   }
+  },
+  {
+   "t": 13,
+   "kind": "comm",
+   "channel": "cellular",
+   "payload": {
+    "id": "C-6",
+    "source_id": "+44-7xxx-3364",
+    "source_role": "citizen",
+    "session": "sms",
+    "cell": "B4",
+    "text": "running late, the trains are fine but my phone keeps dropping"
+   }
+  },
+  {
+   "t": 14,
+   "kind": "comm",
+   "channel": "cellular",
+   "payload": {
+    "id": "C-7",
+    "source_id": "+44-7xxx-7719",
+    "source_role": "citizen",
+    "session": "call",
+    "cell": "B4",
+    "audio": "audio/fibre_cut_outage/C-7.ogg",
+    "script": "Hiya, just letting you know I'm working from the café on Riverside today, the office internet is down. Ring me if you need anything."
+   }
+  },
+  {
+   "t": 16,
+   "kind": "comm",
+   "channel": "satellite",
+   "payload": {
+    "id": "S-1",
+    "source_id": "openreach-crew-7",
+    "source_role": "operator",
+    "lat": 51.5151,
+    "lon": -0.0953,
+    "text": "Field crew 7 on site at the roadworks: fibre cable severed in two places. Splicing van en route, estimated repair 4 hours."
+   }
+  }
+ ]
 }

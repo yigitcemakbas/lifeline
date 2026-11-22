@@ -3,31 +3,38 @@
 from __future__ import annotations
 
 import re
+import statistics
 from html import escape
 
 import streamlit as st
 
+from lifeline.ai.transcriber import AUDIO_ROOT
 from lifeline.dashboard.theme import (
     ASSET_LEGEND,
     CHANNEL_COLOR,
     CONN_COLOR,
     FACT_COLOR,
     REJECTION_COLOR,
-    SERVED_STYLE,
+    STATUS_STYLE,
     TIER_COLOR,
     TIER_LABEL,
 )
+from lifeline.evaluation import GROUPS, POLICY_TITLES, controller_waits
 from lifeline.models import (
     AssetKind,
-    AssetStatus,
+    Communication,
     ConnState,
     EvidenceRef,
     Fact,
     PrioritizedNeed,
 )
+from lifeline.optimization.admission import POLICIES
 from lifeline.simulation.engine import Engine
 
 MAX_LOG_ITEMS = 12
+MAX_DONE = 12
+GATEWAY_KINDS = (AssetKind.CELL_TOWER, AssetKind.MOBILE_BS, AssetKind.SAT_TERMINAL)
+LIFE_COLOR = {"yes": "#e5484d", "no": "#3dd68c", "unknown": "#8a94a3"}
 
 
 def html(s: str) -> None:
@@ -46,6 +53,11 @@ def badge(text: str, color: str = "#aeb6c2") -> str:
     return f'<span class="ll-badge" style="color:{color}">{escape(text)}</span>'
 
 
+def channel_badge(c: Communication) -> str:
+    label = f"{c.channel.value.replace('_', ' ')} {c.kind.value}"
+    return badge(label, CHANNEL_COLOR.get(c.channel.value, "#8a94a3"))
+
+
 def fmt_range(lo: int | None, hi: int | None) -> str:
     if lo is None and hi is None:
         return "unknown"
@@ -54,6 +66,10 @@ def fmt_range(lo: int | None, hi: int | None) -> str:
     if lo is None:
         return f"up to {hi}"
     return f"{lo}–{hi}"
+
+
+def fmt_wait(minutes: float) -> str:
+    return "under 1 min" if minutes < 1 else f"{minutes:.0f} min"
 
 
 def zone_names(engine: Engine) -> dict[str, str]:
@@ -70,7 +86,7 @@ def highlight(text: str, quotes: list[str]) -> str:
 
 
 def evidence_block(engine: Engine, refs: list[EvidenceRef]) -> str:
-    texts = {c.id: (c.text, c.channel.value) for c in engine.comms}
+    texts = {c.id: (c.text, c.channel.value) for c in engine.comms.values()}
     texts.update({e.id: (e.note, "telemetry") for e in engine.telemetry})
     by_src: dict[str, list[str]] = {}
     for r in refs:
@@ -95,42 +111,47 @@ def fact_line(f: Fact) -> str:
     )
 
 
+def admission_order(engine: Engine) -> list[str]:
+    """Held sessions in the order the gateway will admit them."""
+    tiers = {p.need.id: p.tier for p in engine.priorities}
+    order = engine.gateway.queue([p.need.id for p in engine.priorities], tiers)
+    return [s for s in order if s in tiers]
+
+
 # --------------------------------------------------------------------------- header
 
 
-def header(engine: Engine, mode_label: str) -> None:
+def header(engine: Engine, ai_label: str) -> None:
     m = engine.scenario.meta
-    total = len(engine.checkpoint_times)
     html(
         f'<div class="ll-head"><span class="ll-logo">Lifeline</span>'
         f'<span class="ll-scn">{escape(m.name)}</span>'
         f'<span class="ll-dim">{escape(m.hazard_label)}</span>'
         f'<span class="ll-clock">T+{engine.t:.0f} min</span>'
-        f'<span class="ll-dim">update {min(engine.cp_index, total)} of {total}</span>'
-        f'<span class="ll-right">AI: {escape(mode_label)} · network actions simulated</span></div>'
+        f'<span class="ll-right">Live AI: {escape(ai_label)} · network simulated</span></div>'
     )
 
 
 def incident_timeline(engine: Engine) -> None:
-    """Horizontal time axis: incident onset, every event released so far, and the clock."""
+    """Horizontal time axis: onset, every event released so far, and the clock."""
     m = engine.scenario.meta
-    end = max(max((e.t for e in engine.scenario.events), default=10.0), engine.t) + 5
-    started = engine.cp_index > 0
+    end = max(engine.last_event_t, engine.t) + 5
 
     def x(t: float) -> float:
         return 2 + 96 * t / end
 
-    comms = {c.id: c for c in engine.comms}
     marks = []
     for ev in engine.scenario.events:
-        if not started or ev.t > engine.t:
+        if not engine.started or ev.t > engine.t:
             continue
         if ev.kind == "telemetry":
             color, label = "#f5a524", str(ev.payload.get("note", ""))
         else:
-            c = comms.get(str(ev.payload["id"]))
-            color = "#e5484d" if c and c.triage_floor.value == "life_safety" else "#6b8fc7"
-            label = str(ev.payload.get("text", ""))
+            sid = str(ev.payload["id"])
+            c = engine.comms.get(sid)
+            tier = engine.tiers.get(sid, 4)
+            color = TIER_COLOR[tier] if tier <= 2 else "#6b8fc7"
+            label = c.text if c and c.text else "audio awaiting transcription"
         marks.append(
             f'<div class="tl-dot" title="T+{ev.t:.0f}: {escape(label[:120])}" '
             f'style="left:{x(ev.t):.1f}%;background:{color}"></div>'
@@ -138,7 +159,7 @@ def incident_timeline(engine: Engine) -> None:
     onset = (
         f'<div class="tl-onset" style="left:{x(0):.1f}%"></div>'
         f'<div class="tl-onset-lbl" style="left:{x(0):.1f}%">Onset · T+0</div>'
-        if started
+        if engine.started
         else ""
     )
     now = (
@@ -147,12 +168,13 @@ def incident_timeline(engine: Engine) -> None:
     )
     status = (
         f'<span class="tl-alert">{escape(m.hazard_label)} · {engine.t:.0f} min since onset</span>'
-        if started
-        else '<span class="ll-small">No events released yet. Press Play or Step.</span>'
+        if engine.started
+        else '<span class="ll-small">No events released yet.</span>'
     )
     legend = (
         f'<span class="ll-small">{dot("#f5a524")}infrastructure alert '
-        f"{dot('#e5484d')}life-threatening report {dot('#6b8fc7')}other report</span>"
+        f"{dot(TIER_COLOR[1])}life safety {dot(TIER_COLOR[2])}facility or operations "
+        f"{dot('#6b8fc7')}other session</span>"
     )
     html(
         f'<div class="tl-wrap"><div class="tl-head">{status}{legend}</div>'
@@ -160,108 +182,85 @@ def incident_timeline(engine: Engine) -> None:
     )
 
 
-# --------------------------------------------------------------------------- pipeline view
+# --------------------------------------------------------------------------- status panels
 
 
-def _stage(n: int, title: str, body: str, delay: float) -> str:
-    return (
-        f'<div class="wf-step" style="animation-delay:{delay:.1f}s">'
-        f'<div class="wf-n">{n}</div><div class="wf-t">{title}</div>'
-        f'<div class="wf-b">{body}</div></div>'
-    )
+def kpis(engine: Engine) -> None:
+    held = engine.gateway.held()
+    connected = engine.connected_ids
+    backlog = engine.intel.status.backlog
+    holding = {engine.specs[s].zone_id for s in held} - {None}
+    urgent_held = sum(1 for s in held if engine.tiers.get(s, 9) <= 2)
 
-
-def workflow(engine: Engine) -> None:
-    """How the latest update moved through the pipeline: report, interpretation, priority."""
-    if engine.cp_index == 0:
-        html(
-            '<div class="wf-empty">Each update is traced here as it moves through the pipeline: '
-            "report received, AI interpretation, resulting priority and action.</div>"
-        )
-        return
-    comms = {c.id: c for c in engine.comms}
-    tel = {e.id: e for e in engine.telemetry}
-    new_comms = [comms[i] for i in engine.last_event_ids if i in comms]
-    new_tel = [tel[i] for i in engine.last_event_ids if i in tel]
-    zones = zone_names(engine)
-    t = engine.t
-
-    c = min(new_comms, key=lambda c: c.triage_floor.value != "life_safety", default=None)
-    if c is not None:
-        incoming = (
-            f'<div class="wf-src">{escape(c.channel.value.replace("_", " "))} · '
-            f"{escape(c.source_role.value)} · {escape(c.delivery_status)}</div>"
-            f'<div class="wf-msg">“{escape(c.text)}”</div>'
-        )
-    else:
-        incoming = "".join(
-            f'<div class="wf-src">network telemetry · {escape(e.asset_id)}</div>'
-            f'<div class="wf-msg">{escape(e.note)}</div>'
-            for e in new_tel[:3]
+    def cell(label: str, value: str, color: str = "") -> str:
+        d = dot(color) if color else ""
+        return (
+            f'<div class="ll-m"><div class="lbl">{d}{label}</div>'
+            f'<div class="val">{value}</div></div>'
         )
 
-    changes = [e for e in engine.timeline if e.kind == "intelligence" and e.t == t]
-    it = engine.intel.interpretations.get(c.id) if c else None
-    if it:
-        lt = {"yes": "#e5484d", "no": "#3dd68c", "unknown": "#8a94a3"}[it.life_threat.value]
-        facts = "".join(
-            f'<div class="wf-fact"><span class="fs">{f.status.value}</span>{escape(f.claim)}</div>'
-            for f in it.facts[:3]
-        )
-        ai = (
-            f'<div class="wf-kv"><span>Life threat</span>'
-            f'<b style="color:{lt}">{it.life_threat.value}</b>'
-            f"<span>Where</span><b>{escape(zones.get(it.zone_id or '', 'unknown'))}</b>"
-            f"<span>People</span><b>{escape(fmt_range(it.people_min, it.people_max))}</b>"
-            f"<span>Confidence</span><b>{it.confidence:.0%}</b></div>{facts}"
-        )
-        if changes:
-            ai += f'<div class="wf-note">Picture updated: {escape(changes[0].text)}</div>'
-    else:
-        summary = changes[0].text if changes else engine.intel.picture.summary
-        ai = f'<div class="wf-msg">{escape(summary)}</div>'
-
-    linked = [
-        p for p in engine.priorities if c and any(r.source_id == c.id for r in p.need.evidence)
-    ] or [p for p in engine.priorities if p.need.first_seen_t == t]
-    if linked:
-        prio = "".join(
-            f'<div class="wf-need">{tier_chip(p.tier)}<div>{escape(p.need.who)}</div>'
-            f'<div class="ll-small">{escape(zones.get(p.need.zone_id or "", "location unknown"))}'
-            f" · needs {escape(p.need.service.value.replace('_', ' '))} · "
-            f"{escape(SERVED_STYLE[p.served][0].lower())}</div>{algo_lines(p)}</div>"
-            for p in linked[:2]
-        )
-    else:
-        prio = '<div class="ll-small">No new communication need identified.</div>'
-
-    decisions = [e for e in engine.timeline if e.kind == "decision" and e.t == t]
-    outcomes = [e for e in engine.timeline if e.kind == "outcome" and e.t == t]
-    if decisions:
-        prio += '<div class="wf-note">Action taken</div>' + "".join(
-            f'<div class="wf-dec">{escape(d.text)}</div>'
-            f'<div class="ll-small">Why: {escape(d.detail)}</div>'
-            for d in decisions[:2]
-        )
-    prio += "".join(
-        f'<div class="wf-res">{escape(o.text)}: {escape(o.detail)}</div>' for o in outcomes[:2]
-    )
-
-    stages = [
-        ("Report received", incoming),
-        ("AI interpretation", ai),
-        ("Resulting priority", prio),
-    ]
     html(
-        f'<div class="wf"><div class="wf-title">Update at T+{t:.0f} min</div><div class="wf-row">'
-        + '<div class="wf-arrow">›</div>'.join(
-            _stage(i + 1, title, body, i * 0.6) for i, (title, body) in enumerate(stages)
-        )
+        '<div class="ll-panel"><h4>Gateway</h4><div class="ll-grid">'
+        + cell("Sessions intercepted", str(len(engine.specs)))
+        + cell("Held now", str(len(held)))
+        + cell("Urgent held", str(urgent_held), TIER_COLOR[1] if urgent_held else "")
+        + cell("Connected now", str(len(connected)))
+        + cell("Zones holding traffic", str(len(holding)))
+        + cell("Awaiting AI analysis", str(backlog), "#f5a524" if backlog else "")
         + "</div></div>"
     )
 
 
-# --------------------------------------------------------------------------- map legend
+def comparison(engine: Engine) -> None:
+    """Mean wait per tier group under Lifeline and the two baselines, on the same traffic."""
+    waits = controller_waits(engine)
+    rows = ""
+    for label, ts in GROUPS.items():
+        ids = [s for s, t in engine.tiers.items() if t in ts]
+        if not ids:
+            continue
+        cells = ""
+        for policy in POLICIES:
+            vals = [waits[policy][s] for s in ids if s in waits[policy]]
+            cells += f"<b>{fmt_wait(statistics.fmean(vals)) if vals else '–'}</b>"
+        rows += f"<span>{label} ({len(ids)})</span>{cells}"
+    head = "".join(f'<span class="hdr">{POLICY_TITLES[p]}</span>' for p in POLICIES)
+    html(
+        '<div class="ll-panel"><h4>Mean wait to connect, same traffic and network</h4>'
+        f'<div class="cmp"><span class="hdr"></span>{head}'
+        f"{rows or '<span class=ll-small>No sessions yet.</span>'}</div></div>"
+    )
+
+
+def gateways(engine: Engine) -> None:
+    """Load on every access asset carrying traffic, and how many sessions it is holding."""
+    held_by_zone: dict[str, int] = {}
+    for s in engine.gateway.held():
+        z = engine.specs[s].zone_id
+        if z:
+            held_by_zone[z] = held_by_zone.get(z, 0) + 1
+    rows = ""
+    for a in engine.assets:
+        if a.kind not in GATEWAY_KINDS or a.id not in engine.gateway.loads:
+            continue
+        used, cap = engine.gateway.loads[a.id]
+        if cap <= 0:
+            continue
+        share = min(1.0, used / cap)
+        color = "#e5484d" if share > 0.97 else "#d6b84a" if share > 0.8 else "#3dd68c"
+        held = sum(held_by_zone.get(z, 0) for z in a.coverage_zones + a.extra_zones)
+        state = f"holding {held}" if held else "pass-through"
+        rows += (
+            f"<span>{escape(a.name)}</span><span>{state}</span>"
+            f'<span><div class="gw-bar"><i style="width:{share:.0%};background:{color}"></i>'
+            f'</div><span class="ll-small">{used:.0f} of {cap:.0f} units</span></span>'
+        )
+    if rows:
+        html(
+            '<div class="ll-panel"><h4>Access sites behind the gateway</h4><div class="gw">'
+            '<span class="hdr">Site</span><span class="hdr">Gateway</span>'
+            f'<span class="hdr">Load</span>{rows}</div></div>'
+        )
 
 
 def map_legend() -> None:
@@ -277,226 +276,230 @@ def map_legend() -> None:
     assets = "".join(f"<span>{dot(color)}{label}</span>" for label, color in ASSET_LEGEND)
     html(
         f'<div class="ll-legend">{zones}{assets}'
-        '<span><i class="ll-dot ll-ring"></i>latest event</span></div>'
+        '<span><i class="ll-dot ll-ring"></i>held session</span></div>'
     )
 
 
-# --------------------------------------------------------------------------- overview
+# --------------------------------------------------------------------------- latest event
 
 
-def overview(engine: Engine) -> None:
-    pic = engine.intel.picture
-    pr = engine.priorities
-    c1, c2 = st.columns([1, 1])
-    with c1:
-        changes = [e for e in engine.timeline if e.kind == "intelligence"][-3:][::-1]
-        ch_html = "".join(
-            f'<div class="ll-change"><span class="ll-small">T+{e.t:.0f}</span> '
-            f"{escape(e.text)} <span class='ll-small'>{escape(', '.join(e.refs[:6]))}</span></div>"
-            for e in changes
-        )
-        html(
-            f'<div class="ll-panel"><h4>Operational picture · v{pic.version} · '
-            f"{escape(pic.interpreter)}</h4>"
-            f'<div class="ll-summary">{escape(pic.summary)}</div>'
-            f'<h4 class="ll-sub">What changed</h4>'
-            f"{ch_html or '<span class=ll-small>No changes yet.</span>'}</div>"
-        )
-    with c2:
-        unserved = {t: sum(1 for p in pr if p.tier == t and p.served == "unserved") for t in (1, 2)}
-        lo = sum(i.people_min or 0 for i in pic.incidents)
-        hi = sum(i.people_max or i.people_min or 0 for i in pic.incidents)
-        unknown = sum(1 for i in pic.incidents if i.people_min is None and i.people_max is None)
-        states = [s.state for s in engine.snapshot.zones.values()]
-        free = [
-            a.name
-            for a in engine.assets
-            if a.status == AssetStatus.STANDBY
-            and a.kind in (AssetKind.MOBILE_BS, AssetKind.SAT_TERMINAL, AssetKind.TETRA_SITE)
-        ]
-        towers = [a for a in engine.assets if a.kind == AssetKind.CELL_TOWER]
-        up = sum(1 for a in towers if a.id in engine.snapshot.usable_assets)
-        people = f"{lo}" if lo == hi else f"{lo}–{hi}"
-        if unknown:
-            people += f'<span class="ll-small"> +{unknown} unknown</span>'
-
-        def cell(label: str, value: str, color: str = "") -> str:
-            d = dot(color) if color else ""
-            return (
-                f'<div class="ll-m"><div class="lbl">{d}{label}</div>'
-                f'<div class="val">{value}</div></div>'
-            )
-
-        n_degraded = states.count(ConnState.DEGRADED)
-        n_isolated = states.count(ConnState.ISOLATED)
-        html(
-            '<div class="ll-panel"><h4>Situation status</h4><div class="ll-grid">'
-            + cell("Critical, unserved", str(unserved[1]), TIER_COLOR[1])
-            + cell("High, unserved", str(unserved[2]), TIER_COLOR[2])
-            + cell("Open needs", str(len(pr)))
-            + cell("Incidents", str(len(pic.incidents)))
-            + cell("People affected", people)
-            + cell("Towers usable", f"{up}/{len(towers)}")
-            + cell("Zones degraded / cut off", f"{n_degraded} / {n_isolated}")
-            + cell("Actions en route / in effect", f"{len(engine.pending)} / {len(engine.applied)}")
-            + cell("Information gaps", str(len(pic.gaps)))
-            + "</div>"
-            + f'<div class="ll-small ll-gap">Standby resources: '
-            f"{escape(', '.join(free) or 'none')}</div></div>"
-        )
-    with st.expander("Incidents, dependencies, contradictions and information gaps"):
-        intelligence_details(engine)
+def _stage(n: int, title: str, body: str, delay: float) -> str:
+    return (
+        f'<div class="wf-step" style="animation-delay:{delay:.1f}s">'
+        f'<div class="wf-n">{n}</div><div class="wf-t">{title}</div>'
+        f'<div class="wf-b">{body}</div></div>'
+    )
 
 
-def intelligence_details(engine: Engine) -> None:
-    pic = engine.intel.picture
-    zones = zone_names(engine)
-    if not pic.incidents:
-        html('<div class="ll-small">No incidents yet.</div>')
-    for inc in pic.incidents:
-        lt = {"yes": "#e5484d", "no": "#3dd68c", "unknown": "#8a94a3"}[inc.life_threat.value]
-        rel = ", ".join(f"{r.relation.replace('_', ' ')} {r.incident_id}" for r in inc.related)
-        html(
-            f'<div class="ll-card"><div class="ll-title">{escape(inc.id)} · {escape(inc.title)}'
-            f"</div>"
-            f'<div class="ll-small">{badge("life threat: " + inc.life_threat.value, lt)}'
-            f"{escape(zones.get(inc.zone_id or '', 'location unknown'))} · people "
-            f"{fmt_range(inc.people_min, inc.people_max)} · confidence {inc.confidence:.0%} · "
-            f"reports {escape(', '.join(inc.comm_ids))}{(' · ' + escape(rel)) if rel else ''}"
-            f"</div>{''.join(fact_line(f) for f in inc.facts)}"
-            f"{evidence_block(engine, [r for f in inc.facts for r in f.evidence])}</div>"
-        )
-    if pic.dependencies:
-        html('<h4 class="ll-sub">Dependency chains</h4>')
-        for d in pic.dependencies:
-            steps = '<span class="ll-small">→</span>'.join(
-                f'<span class="step">{escape(s.description)}</span>' for s in d.steps
-            )
+def latest_interception(engine: Engine) -> None:
+    """How the most urgent session of the latest update moved through the gateway."""
+    new = [engine.comms[i] for i in engine.last_event_ids if i in engine.comms]
+    if not new:
+        tel = [e for e in engine.telemetry if e.id in engine.last_event_ids]
+        if tel:
             html(
-                f'<div class="ll-card"><div class="ll-title">{escape(d.title)} '
-                f"{badge(d.status.value, FACT_COLOR[d.status])}</div>"
-                f'<div class="ll-chain">{steps}</div></div>'
+                '<div class="wf-empty">'
+                + "<br/>".join(f"Network telemetry: {escape(e.note)}" for e in tel)
+                + "</div>"
             )
-    if pic.contradictions:
-        html('<h4 class="ll-sub">Contradictions</h4>')
-        for c in pic.contradictions:
+        elif not engine.started:
             html(
-                f'<div class="ll-card"><div class="ll-fact">{escape(c.description)}</div>'
-                f'<div class="ll-small">Verify: {escape(c.suggested_verification)}</div>'
-                f"{evidence_block(engine, c.evidence)}</div>"
+                '<div class="wf-empty">Each intercepted session is traced here: held at the '
+                "gateway, transcribed and analysed by the AI, then admitted in priority order."
+                "</div>"
             )
-    if pic.gaps:
-        html('<h4 class="ll-sub">Information gaps</h4>')
-        for g in pic.gaps:
-            why = f" · {escape(g.why_it_matters)}" if g.why_it_matters else ""
-            html(f'<div class="ll-small"><b>{escape(g.question)}</b>{why}</div>')
-    if pic.unlinked_comm_ids:
-        html(
-            '<div class="ll-small ll-gap">Not yet linked to an incident (kept visible): '
-            f"{escape(', '.join(pic.unlinked_comm_ids))}</div>"
-        )
-    if pic.guard_notes:
-        html('<h4 class="ll-sub">Evidence guard actions</h4>')
-        html("".join(f'<div class="ll-small">{escape(n)}</div>' for n in pic.guard_notes))
-
-
-# --------------------------------------------------------------------------- priority queue
-
-
-ALGO_LINES = [
-    ("Travel time to help", "access to help"),
-    ("Life at risk", "life threat"),
-    ("Bandwidth", "bandwidth"),
-]
-
-
-def criterion(p: PrioritizedNeed, name: str) -> str:
-    return next((c.value for c in p.criteria if c.criterion == name), "")
-
-
-def algo_lines(p: PrioritizedNeed) -> str:
-    """The deterministic results behind a rank: routing, evidence fusion, flow allocation."""
-    return "".join(
-        f'<div class="ll-small">{label}: {escape(criterion(p, key))}</div>'
-        for label, key in ALGO_LINES
-        if criterion(p, key)
-    )
-
-
-def priority_queue(engine: Engine) -> None:
-    """Every open need ranked by urgency, most urgent first."""
-    pr = engine.priorities
-    html(
-        '<div class="ll-section"><div class="ttl">Priority queue</div>'
-        '<div class="ll-small">Open communication needs, most urgent first. Scarce capacity goes '
-        "to the top of the list first; nothing is dropped.</div></div>"
-    )
-    if not pr:
-        html('<div class="ll-small">No needs identified yet.</div>')
         return
-    arrival = {p.need.id: i for i, p in enumerate(sorted(pr, key=lambda p: p.need.first_seen_t), 1)}
+    c = min(new, key=lambda c: (engine.tiers.get(c.id, 9), c.t))
     zones = zone_names(engine)
-    for i, p in enumerate(pr, start=1):
-        n = p.need
-        is_new = n.first_seen_t == engine.t and engine.cp_index > 0
-        status, scol = SERVED_STYLE[p.served]
-        jump = arrival[n.id] - i
-        jump_txt = (
-            f'<span class="pq-jump">{jump} place{"s" if jump > 1 else ""} ahead of arrival order'
-            "</span>"
-            if jump > 0
+    source = (
+        f'<div class="wf-src">{escape(c.adapter)} · {escape(c.source_role.value)} · '
+        f"{escape(zones.get(engine.specs[c.id].zone_id or '', 'unknown zone'))}</div>"
+    )
+    if c.awaiting_transcript:
+        heard = '<div class="wf-msg">Audio held; transcription pending.</div>'
+    else:
+        asr = ""
+        if c.transcript is not None:
+            conf = "low confidence" if c.transcript.low_confidence else "transcribed"
+            asr = f'<div class="wf-src">{escape(c.transcript.model)}: {conf}</div>'
+        heard = f'{asr}<div class="wf-msg">“{escape(c.text)}”</div>'
+    it = engine.intel.interpretations.get(c.id)
+    if it:
+        facts = "".join(
+            f'<div class="wf-fact"><span class="fs">{f.status.value}</span>{escape(f.claim)}</div>'
+            for f in it.facts[:3]
+        )
+        lt = it.life_threat.value
+        ai = (
+            f'<div class="wf-kv"><span>About</span><b>{escape(it.category.replace("_", " "))}</b>'
+            f'<span>Life threat</span><b style="color:{LIFE_COLOR[lt]}">{lt}</b>'
+            f"<span>Where</span><b>{escape(zones.get(it.zone_id or '', 'not stated'))}</b>"
+            f"<span>People</span><b>{escape(fmt_range(it.people_min, it.people_max))}</b>"
+            f"<span>Confidence</span><b>{it.confidence:.0%}</b></div>{facts}"
+        )
+    else:
+        ai = (
+            '<div class="wf-msg">Analysis pending (rate limit or retry); held with its '
+            f"pre-triage floor: {escape(c.triage_floor.value.replace('_', ' '))}.</div>"
+        )
+    p = next((p for p in engine.priorities if p.need.id == c.id), None)
+    state = engine.gateway.states.get(c.id)
+    decision = '<div class="ll-small">Queued.</div>'
+    if p and state:
+        if state.state == "held":
+            order = admission_order(engine)
+            pos = order.index(c.id) + 1 if c.id in order else len(order)
+            outcome = f"Held at the gateway, position {pos} of {len(order)}"
+        elif state.state == "connected":
+            outcome = f"Connected via {escape(state.via or 'satellite messaging')}"
+        else:
+            outcome = "Completed"
+        decision = (
+            f"{tier_chip(p.tier)}<div class='wf-need'>{escape(p.need.who)}</div>"
+            f'<div class="ll-small">Rule: {escape(p.tier_rule)}</div>'
+            f'<div class="wf-res">{outcome}</div>'
+        )
+    stages = [("Intercepted", source + heard), ("AI analysis", ai), ("Gateway", decision)]
+    html(
+        f'<div class="wf"><div class="wf-title">Latest interception at T+{engine.t:.0f} min</div>'
+        '<div class="wf-row">'
+        + '<div class="wf-arrow">›</div>'.join(
+            _stage(i + 1, title, body, i * 0.5) for i, (title, body) in enumerate(stages)
+        )
+        + "</div></div>"
+    )
+
+
+# --------------------------------------------------------------------------- queue
+
+
+def _details(engine: Engine, p: PrioritizedNeed) -> None:
+    c = engine.comms[p.need.id]
+    if c.audio:
+        st.audio(str(AUDIO_ROOT / c.audio))
+        if c.transcript is not None:
+            conf = "low confidence" if c.transcript.low_confidence else "ok"
+            html(
+                f'<div class="ll-small">Transcribed by {escape(c.transcript.model)} (mean '
+                f"log-probability {c.transcript.avg_logprob}, {conf})</div>"
+            )
+    it = engine.intel.interpretations.get(c.id)
+    quotes = [r.quote for f in it.facts for r in f.evidence] if it else []
+    html(f'<div class="ll-quote">{highlight(c.text, quotes) or "No text yet."}</div>')
+    if it:
+        html(
+            f'<div class="ll-small">AI ({escape(it.interpreter)}): {escape(it.summary)}</div>'
+            + "".join(fact_line(f) for f in it.facts)
+        )
+        if it.missing_info:
+            html(f'<div class="ll-small">Unknown: {escape("; ".join(it.missing_info))}</div>')
+    html(
+        "".join(
+            f'<div class="ll-small"><b>{escape(cr.criterion)}</b>: {escape(cr.value)}</div>'
+            for cr in p.criteria
+        )
+    )
+    if c.triage_terms:
+        html(f'<div class="ll-small">Pre-triage: {escape(", ".join(c.triage_terms))}</div>')
+
+
+def queue(engine: Engine) -> None:
+    """Held sessions in the order the gateway will admit them, then recent connections."""
+    by_id = {p.need.id: p for p in engine.priorities}
+    order = admission_order(engine)
+    html(
+        '<div class="ll-section"><div class="ttl">Interception queue</div>'
+        '<div class="ll-small">Sessions held at the gateway, in the order the network will carry '
+        "them. Urgent sessions go first; routine traffic keeps its arrival order.</div></div>"
+    )
+    if not order:
+        html(
+            '<div class="ll-small">Nothing is waiting: the network is carrying every session.</div>'
+        )
+    zones = zone_names(engine)
+    for i, sid in enumerate(order, start=1):
+        p, c = by_id[sid], engine.comms[sid]
+        label, color = STATUS_STYLE[p.status]
+        wait = engine.gateway.wait(sid, engine.t)
+        flags = "".join(f'<div class="ll-small ll-flag">{escape(f)}</div>' for f in p.flags)
+        text = c.text or "Audio held; transcription pending."
+        more = "…" if len(text) > 180 else ""
+        html(
+            f'<div class="pq{" pq-new" if c.t == engine.t else ""}">'
+            f'<div class="pq-rank">{i}</div><div class="pq-body">'
+            f"<div>{tier_chip(p.tier)}{channel_badge(c)}</div>"
+            f'<div class="pq-who">{escape(p.need.who)}</div>'
+            f'<div class="ll-small">{escape(p.need.purpose)} · '
+            f"{escape(zones.get(p.need.zone_id or '', 'unknown zone'))}</div>"
+            f'<div class="pq-text">{escape(text[:180])}{more}</div>'
+            f'<div class="ll-small">Rule: {escape(p.tier_rule)}</div>{flags}'
+            f'<div class="pq-status" style="color:{color}">{dot(color)}{label} · '
+            f'<span class="pq-wait">waiting {fmt_wait(wait)}</span></div></div></div>'
+        )
+        with st.expander(f"{sid}: transcript, analysis and ranking"):
+            _details(engine, p)
+    admitted(engine)
+    with st.expander("How the queue is ordered"):
+        html(
+            '<div class="ll-small"><b>Interception</b>: every new call, message, data session '
+            "and radio transmission is held at the gateway in front of the base station or "
+            "radio network.</div>"
+            '<div class="ll-small"><b>AI</b>: Whisper transcribes voice; a language model reads '
+            "each session (what it is about, where, how many people, whether a life is at "
+            "risk) and merges reports into incidents. It never ranks.</div>"
+            '<div class="ll-small"><b>Tier rules</b>: life safety, then facilities and rescue '
+            "operations, then isolated or not-yet-analysed sessions, then routine and "
+            "non-urgent traffic. A rule-based pre-triage floor holds possible life-safety "
+            "sessions at the top until the AI has read them.</div>"
+            '<div class="ll-small"><b>Within a tier</b>: road travel time to help (Dijkstra), '
+            "Bayesian evidence fusion across reports, connectivity, people affected, waiting "
+            "time.</div>"
+            '<div class="ll-small"><b>Admission</b>: once a minute, a lexicographic maximum '
+            "flow over core, backhaul and radio capacity admits held sessions in this order "
+            "without displacing anything already connected.</div>"
+        )
+
+
+def admitted(engine: Engine) -> None:
+    states = engine.gateway.states
+    done = [s for s, x in states.items() if x.first_connected_t is not None]
+    done.sort(key=lambda s: -(states[s].first_connected_t or 0.0))
+    if not done:
+        return
+    waits = controller_waits(engine)
+    rows = ""
+    for sid in done[:MAX_DONE]:
+        x = states[sid]
+        tier = engine.tiers.get(sid, 4)
+        base = waits["arrival"].get(sid)
+        vs = (
+            f"; first come, first served: {fmt_wait(base)}"
+            if base is not None and tier <= 2
             else ""
         )
-        flags = "".join(f'<div class="ll-small ll-flag">{escape(f)}</div>' for f in p.flags)
-        html(
-            f'<div class="pq{" pq-new" if is_new else ""}">'
-            f'<div class="pq-rank">{i}</div><div class="pq-body">'
-            f"<div>{tier_chip(p.tier)}{'<span class=pq-newtag>new</span>' if is_new else ''}</div>"
-            f'<div class="pq-who">{escape(n.who)}</div>'
-            f'<div class="ll-small">{escape(n.purpose)} · '
-            f"{escape(zones.get(n.zone_id or '', 'location unknown'))}</div>"
-            f'<div class="ll-small">Tier rule: {escape(p.tier_rule)}</div>'
-            f"{algo_lines(p)}{flags}"
-            f'<div class="pq-status" style="color:{scol}">{dot(scol)}{status}</div>{jump_txt}'
-            "</div></div>"
+        rows += (
+            f'<div class="pq-done"><span class="id">{sid}</span>{tier_chip(tier)}'
+            f"<span>{x.state} via {escape(x.via or 'satellite messaging')}, waited "
+            f"{fmt_wait(engine.gateway.wait(sid, engine.t))}{vs}</span></div>"
         )
-    with st.expander("How the ranking is computed"):
-        html(
-            '<div class="ll-small"><b>AI</b> reads each message: what happened, where, how many '
-            "people, whether a life is at risk. It never ranks.</div>"
-            '<div class="ll-small"><b>Tier rules</b>: life at risk, then hospitals and rescuers, '
-            "then cut-off people, then degraded service, then everything else.</div>"
-            '<div class="ll-small"><b>Road routing</b>: a road graph between areas (minimum '
-            "spanning tree plus nearest neighbours), with blocked roads removed and damaged roads "
-            "slowed. Dijkstra gives travel time from the nearest hospital or rescue base. Farther "
-            "from help ranks higher.</div>"
-            '<div class="ll-small"><b>Evidence fusion</b>: Bayesian log-odds over independent '
-            "sources, weighted by reliability (rescuer &gt; facility &gt; citizen); repeats from "
-            "one phone count once. Marzullo's algorithm finds the people count most reports "
-            "agree on.</div>"
-            '<div class="ll-small"><b>Bandwidth</b>: a min-cost flow over core, backhaul, towers '
-            "and areas. Penalties grow with queue position, so where priority access is on, "
-            "capacity goes strictly to the top of this list first; elsewhere traffic shares best "
-            "effort.</div>"
-            '<div class="ll-small"><b>Plan search</b>: every combination of scarce resources is '
-            "simulated end to end; the plan serving the most needs, tier by tier, wins.</div>"
-        )
+    html(f'<h4 class="ll-sub">Admitted ({len(done)})</h4>{rows}')
 
 
 # --------------------------------------------------------------------------- plan + decisions
 
 
 def recommended_plan(engine: Engine) -> None:
-    """Operator-approval mode: the optimizer's plan with approve / reject controls."""
+    """Operator-approval mode: capacity interventions with approve / reject controls."""
     rec = engine.recommendation
     tiers = {p.need.id: p for p in engine.priorities}
     html(
-        '<div class="ll-section"><div class="ttl">Recommended plan</div>'
-        '<div class="ll-small">Chosen by exhaustive search: most needs served tier by tier, then '
-        "fewest scarce resources, then shortest ETA.</div></div>"
+        '<div class="ll-section"><div class="ttl">Capacity plan</div>'
+        '<div class="ll-small">For held sessions no network can carry yet. Chosen by exhaustive '
+        "search: most sessions carried tier by tier, then fewest scarce resources, then "
+        "shortest ETA.</div></div>"
     )
     if not rec.plan:
-        html('<div class="ll-small">No intervention currently improves any unserved need.</div>')
+        html('<div class="ll-small">No intervention would carry any held session.</div>')
     for i, item in enumerate(rec.plan, start=1):
         iv = item.intervention
         pcs = "".join(
@@ -542,7 +545,7 @@ def decision_log(engine: Engine) -> None:
             f"{escape(p.intervention.label)}, active at T+{p.activate_t:.0f} min</div>"
         )
     if not entries:
-        html('<div class="ll-small">No actions yet.</div>')
+        html('<div class="ll-small">No capacity interventions yet.</div>')
     for e in entries[:MAX_LOG_ITEMS]:
         if e.kind == "outcome":
             html(
@@ -560,3 +563,75 @@ def decision_log(engine: Engine) -> None:
             + (f'<div class="ll-small"><b>Why:</b> {escape(e.detail)}</div>' if e.detail else "")
             + "</div>"
         )
+
+
+# --------------------------------------------------------------------------- picture + AI
+
+
+def operational_picture(engine: Engine) -> None:
+    pic = engine.intel.picture
+    zones = zone_names(engine)
+    changes = [e for e in engine.timeline if e.kind == "intelligence"][-3:][::-1]
+    html(
+        f'<div class="ll-panel"><h4>Operational picture · v{pic.version}</h4>'
+        f'<div class="ll-summary">{escape(pic.summary)}</div>'
+        + "".join(
+            f'<div class="ll-change"><span class="ll-small">T+{e.t:.0f}</span> {escape(e.text)}'
+            "</div>"
+            for e in changes
+        )
+        + "</div>"
+    )
+    incidents = [i for i in pic.incidents if i.comm_ids]
+    with st.expander(f"Incidents ({len(incidents)}), dependencies, contradictions and gaps"):
+        for inc in incidents:
+            lt = inc.life_threat.value
+            rel = ", ".join(f"{r.relation.replace('_', ' ')} {r.incident_id}" for r in inc.related)
+            html(
+                f'<div class="ll-card"><div class="ll-title">{escape(inc.id)} · '
+                f"{escape(inc.title)}</div>"
+                f'<div class="ll-small">{badge("life threat: " + lt, LIFE_COLOR[lt])}'
+                f"{escape(zones.get(inc.zone_id or '', 'location unknown'))} · people "
+                f"{fmt_range(inc.people_min, inc.people_max)} · sessions "
+                f"{escape(', '.join(inc.comm_ids))}{(' · ' + escape(rel)) if rel else ''}</div>"
+                f"{''.join(fact_line(f) for f in inc.facts)}"
+                f"{evidence_block(engine, [r for f in inc.facts for r in f.evidence])}</div>"
+            )
+        for d in pic.dependencies:
+            steps = '<span class="ll-small">→</span>'.join(
+                f'<span class="step">{escape(s.description)}</span>' for s in d.steps
+            )
+            html(
+                f'<div class="ll-card"><div class="ll-title">{escape(d.title)} '
+                f"{badge(d.status.value, FACT_COLOR[d.status])}</div>"
+                f'<div class="ll-chain">{steps}</div></div>'
+            )
+        for c in pic.contradictions:
+            html(
+                f'<div class="ll-card"><div class="ll-fact">Contradiction: '
+                f"{escape(c.description)}</div>"
+                f'<div class="ll-small">Verify: {escape(c.suggested_verification)}</div>'
+                f"{evidence_block(engine, c.evidence)}</div>"
+            )
+        for g in pic.gaps:
+            why = f" · {escape(g.why_it_matters)}" if g.why_it_matters else ""
+            html(f'<div class="ll-small"><b>{escape(g.question)}</b>{why}</div>')
+        if pic.guard_notes:
+            html('<h4 class="ll-sub">Evidence guard actions</h4>')
+            html("".join(f'<div class="ll-small">{escape(n)}</div>' for n in pic.guard_notes))
+
+
+def ai_status(engine: Engine) -> None:
+    s = engine.intel.status
+    lines = [
+        f"Awaiting transcription: {', '.join(s.pending_transcripts) or 'none'}",
+        f"Awaiting interpretation: {', '.join(s.pending_interpretation) or 'none'}",
+        f"Awaiting synthesis: {', '.join(s.pending_synthesis) or 'none'}",
+    ]
+    used = getattr(engine.interpreter, "tokens_used", None)
+    if used is not None:
+        waited = getattr(engine.interpreter, "waited_s", 0.0)
+        lines.append(f"Tokens used this run: {used:,}; waited for rate limits: {waited:.0f} s")
+    html("".join(f'<div class="ll-small">{escape(x)}</div>' for x in lines))
+    for e in s.errors[:5]:
+        html(f'<div class="ll-small ll-flag">{escape(e[:240])}</div>')
