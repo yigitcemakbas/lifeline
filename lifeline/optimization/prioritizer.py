@@ -206,12 +206,3 @@ def prioritize(
         keys[n.id] = (tier, -band, -threat.band, -sev, -upper, n.first_seen_t)
         out.append(p)
     return sorted(out, key=lambda p: keys[p.need.id])
-
-
-def telemetry_only_ranking(snapshot: NetworkSnapshot, zones: list[Zone]) -> list[str]:
-    """What a network-only view would prioritise: worst connectivity, then most residents."""
-    pop = {z.id: z.population for z in zones}
-    return sorted(
-        snapshot.zones,
-        key=lambda zid: (-CONN_SEVERITY[snapshot.zones[zid].state], -pop.get(zid, 0)),
-    )

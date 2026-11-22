@@ -1,7 +1,7 @@
 """Channel adapter interface.
 
 Every source of information (cellular, satellite, mesh, TETRA, citizen apps, facilities,
-telemetry) is reached through an adapter. In this prototype every adapter is SIMULATED: it
+telemetry) is reached through an adapter. Every adapter in this repository is simulated: it
 replays scenario events. A real integration would subclass `ChannelAdapter` and register it.
 """
 

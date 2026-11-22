@@ -4,7 +4,7 @@
     "name": "Coastal infrastructure blackout",
     "description": "Port Selin after an earthquake: towers standing but the fibre trunk is cut and the grid is down; batteries are draining while a port operation and a shelter need communications.",
     "hazard_label": "M6.7 earthquake",
-    "category": "demo",
+    "category": "exercise",
     "order": 3,
     "center_lat": 36.862,
     "center_lon": 30.712,

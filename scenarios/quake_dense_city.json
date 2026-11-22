@@ -4,7 +4,7 @@
     "name": "Dense urban environment",
     "description": "Aster City after a strong earthquake: towers offline, congestion, a degraded hospital, a collapsed apartment block and rescue teams on TETRA.",
     "hazard_label": "M6.9 earthquake",
-    "category": "demo",
+    "category": "exercise",
     "order": 1,
     "center_lat": 37.872,
     "center_lon": 32.492,

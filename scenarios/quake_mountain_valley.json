@@ -4,7 +4,7 @@
     "name": "Mountainous and isolated communities",
     "description": "Kara Valley after an earthquake: sparse towers, landslides blocking roads, villages cut off, mountain rescue on TETRA, satellite and mesh as lifelines.",
     "hazard_label": "M6.4 earthquake",
-    "category": "demo",
+    "category": "exercise",
     "order": 2,
     "center_lat": 38.612,
     "center_lon": 39.415,

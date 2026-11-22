@@ -1,4 +1,10 @@
-"""Simulation engine: clock, scenario events, dynamics, operator decisions, re-evaluation.
+"""Simulation engine: clock, scenario events, dynamics, decisions and re-evaluation.
+
+Each step releases the next checkpoint of scenario events and runs the full pipeline
+(ingestion, pre-triage, AI interpretation and synthesis, network analysis, prioritisation,
+bandwidth allocation, planning). Interventions are approved either by an operator
+(`approve` / `reject`) or, with `auto_approve`, by the engine itself in plan order. Approved
+interventions take effect after their ETA and everything is re-evaluated.
 
 No Streamlit imports: the whole pipeline is unit-testable.
 """
@@ -12,6 +18,7 @@ from lifeline.ai.interpreter import Interpreter
 from lifeline.ingestion.pretriage import pretriage
 from lifeline.ingestion.registry import ingest
 from lifeline.models import (
+    Actor,
     Asset,
     AssetStatus,
     Communication,
@@ -22,13 +29,14 @@ from lifeline.models import (
     Scenario,
     TelemetryEvent,
     TimelineEntry,
+    TimelineKind,
     Zone,
 )
 from lifeline.optimization.allocator import recommend
 from lifeline.optimization.flow import with_allocation
 from lifeline.optimization.interventions import apply, generate
 from lifeline.optimization.network import analyse, need_served
-from lifeline.optimization.prioritizer import prioritize, telemetry_only_ranking
+from lifeline.optimization.prioritizer import prioritize
 
 IDLE_STEP_MIN = 10.0
 
@@ -55,7 +63,7 @@ class Engine:
     rejected_ids: set[str] = field(default_factory=set)
     checkpoint_times: list[float] = field(default_factory=list)
     cp_index: int = 0
-    autopilot: bool = False  # AI-led mode: Lifeline approves its own plan by priority
+    auto_approve: bool = False  # approve the recommended plan automatically, in plan order
     last_event_ids: list[str] = field(default_factory=list)
 
     def __post_init__(self) -> None:
@@ -82,8 +90,18 @@ class Engine:
     def dpp(self) -> float:
         return self.scenario.dynamics.demand_per_person
 
-    def log(self, t: float, kind: str, text: str, refs: list[str] | None = None) -> None:
-        self.timeline.append(TimelineEntry(t=t, kind=kind, text=text, refs=refs or []))  # type: ignore[arg-type]
+    def log(
+        self,
+        t: float,
+        kind: TimelineKind,
+        text: str,
+        refs: list[str] | None = None,
+        detail: str = "",
+        actor: Actor = "",
+    ) -> None:
+        self.timeline.append(
+            TimelineEntry(t=t, kind=kind, text=text, refs=refs or [], detail=detail, actor=actor)
+        )
 
     # ------------------------------------------------------------------ stepping
 
@@ -95,7 +113,7 @@ class Engine:
         self._advance_clock(target)
         if self.events_done:
             self.recompute()
-            self.run_autopilot()
+            self.run_auto_approval()
             return
         new_comms: list[Communication] = []
         self.last_event_ids = [str(e.payload["id"]) for e in self.scenario.events if e.t == target]
@@ -123,11 +141,11 @@ class Engine:
         for ch in changes:
             self.log(target, "intelligence", ch.summary, ch.caused_by + ch.needs_affected)
         self.recompute()
-        self.run_autopilot()
+        self.run_auto_approval()
 
-    def run_autopilot(self) -> None:
-        """AI-led mode: approve the plan in priority order, logging the reason for each."""
-        if not self.autopilot:
+    def run_auto_approval(self) -> None:
+        """Approve the recommended plan in order, logging the needs each item serves."""
+        if not self.auto_approve:
             return
         tiers = {p.need.id: p for p in self.priorities}
         for _ in range(10):
@@ -139,14 +157,8 @@ class Engine:
             item = plan[0]
             served = [tiers[n] for n in item.needs_served if n in tiers]
             why = "; ".join(f"{p.need.who} ({p.tier_rule})" for p in served[:3]) or item.rationale
-            self.log(
-                self.t,
-                "decision",
-                f"Lifeline AUTO-APPROVED: {item.intervention.label}. Reason: {why}",
-                [item.intervention.id],
-            )
             before = len(self.applied) + len(self.pending)
-            self.approve(item.intervention.id, auto=True)
+            self.approve(item.intervention.id, reason=why, actor="lifeline")
             if len(self.applied) + len(self.pending) == before:
                 return
 
@@ -180,7 +192,7 @@ class Engine:
 
     # ------------------------------------------------------------------ decisions
 
-    def approve(self, iv_id: str, auto: bool = False) -> None:
+    def approve(self, iv_id: str, reason: str = "", actor: Actor = "operator") -> None:
         iv = next(
             (i.intervention for i in self.recommendation.plan if i.intervention.id == iv_id), None
         )
@@ -195,13 +207,14 @@ class Engine:
             )
         if iv is None:
             return
-        if not auto:
-            self.log(
-                self.t,
-                "decision",
-                f"Operator APPROVED: {iv.label} (ETA {iv.eta_min:.0f} min)",
-                [iv.id],
-            )
+        self.log(
+            self.t,
+            "decision",
+            iv.label,
+            [iv.id],
+            detail=reason or f"approved by operator, ETA {iv.eta_min:.0f} min",
+            actor=actor,
+        )
         p = Pending(iv, self.t, self.t + iv.eta_min)
         if iv.eta_min <= 5:
             self._activate(p)
@@ -211,7 +224,11 @@ class Engine:
 
     def reject(self, iv_id: str) -> None:
         self.rejected_ids.add(iv_id)
-        self.log(self.t, "decision", f"Operator rejected: {iv_id}", [iv_id])
+        label = next(
+            (i.intervention.label for i in self.recommendation.plan if i.intervention.id == iv_id),
+            iv_id,
+        )
+        self.log(self.t, "decision", f"Rejected: {label}", [iv_id], actor="operator")
         self.recompute()
 
     def _activate(self, p: Pending) -> None:
@@ -235,9 +252,9 @@ class Engine:
         self.log(
             self.t,
             "outcome",
-            f"Simulated effect applied: {p.intervention.label}. {delta}"
-            + (f"; needs now served: {', '.join(newly)}" if newly else ""),
+            p.intervention.label,
             [p.intervention.id, *newly],
+            detail=delta + (f"; needs now served: {', '.join(newly)}" if newly else ""),
         )
 
     # ------------------------------------------------------------------ evaluation
@@ -283,7 +300,6 @@ class Engine:
         self.recommendation: Recommendation = recommend(
             candidates, pa, self.zones, ppz, proj_priorities, self.dpp, self.rejected_ids
         )
-        self.telemetry_rank: list[str] = telemetry_only_ranking(self.snapshot, self.zones)
         for p in self.priorities:
             old = self._tier_view.get(p.need.id)
             if old != p.tier:

@@ -149,7 +149,7 @@ class ScenarioMeta(BaseModel):
     name: str
     description: str
     hazard_label: str  # display only; the engine never branches on it
-    category: Literal["demo", "validation"] = "demo"
+    category: Literal["exercise", "validation"] = "exercise"
     order: int = 99
     center_lat: float
     center_lon: float
@@ -436,8 +436,16 @@ class Recommendation(BaseModel):
     unserved_needs: list[str]
 
 
+TimelineKind = Literal[
+    "comm", "telemetry", "intelligence", "priority", "decision", "outcome", "system"
+]
+Actor = Literal["lifeline", "operator", ""]
+
+
 class TimelineEntry(BaseModel):
     t: float
-    kind: Literal["comm", "telemetry", "intelligence", "priority", "decision", "outcome", "system"]
-    text: str
+    kind: TimelineKind
+    text: str  # headline: for decisions and outcomes, the intervention label
+    detail: str = ""  # decisions: the reason; outcomes: the measured effect
+    actor: Actor = ""  # who made a decision
     refs: list[str] = Field(default_factory=list)

@@ -6,15 +6,12 @@ from typing import Any
 
 import pydeck as pdk
 
-from lifeline.dashboard.theme import CONN_RGB, TIER_RGB
+from lifeline.dashboard.theme import ASSET_RGB, CONN_RGB, TIER_RGB
 from lifeline.models import AssetKind, AssetStatus
 from lifeline.simulation.engine import Engine
 
-ASSET_RGB = {
-    "usable": [200, 208, 218],
-    "unusable": [229, 72, 77],
-    "standby": [76, 141, 255],
-}
+FIT_MARGIN_ZOOM = 0.4
+
 KIND_LABEL = {
     AssetKind.CELL_TOWER: "Cell tower",
     AssetKind.SAT_TERMINAL: "Satellite terminal",
@@ -179,26 +176,6 @@ def build_deck(engine: Engine) -> pdk.Deck:
             get_target_color="color",
             get_width=4,
         ),
-        pdk.Layer(
-            "TextLayer",
-            [{"lon": r["lon"], "lat": r["lat"], "t": r["name"]} for r in zone_rows],
-            get_position="[lon, lat]",
-            get_text="t",
-            get_size=13,
-            font_family="Arial",
-            get_color=[230, 234, 240, 220],
-            get_pixel_offset=[0, -26],
-        ),
-        pdk.Layer(
-            "TextLayer",
-            asset_rows,
-            get_position="[lon, lat]",
-            get_text="label",
-            get_size=10,
-            font_family="Arial",
-            get_color=[138, 148, 163, 200],
-            get_pixel_offset=[0, 12],
-        ),
     ]
     latest = []
     latest_pos = {c.id: (c.lon, c.lat) for c in engine.comms if c.lat is not None}
@@ -224,14 +201,11 @@ def build_deck(engine: Engine) -> pdk.Deck:
             line_width_min_pixels=4,
         )
     )
-    focus = latest[0] if latest else {"lat": sc.meta.center_lat, "lon": sc.meta.center_lon}
-    view = pdk.ViewState(
-        latitude=focus["lat"],
-        longitude=focus["lon"],
-        zoom=sc.meta.zoom + (0.5 if latest else 0),
-        pitch=0,
-        transition_duration=1500,
-    )
+    # fit every zone (plus mobile depots and other assets) with a margin
+    points = [[z.lon, z.lat] for z in sc.zones] + [[a.lon, a.lat] for a in sc.assets]
+    view = pdk.data_utils.compute_view(points, view_proportion=1.0)
+    view.zoom = min(sc.meta.zoom, view.zoom - FIT_MARGIN_ZOOM)
+    view.pitch = 0
     return pdk.Deck(
         layers=layers,
         initial_view_state=view,
