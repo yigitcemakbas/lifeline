@@ -1,4 +1,1035 @@
 {
+ "interpret:C-1": {
+  "hash": "f05200e5c3914047",
+  "model": "openai/gpt-oss-20b",
+  "output": {
+   "items": [
+    {
+     "category": "non_urgent",
+     "comm_id": "C-1",
+     "confidence": 0.9,
+     "facts": [
+      {
+       "claim": "Card payments are down across the business district",
+       "evidence": [
+        {
+         "quote": "Card payments and phones are down across the whole business district",
+         "source_id": "C-1"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "Phones are down across the business district",
+       "evidence": [
+        {
+         "quote": "Card payments and phones are down across the whole business district",
+         "source_id": "C-1"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "Shops are closing early due to the outage",
+       "evidence": [
+        {
+         "quote": "So the shops are closing early",
+         "source_id": "C-1"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      }
+     ],
+     "interpreter": "openai/gpt-oss-20b",
+     "life_threat": "unknown",
+     "location_text": "Business District",
+     "missing_info": [
+      "Extent of outage beyond business district"
+     ],
+     "needs_mentioned": [],
+     "operations_affected": [
+      "Business district shops closing"
+     ],
+     "people_max": null,
+     "people_min": null,
+     "purpose": "report service outage",
+     "summary": "Caller reports that card payments and phones are down across the business district, causing shops to close early.",
+     "who": "citizen caller",
+     "zone_id": "Z-BIZ"
+    }
+   ]
+  }
+ },
+ "interpret:C-2": {
+  "hash": "f0d846555402841c",
+  "model": "openai/gpt-oss-20b",
+  "output": {
+   "items": [
+    {
+     "category": "non_urgent",
+     "comm_id": "C-2",
+     "confidence": 0.95,
+     "facts": [
+      {
+       "claim": "cannot reach office VPN",
+       "evidence": [
+        {
+         "quote": "Cannot reach the office VPN from here, any estimate on when the repair will be done? Nobody is hurt, just annoying.",
+         "source_id": "C-2"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      }
+     ],
+     "interpreter": "openai/gpt-oss-20b",
+     "life_threat": "no",
+     "location_text": null,
+     "missing_info": [
+      "repair timeline"
+     ],
+     "needs_mentioned": [],
+     "operations_affected": [],
+     "people_max": null,
+     "people_min": null,
+     "purpose": "request repair estimate",
+     "summary": "Citizen reports inability to reach office VPN, no life threat.",
+     "who": "citizen",
+     "zone_id": null
+    }
+   ]
+  }
+ },
+ "interpret:C-3": {
+  "hash": "b56c73765ba275f4",
+  "model": "openai/gpt-oss-20b",
+  "output": {
+   "items": [
+    {
+     "category": "non_urgent",
+     "comm_id": "C-3",
+     "confidence": 0.9,
+     "facts": [
+      {
+       "claim": "card machine is down",
+       "evidence": [
+        {
+         "quote": "the card machine is down",
+         "source_id": "C-3"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "request for bank transfer money",
+       "evidence": [
+        {
+         "quote": "send me some money by bank transfer",
+         "source_id": "C-3"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "location is Riverside Pharmacy",
+       "evidence": [
+        {
+         "quote": "I'm at the Riverside Pharmacy",
+         "source_id": "C-3"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      }
+     ],
+     "interpreter": "openai/gpt-oss-20b",
+     "life_threat": "unknown",
+     "location_text": null,
+     "missing_info": [
+      "amount needed"
+     ],
+     "needs_mentioned": [],
+     "operations_affected": [
+      "payment processing"
+     ],
+     "people_max": null,
+     "people_min": null,
+     "purpose": "request bank transfer to pay prescription",
+     "summary": "Riverside Pharmacy reports card machine failure and requests a bank transfer to pay a prescription.",
+     "who": "Riverside Pharmacy employee",
+     "zone_id": "Z-RES"
+    }
+   ]
+  }
+ },
+ "interpret:C-4": {
+  "hash": "6d72a80cdeb740a9",
+  "model": "openai/gpt-oss-20b",
+  "output": {
+   "items": [
+    {
+     "category": "critical_facility",
+     "comm_id": "C-4",
+     "confidence": 0.9,
+     "facts": [
+      {
+       "claim": "Caller cannot reach Elm Park Care Home",
+       "evidence": [
+        {
+         "quote": "I can't get through to them at all",
+         "source_id": "C-4"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "Mother is on oxygen monitoring",
+       "evidence": [
+        {
+         "quote": "She's on oxygen monitoring",
+         "source_id": "C-4"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "Caller is asking if residents are being checked on",
+       "evidence": [
+        {
+         "quote": "Is anyone actually checking on the residents?",
+         "source_id": "C-4"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      }
+     ],
+     "interpreter": "openai/gpt-oss-20b",
+     "life_threat": "yes",
+     "location_text": "Elm Park Care Home",
+     "missing_info": [
+      "confirmation of monitoring status",
+      "current communication status"
+     ],
+     "needs_mentioned": [],
+     "operations_affected": [
+      "resident monitoring"
+     ],
+     "people_max": null,
+     "people_min": null,
+     "purpose": "to confirm resident monitoring",
+     "summary": "Caller reports inability to reach Elm Park Care Home and asks if residents are being monitored.",
+     "who": "caller reporting mother at Elm Park Care Home",
+     "zone_id": "Z-CARE"
+    },
+    {
+     "category": "non_urgent",
+     "comm_id": "C-4",
+     "confidence": 1.0,
+     "facts": [],
+     "interpreter": "openai/gpt-oss-20b",
+     "life_threat": "unknown",
+     "location_text": null,
+     "missing_info": [],
+     "needs_mentioned": [],
+     "operations_affected": [],
+     "people_max": null,
+     "people_min": null,
+     "purpose": "internal",
+     "summary": "Interpreter note",
+     "who": "Lifeline Interpretation Engine",
+     "zone_id": null
+    }
+   ]
+  }
+ },
+ "interpret:C-5": {
+  "hash": "0c9ff4441e76f851",
+  "model": "openai/gpt-oss-20b",
+  "output": {
+   "items": [
+    {
+     "category": "life_safety",
+     "comm_id": "C-5",
+     "confidence": 0.9,
+     "facts": [
+      {
+       "claim": "Man collapsed at bus stop on River Street",
+       "evidence": [
+        {
+         "quote": "There's a man collapsed at the bus stop on River Street",
+         "source_id": "C-5"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "Man is not responding and not breathing",
+       "evidence": [
+        {
+         "quote": "He's not responding and I don't think he's breathing",
+         "source_id": "C-5"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "Caller requests ambulance",
+       "evidence": [
+        {
+         "quote": "Please send an ambulance",
+         "source_id": "C-5"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      }
+     ],
+     "interpreter": "openai/gpt-oss-20b",
+     "life_threat": "yes",
+     "location_text": "bus stop on River Street",
+     "missing_info": [],
+     "needs_mentioned": [],
+     "operations_affected": [],
+     "people_max": null,
+     "people_min": null,
+     "purpose": "Ambulance dispatch",
+     "summary": "Caller reports a collapsed man at a bus stop on River Street who is not breathing and requests an ambulance.",
+     "who": "Caller reporting collapsed man",
+     "zone_id": "Z-RES"
+    }
+   ]
+  }
+ },
+ "interpret:C-6": {
+  "hash": "8cc9fbe12ec30405",
+  "model": "openai/gpt-oss-20b",
+  "output": {
+   "items": [
+    {
+     "category": "non_urgent",
+     "comm_id": "C-6",
+     "confidence": 0.9,
+     "facts": [
+      {
+       "claim": "Phone signal dropping",
+       "evidence": [
+        {
+         "quote": "my phone keeps dropping",
+         "source_id": "C-6"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      }
+     ],
+     "interpreter": "openai/gpt-oss-20b",
+     "life_threat": "unknown",
+     "location_text": null,
+     "missing_info": [
+      "exact location of drop",
+      "cause of drop"
+     ],
+     "needs_mentioned": [],
+     "operations_affected": [],
+     "people_max": null,
+     "people_min": null,
+     "purpose": "report connectivity issue",
+     "summary": "Citizen reports phone dropping while running late.",
+     "who": "citizen",
+     "zone_id": null
+    }
+   ]
+  }
+ },
+ "interpret:C-7": {
+  "hash": "9b97c133c6dceb18",
+  "model": "openai/gpt-oss-20b",
+  "output": {
+   "items": [
+    {
+     "category": "non_urgent",
+     "comm_id": "C-7",
+     "confidence": 0.9,
+     "facts": [
+      {
+       "claim": "office internet is down",
+       "evidence": [
+        {
+         "quote": "The office internet is down",
+         "source_id": "C-7"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      }
+     ],
+     "interpreter": "openai/gpt-oss-20b",
+     "life_threat": "unknown",
+     "location_text": "cafe on Riverside",
+     "missing_info": [],
+     "needs_mentioned": [],
+     "operations_affected": [],
+     "people_max": null,
+     "people_min": null,
+     "purpose": "inform about internet outage",
+     "summary": "Citizen reports office internet is down while working from a Riverside cafe.",
+     "who": "citizen working from cafe",
+     "zone_id": "Z-RES"
+    }
+   ]
+  }
+ },
+ "interpret:F-1": {
+  "hash": "19839b9396f4f35d",
+  "model": "openai/gpt-oss-20b",
+  "output": {
+   "items": [
+    {
+     "category": "critical_facility",
+     "comm_id": "F-1",
+     "confidence": 0.9,
+     "facts": [
+      {
+       "claim": "nurse call and telecare alarm platform offline since 10:05",
+       "evidence": [
+        {
+         "quote": "Elm Park Care Home: our nurse call and telecare alarm platform has been offline since 10:05.",
+         "source_id": "F-1"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "64 residents in the care home",
+       "evidence": [
+        {
+         "quote": "64 residents",
+         "source_id": "F-1"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "2 residents on remote oxygen monitoring",
+       "evidence": [
+        {
+         "quote": "2 of them on remote oxygen monitoring",
+         "source_id": "F-1"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      }
+     ],
+     "interpreter": "openai/gpt-oss-20b",
+     "life_threat": "unknown",
+     "location_text": null,
+     "missing_info": [
+      "cause of platform outage",
+      "current network connectivity status"
+     ],
+     "needs_mentioned": [],
+     "operations_affected": [
+      "nurse call and telecare alarm platform"
+     ],
+     "people_max": 64,
+     "people_min": 64,
+     "purpose": "restore nurse call and telecare services",
+     "summary": "Elm Park Care Home reports its nurse call and telecare alarm platform has been offline since 10:05, affecting 64 residents, 2 of whom are on remote oxygen monitoring.",
+     "who": "Elm Park Care Home",
+     "zone_id": "Z-CARE"
+    }
+   ]
+  }
+ },
+ "interpret:R-1": {
+  "hash": "3a2960acac470f19",
+  "model": "openai/gpt-oss-20b",
+  "output": {
+   "items": [
+    {
+     "category": "emergency_operation",
+     "comm_id": "R-1",
+     "confidence": 0.9,
+     "facts": [
+      {
+       "claim": "traffic signals are out at the junction of King Street and Mill Lane",
+       "evidence": [
+        {
+         "quote": "traffic signals are out at the junction of King Street and Mill Lane",
+         "source_id": "R-1"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "Unit 1-4 requests a second unit for traffic control",
+       "evidence": [
+        {
+         "quote": "requesting a second unit for traffic control",
+         "source_id": "R-1"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      }
+     ],
+     "interpreter": "openai/gpt-oss-20b",
+     "life_threat": "unknown",
+     "location_text": "junction of King Street and Mill Lane",
+     "missing_info": [
+      "confirmation of signal status"
+     ],
+     "needs_mentioned": [],
+     "operations_affected": [
+      "traffic control"
+     ],
+     "people_max": null,
+     "people_min": null,
+     "purpose": "traffic control",
+     "summary": "Unit 1-4 reports traffic signals out at the junction of King Street and Mill Lane and requests a second unit for traffic control.",
+     "who": "Unit 1-4",
+     "zone_id": "Z-BIZ"
+    }
+   ]
+  }
+ },
+ "interpret:S-1": {
+  "hash": "e05e1cc530075a3f",
+  "model": "openai/gpt-oss-20b",
+  "output": {
+   "items": [
+    {
+     "category": "non_urgent",
+     "comm_id": "S-1",
+     "confidence": 0.9,
+     "facts": [
+      {
+       "claim": "fibre cable severed in two places",
+       "evidence": [
+        {
+         "quote": "Field crew 7 on site at the roadworks: fibre cable severed in two places.",
+         "source_id": "S-1"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "splicing van en route",
+       "evidence": [
+        {
+         "quote": "Splicing van en route",
+         "source_id": "S-1"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "estimated repair 4 hours",
+       "evidence": [
+        {
+         "quote": "estimated repair 4 hours",
+         "source_id": "S-1"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      }
+     ],
+     "interpreter": "openai/gpt-oss-20b",
+     "life_threat": "no",
+     "location_text": "roadworks",
+     "missing_info": [],
+     "needs_mentioned": [],
+     "operations_affected": [],
+     "people_max": null,
+     "people_min": null,
+     "purpose": "report maintenance",
+     "summary": "Field crew 7 reports a fibre cable severed at two points on the roadworks, with a splicing van en route and an estimated repair time of four hours.",
+     "who": "Field crew 7",
+     "zone_id": null
+    }
+   ]
+  }
+ },
+ "synth:1": {
+  "hash": "a0be0c042e069e3a",
+  "model": "openai/gpt-oss-120b",
+  "output": {
+   "changes": [
+    {
+     "caused_by": [
+      "F-1",
+      "TM-1"
+     ],
+     "summary": "Added incident INC-1 for Elm Park Care Home platform outage and dependency DEP-1 linking fibre loss to outage.",
+     "t": 3.0
+    }
+   ],
+   "closed_item_ids": [],
+   "contradictions": [],
+   "dependencies": [
+    {
+     "id": "DEP-1",
+     "status": "reported",
+     "steps": [
+      {
+       "description": "Excavator strike at roadworks",
+       "evidence": [
+        {
+         "quote": "contractor reports excavator strike at roadworks",
+         "source_id": "TM-1"
+        }
+       ]
+      },
+      {
+       "description": "Loss of light on FB-1 metro fibre at 10:05",
+       "evidence": [
+        {
+         "quote": "FB-1 metro fibre: loss of light at 10:05; contractor reports excavator strike at roadworks",
+         "source_id": "TM-1"
+        }
+       ]
+      },
+      {
+       "description": "Nurse call and telecare alarm platform offline",
+       "evidence": [
+        {
+         "quote": "Elm Park Care Home: our nurse call and telecare alarm platform has been offline since 10:05.",
+         "source_id": "F-1"
+        }
+       ]
+      }
+     ],
+     "title": "Metro fibre loss causing platform outage"
+    }
+   ],
+   "gaps": [
+    {
+     "id": "GAP-1",
+     "question": "What is the immediate impact on residents requiring emergency assistance, especially the 2 on remote oxygen monitoring?",
+     "why_it_matters": "Determines urgency of alternative response measures."
+    }
+   ],
+   "incidents": [
+    {
+     "comm_ids": [
+      "F-1"
+     ],
+     "confidence": 0.8,
+     "facts": [
+      {
+       "claim": "Nurse call and telecare alarm platform offline since 10:05",
+       "evidence": [
+        {
+         "quote": "Elm Park Care Home: our nurse call and telecare alarm platform has been offline since 10:05. 64 residents, 2 of them on remote oxygen monitoring.",
+         "source_id": "F-1"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "64 residents affected, 2 on remote oxygen monitoring",
+       "evidence": [
+        {
+         "quote": "64 residents, 2 of them on remote oxygen monitoring.",
+         "source_id": "F-1"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      }
+     ],
+     "id": "INC-1",
+     "life_threat": "unknown",
+     "people_max": 64,
+     "people_min": 64,
+     "related": [],
+     "title": "Elm Park Care Home nurse call and telecare alarm platform offline",
+     "zone_id": "Z-CARE"
+    }
+   ],
+   "summary": "Elm Park Care Home's nurse call and telecare alarm platform is offline since 10:05, affecting all 64 residents (including 2 on remote oxygen monitoring). The outage is linked to a metro fibre loss caused by an excavator strike."
+  }
+ },
+ "synth:2": {
+  "hash": "f5580d93dddd07c7",
+  "model": "openai/gpt-oss-120b",
+  "output": {
+   "changes": [
+    {
+     "caused_by": [
+      "C-4",
+      "C-1",
+      "C-3",
+      "C-2"
+     ],
+     "summary": "Added communication C-4 to INC-1 and created three new incidents (INC-2, INC-3, INC-4).",
+     "t": 9.0
+    }
+   ],
+   "closed_item_ids": [],
+   "contradictions": [],
+   "dependencies": [],
+   "gaps": [
+    {
+     "id": "GAP-1",
+     "question": "What is the immediate impact on residents requiring emergency assistance, especially the 2 on remote oxygen monitoring?",
+     "why_it_matters": "Determines urgency of response for the care home outage."
+    }
+   ],
+   "incidents": [
+    {
+     "comm_ids": [
+      "F-1",
+      "C-4"
+     ],
+     "confidence": 0.5,
+     "facts": [
+      {
+       "claim": "Platform offline since 10:05 affecting 64 residents, 2 on remote oxygen monitoring",
+       "evidence": [
+        {
+         "quote": "Elm Park Care Home: our nurse call and telecare alarm platform has been offline since 10:05. 64 residents, 2 of them on remote oxygen monitoring.",
+         "source_id": "F-1"
+        }
+       ],
+       "flagged": null,
+       "status": "verified"
+      },
+      {
+       "claim": "Family cannot reach the care home by phone",
+       "evidence": [
+        {
+         "quote": "My mother lives at Elm Park Care Home and I can't get through to them at all. She's on oxygen monitoring. Is anyone actually checking on the residents?",
+         "source_id": "C-4"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      }
+     ],
+     "id": "INC-1",
+     "life_threat": "unknown",
+     "people_max": 64,
+     "people_min": 64,
+     "related": [],
+     "title": "Elm Park Care Home nurse call and telecare alarm platform offline",
+     "zone_id": "Z-CARE"
+    },
+    {
+     "comm_ids": [
+      "C-1"
+     ],
+     "confidence": 0.5,
+     "facts": [
+      {
+       "claim": "Card payments and phones are down across the whole business district, causing shops to close early",
+       "evidence": [
+        {
+         "quote": "Hi, it's me. Card payments and phones are down across the whole business district. So the shops are closing early. I'm walking over to Riverside to get signal.",
+         "source_id": "C-1"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      }
+     ],
+     "id": "INC-2",
+     "life_threat": "unknown",
+     "people_max": null,
+     "people_min": null,
+     "related": [],
+     "title": "Business District card payments and cellular service outage",
+     "zone_id": "Z-BIZ"
+    },
+    {
+     "comm_ids": [
+      "C-3"
+     ],
+     "confidence": 0.5,
+     "facts": [
+      {
+       "claim": "Card machine at Riverside Pharmacy is down; request for bank transfer to pay prescription",
+       "evidence": [
+        {
+         "quote": "Hello, I'm at the Riverside Pharmacy and the card machine is down. Could you send me some money by bank transfer so I can pay for the prescription?",
+         "source_id": "C-3"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      }
+     ],
+     "id": "INC-3",
+     "life_threat": "unknown",
+     "people_max": null,
+     "people_min": null,
+     "related": [],
+     "title": "Riverside Pharmacy card machine failure",
+     "zone_id": "Z-RES"
+    },
+    {
+     "comm_ids": [
+      "C-2"
+     ],
+     "confidence": 0.5,
+     "facts": [
+      {
+       "claim": "Cannot reach office VPN; no immediate safety impact",
+       "evidence": [
+        {
+         "quote": "Cannot reach the office VPN from here, any estimate on when the repair will be done? Nobody is hurt, just annoying.",
+         "source_id": "C-2"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      }
+     ],
+     "id": "INC-4",
+     "life_threat": "no",
+     "people_max": null,
+     "people_min": null,
+     "related": [],
+     "title": "Office VPN connectivity issue",
+     "zone_id": null
+    }
+   ],
+   "summary": "Additional reports indicate a city\u2011wide payments and phone outage affecting businesses in the Business District, a pharmacy payment issue, and VPN connectivity problems. A citizen could not contact Elm\u00a0Park Care Home, extending incident INC\u20111 with new communication evidence."
+  }
+ },
+ "synth:3": {
+  "hash": "66634c222e9e5c8f",
+  "model": "openai/gpt-oss-120b",
+  "output": {
+   "changes": [
+    {
+     "caused_by": [],
+     "summary": "Added new incident INC-5 for traffic signal outage in Business District.",
+     "t": 10.0
+    }
+   ],
+   "closed_item_ids": [],
+   "contradictions": [],
+   "dependencies": [],
+   "gaps": [
+    {
+     "id": "GAP-1",
+     "question": "What is the immediate impact on residents requiring emergency assistance, especially the 2 on remote oxygen monitoring?",
+     "why_it_matters": ""
+    }
+   ],
+   "incidents": [
+    {
+     "comm_ids": [
+      "R-1"
+     ],
+     "confidence": 0.8,
+     "facts": [
+      {
+       "claim": "Traffic signals are out at the junction of King Street and Mill Lane",
+       "evidence": [
+        {
+         "quote": "Control, Unit 1-4, traffic signals are out at the junction of King Street and Mill Lane, requesting a second unit for traffic control. Over.",
+         "source_id": "R-1"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "A second unit is requested for traffic control",
+       "evidence": [
+        {
+         "quote": "Control, Unit 1-4, traffic signals are out at the junction of King Street and Mill Lane, requesting a second unit for traffic control. Over.",
+         "source_id": "R-1"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      }
+     ],
+     "id": "INC-5",
+     "life_threat": "unknown",
+     "people_max": null,
+     "people_min": null,
+     "related": [],
+     "title": "Traffic signals offline at King Street and Mill Lane junction",
+     "zone_id": "Z-BIZ"
+    }
+   ],
+   "summary": "A traffic signal outage has been reported at the King Street and Mill Lane junction in the Business District, prompting a request for additional traffic control resources."
+  }
+ },
+ "synth:4": {
+  "hash": "52d59ab9b4f8e68e",
+  "model": "openai/gpt-oss-120b",
+  "output": {
+   "changes": [
+    {
+     "caused_by": [
+      "C-5"
+     ],
+     "summary": "Added new life\u2011safety incident INC-6 for collapsed man at River Street bus stop.",
+     "t": 11.0
+    }
+   ],
+   "closed_item_ids": [],
+   "contradictions": [],
+   "dependencies": [],
+   "gaps": [],
+   "incidents": [
+    {
+     "comm_ids": [
+      "C-5"
+     ],
+     "confidence": 0.9,
+     "facts": [
+      {
+       "claim": "A man collapsed at the bus stop on River Street and is not breathing.",
+       "evidence": [
+        {
+         "quote": "There's a man collapsed at the bus stop on River Street. He's not responding and I don't think he's breathing. Please send an ambulance.",
+         "source_id": "C-5"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      }
+     ],
+     "id": "INC-6",
+     "life_threat": "yes",
+     "people_max": null,
+     "people_min": null,
+     "related": [],
+     "title": "Man collapsed at River Street bus stop, not breathing",
+     "zone_id": "Z-RES"
+    }
+   ],
+   "summary": "A collapsed, non\u2011breathing man was reported at a bus stop on River Street in the Riverside Residential zone, creating a new life\u2011safety incident requiring an ambulance."
+  }
+ },
+ "synth:5": {
+  "hash": "9cfc6af01e385913",
+  "model": "openai/gpt-oss-120b",
+  "output": {
+   "changes": [
+    {
+     "caused_by": [
+      "R-1",
+      "S-1"
+     ],
+     "summary": "Added incident linking traffic signals outage to fibre cut; created dependency chain.",
+     "t": 16.0
+    }
+   ],
+   "closed_item_ids": [],
+   "contradictions": [],
+   "dependencies": [
+    {
+     "id": "DEP-2",
+     "status": "inferred",
+     "steps": [
+      {
+       "description": "Fibre cable severed at roadworks",
+       "evidence": [
+        {
+         "quote": "Field crew 7 on site at the roadworks: fibre cable severed in two places. Splicing van en route, estimated repair 4 hours.",
+         "source_id": "S-1"
+        }
+       ]
+      },
+      {
+       "description": "Traffic signals at King Street and Mill Lane lose connectivity and go offline",
+       "evidence": [
+        {
+         "quote": "Control, Unit 1-4, traffic signals are out at the junction of King Street and Mill Lane, requesting a second unit for traffic control. Over.",
+         "source_id": "R-1"
+        }
+       ]
+      }
+     ],
+     "title": "Fibre cut leads to traffic signals outage"
+    }
+   ],
+   "gaps": [
+    {
+     "id": "GAP-1",
+     "question": "What is the immediate impact on residents requiring emergency assistance, especially the 2 on remote oxygen monitoring?",
+     "why_it_matters": ""
+    }
+   ],
+   "incidents": [
+    {
+     "comm_ids": [
+      "R-1",
+      "S-1"
+     ],
+     "confidence": 0.8,
+     "facts": [
+      {
+       "claim": "traffic signals are out at the junction of King Street and Mill Lane",
+       "evidence": [
+        {
+         "quote": "Control, Unit 1-4, traffic signals are out at the junction of King Street and Mill Lane, requesting a second unit for traffic control. Over.",
+         "source_id": "R-1"
+        }
+       ],
+       "flagged": null,
+       "status": "verified"
+      },
+      {
+       "claim": "fibre cable severed in two places near the roadworks",
+       "evidence": [
+        {
+         "quote": "Field crew 7 on site at the roadworks: fibre cable severed in two places. Splicing van en route, estimated repair 4 hours.",
+         "source_id": "S-1"
+        }
+       ],
+       "flagged": null,
+       "status": "verified"
+      },
+      {
+       "claim": "the fibre cut caused the traffic signals outage",
+       "evidence": [
+        {
+         "quote": "within 300 m",
+         "source_id": "correlation_hints"
+        }
+       ],
+       "flagged": null,
+       "status": "inferred"
+      }
+     ],
+     "id": "INC-7",
+     "life_threat": "unknown",
+     "people_max": null,
+     "people_min": null,
+     "related": [],
+     "title": "Traffic signals outage at King Street and Mill Lane caused by fibre cut",
+     "zone_id": "Z-BIZ"
+    }
+   ],
+   "summary": "A fibre cable severed near roadworks is linked to the traffic signals outage at King Street and Mill Lane in the Business District. The outage is now attributed to the fibre cut, with repair estimated in four hours."
+  }
+ },
  "transcribe:C-1": {
   "hash": "066620c9a5389ef9",
   "model": "whisper-large-v3-turbo",
