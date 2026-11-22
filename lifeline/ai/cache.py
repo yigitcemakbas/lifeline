@@ -1,4 +1,4 @@
-"""On-disk cache of real LLM outputs so demos run offline and reproducibly."""
+"""On-disk record of real LLM outputs, so every scenario replays offline and reproducibly."""
 
 from __future__ import annotations
 

@@ -38,6 +38,8 @@ from lifeline.models import (
 T = TypeVar("T", bound=BaseModel)
 
 DEFAULT_MODEL = "openai/gpt-oss-120b"
+MAX_OUTPUT_TOKENS = 6000
+MIN_OUTPUT_TOKENS = 1500
 
 
 class LLMError(RuntimeError):
@@ -56,20 +58,31 @@ class Interpreter(Protocol):
 
 
 def _inline_refs(schema: dict[str, Any]) -> dict[str, Any]:
-    """Inline `$defs` references; some providers handle flat schemas more reliably."""
+    """Inline `$defs` references and drop titles: flat, compact schemas cost fewer tokens."""
     defs = schema.pop("$defs", {})
 
     def walk(node: Any) -> Any:
         if isinstance(node, dict):
             if "$ref" in node:
                 return walk(dict(defs[node["$ref"].split("/")[-1]]))
-            return {k: walk(v) for k, v in node.items()}
+            return {k: walk(v) for k, v in node.items() if k != "title"}
         if isinstance(node, list):
             return [walk(v) for v in node]
         return node
 
     result: dict[str, Any] = walk(schema)
     return result
+
+
+def _max_output_tokens(*parts: str) -> int:
+    """Output budget so that input + output stays inside the per-minute token limit.
+
+    Groq rejects (HTTP 413) any request whose input plus `max_completion_tokens` exceeds the
+    account's tokens-per-minute limit, so the budget shrinks as the prompt grows.
+    """
+    tpm = int(os.getenv("LIFELINE_GROQ_TPM", "8000"))
+    est_input = sum(len(p) for p in parts) // 3  # conservative: ~3 characters per token
+    return max(MIN_OUTPUT_TOKENS, min(MAX_OUTPUT_TOKENS, tpm - est_input - 200))
 
 
 class GroqBackend:
@@ -91,12 +104,15 @@ class GroqBackend:
             {"role": "user", "content": user},
         ]
         last_err = ""
+        schema_json = json.dumps(_inline_refs(schema.model_json_schema()))
         for _attempt in range(5):
             kwargs: dict[str, Any] = {
                 "model": self.model,
                 "messages": messages,
                 "temperature": 0,
-                "max_completion_tokens": 6000,
+                "max_completion_tokens": _max_output_tokens(
+                    schema_json, *(m["content"] for m in messages)
+                ),
             }
             if self.model.startswith("openai/gpt-oss"):
                 kwargs["reasoning_effort"] = effort
@@ -105,17 +121,13 @@ class GroqBackend:
                     "type": "json_schema",
                     "json_schema": {
                         "name": name,
-                        "schema": _inline_refs(schema.model_json_schema()),
+                        "schema": json.loads(schema_json),
                         "strict": False,
                     },
                 }
             else:
                 kwargs["response_format"] = {"type": "json_object"}
-                messages[0]["content"] = (
-                    system
-                    + "\nJSON schema:\n"
-                    + json.dumps(_inline_refs(schema.model_json_schema()))
-                )
+                messages[0]["content"] = system + "\nJSON schema:\n" + schema_json
             try:
                 resp = self.client.chat.completions.create(**kwargs)
             except groq.RateLimitError as e:
@@ -178,7 +190,7 @@ class GroqInterpreter:
 
     def synthesize(self, payload: dict[str, Any]) -> SynthesisDelta:
         user = json.dumps(payload, ensure_ascii=False)
-        return self.backend.complete(SYNTHESIS_SYSTEM, user, SynthesisDelta, "synthesis", "medium")
+        return self.backend.complete(SYNTHESIS_SYSTEM, user, SynthesisDelta, "synthesis", "low")
 
 
 # --------------------------------------------------------------------------- cache
@@ -193,20 +205,29 @@ class CachedInterpreter:
         self.name = "cached"
         self.misses: list[str] = []
 
+    def _lookup(self, key: str, inputs: Any) -> dict[str, Any] | None:
+        """A hit only counts if it was recorded from exactly these inputs."""
+        hit = self.cache.get(key)
+        if hit is None:
+            self.misses.append(f"{key}: not recorded")
+            return None
+        if hit["hash"] != input_hash(inputs):
+            self.misses.append(f"{key}: recorded from different inputs (stale)")
+            return None
+        return hit
+
     def interpret(self, comm: Communication, context: dict[str, Any]) -> Interpretation:
-        hit = self.cache.get(f"interpret:{comm.id}")
-        if hit:
-            out = Interpretation.model_validate(hit["output"])
-            return out.model_copy(update={"interpreter": f"cached {hit['model']}"})
-        self.misses.append(f"interpret:{comm.id}")
-        return self.fallback.interpret(comm, context)
+        hit = self._lookup(f"interpret:{comm.id}", [comm.model_dump(mode="json"), context])
+        if hit is None:
+            return self.fallback.interpret(comm, context)
+        out = Interpretation.model_validate(hit["output"])
+        return out.model_copy(update={"interpreter": f"cached {hit['model']}"})
 
     def synthesize(self, payload: dict[str, Any]) -> SynthesisDelta:
-        hit = self.cache.get(f"synth:{payload['checkpoint']}")
-        if hit:
-            return SynthesisDelta.model_validate(hit["output"])
-        self.misses.append(f"synth:{payload['checkpoint']}")
-        return self.fallback.synthesize(payload)
+        hit = self._lookup(f"synth:{payload['checkpoint']}", payload)
+        if hit is None:
+            return self.fallback.synthesize(payload)
+        return SynthesisDelta.model_validate(hit["output"])
 
 
 class RecordingInterpreter:

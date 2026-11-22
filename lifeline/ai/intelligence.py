@@ -87,6 +87,15 @@ class IntelligenceEngine:
         telemetry: list[TelemetryEvent],
     ) -> dict[str, Any]:
         p = self.picture
+        # Full text only for new messages and the earlier reports hinted to match them; older
+        # messages are already summarised in the previous picture. This keeps every request
+        # inside the provider's per-minute token budget as the scenario grows.
+        hints = correlation_hints(all_comms, self.scenario)
+        relevant = {c.id for c in new_comms}
+        for h in hints:
+            members = set(h["comm_ids"])
+            if members & relevant:
+                relevant |= members
         return {
             "checkpoint": self.checkpoint,
             "time_min": t,
@@ -141,21 +150,23 @@ class IntelligenceEngine:
                 }
                 for c in new_comms
             ],
-            "all_communications": [
-                {
-                    "id": c.id,
-                    "t": c.t,
-                    "channel": c.channel.value,
-                    "source_role": c.source_role.value,
-                    "zone_id": self.comm_zone.get(c.id),
-                    "triage_floor": c.triage_floor.value,
-                    "text": c.text,
-                }
-                for c in all_comms
-            ],
+            "all_communications": [self._comm_entry(c, c.id in relevant) for c in all_comms],
             "telemetry": [{"id": e.id, "asset_id": e.asset_id, "note": e.note} for e in telemetry],
-            "correlation_hints": correlation_hints(all_comms, self.scenario),
+            "correlation_hints": hints,
         }
+
+    def _comm_entry(self, c: Communication, with_text: bool) -> dict[str, Any]:
+        entry: dict[str, Any] = {
+            "id": c.id,
+            "t": c.t,
+            "channel": c.channel.value,
+            "source_role": c.source_role.value,
+            "zone_id": self.comm_zone.get(c.id),
+            "triage_floor": c.triage_floor.value,
+        }
+        if with_text:
+            entry["text"] = c.text
+        return entry
 
     # ------------------------------------------------------------------ guards + merge
 

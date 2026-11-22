@@ -8,12 +8,18 @@ incident; the guards in `intelligence.py` enforce no double counting and no drop
 from __future__ import annotations
 
 import re
+from typing import TypedDict
 
 from lifeline.models import Communication, Scenario, Zone
 from lifeline.optimization.network import distance_m
 
 SAME_PLACE_M = 300.0
 TIME_WINDOW_MIN = 60.0
+
+
+class CorrelationHint(TypedDict):
+    comm_ids: list[str]
+    reason: str
 
 
 def resolve_zone(comm: Communication, scenario: Scenario) -> str | None:
@@ -52,7 +58,7 @@ def location_tokens(comm: Communication, scenario: Scenario) -> set[str]:
     return toks
 
 
-def correlation_hints(comms: list[Communication], scenario: Scenario) -> list[dict[str, object]]:
+def correlation_hints(comms: list[Communication], scenario: Scenario) -> list[CorrelationHint]:
     """Union-find over communications that are close in space/time or name the same place."""
     parent = {c.id: c.id for c in comms}
 
@@ -89,7 +95,7 @@ def correlation_hints(comms: list[Communication], scenario: Scenario) -> list[di
     groups: dict[str, list[str]] = {}
     for c in comms:
         groups.setdefault(find(c.id), []).append(c.id)
-    out: list[dict[str, object]] = []
+    out: list[CorrelationHint] = []
     for members in groups.values():
         if len(members) < 2:
             continue
