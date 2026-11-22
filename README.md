@@ -6,7 +6,7 @@ When a base station is congested, a call gets through only if it happens to grab
 
 Speech recognition and language models read the sessions. Deterministic, tested algorithms make every decision: ranking, admission, routing and capacity planning. Every decision can be traced to the evidence and rule behind it.
 
-![Lifeline operator dashboard](docs/dashboard.png)
+![Lifeline operator dashboard, city scenario at minute 16: a caller at the collapsed building connected at once while a non-urgent insurance call waits](docs/dashboard.png)
 
 > The network, the sessions and their audio are simulated (the audio is synthetic speech). Transcription and analysis run live on real models. Lifeline controls no real network.
 
@@ -19,6 +19,35 @@ Speech recognition and language models read the sessions. Deterministic, tested 
 - **No gateway (today)**: blocked callers retry, and freed capacity goes to whichever attempt gets in first.
 
 <!-- evaluation:start -->
+**Scenario replay.** Mean wait from interception to connection (in brackets: share connected within 2 minutes). Number of sessions per group in brackets after the group:
+
+| | Lifeline | First come, first served | No gateway (today) |
+|---|---|---|---|
+| Dense urban environment: life safety (10) | 0.4 min (90%) | 3.2 min (50%) | 7.8 min (50%) |
+| Dense urban environment: facility and operations (3) | 1.0 min (100%) | 17.7 min (0%) | 15.9 min (0%) |
+| Dense urban environment: routine (11) | 2.5 min (55%) | 2.6 min (45%) | 3.1 min (55%) |
+| Mountainous and isolated communities: life safety (8) | 15.6 min (62%) | 17.8 min (25%) | 17.6 min (25%) |
+| Mountainous and isolated communities: routine (7) | 7.0 min (0%) | 7.0 min (0%) | 6.5 min (0%) |
+| Coastal infrastructure blackout: life safety (2) | 0.0 min (100%) | 6.0 min (0%) | 17.6 min (0%) |
+| Coastal infrastructure blackout: facility and operations (5) | 9.4 min (60%) | 25.8 min (20%) | 24.8 min (20%) |
+| Coastal infrastructure blackout: routine (7) | 3.9 min (57%) | 3.9 min (57%) | 5.2 min (57%) |
+| Metro fibre cut (non-disaster): life safety (3) | 3.3 min (67%) | 5.0 min (33%) | 9.0 min (0%) |
+| Metro fibre cut (non-disaster): facility and operations (1) | 0.0 min (100%) | 0.0 min (100%) | 0.0 min (100%) |
+| Metro fibre cut (non-disaster): routine (6) | 2.0 min (67%) | 2.0 min (67%) | 1.7 min (50%) |
+
+**Load sweep.** 100 seeded trials per load on one congested cell: urgent and routine sessions arrive at random for 30 minutes while background traffic offers 1.2× to 2× the cell's capacity. Life-safety mean wait / 90th percentile:
+
+| | Lifeline | First come, first served | No gateway (today) |
+|---|---|---|---|
+| background 1.2x capacity | 0.0 / 0 min | 4.9 / 6 min | 4.4 / 12 min |
+| background 1.5x capacity | 0.0 / 0 min | 5.6 / 6 min | 6.7 / 18 min |
+| background 2.0x capacity | 0.0 / 0 min | 5.9 / 6 min | 10.4 / 27 min |
+
+Life-safety sessions connect at the next free channel instead of after the backlog of routine retries. In the city and coastal scenarios their mean wait falls from 3–18 minutes to under half a minute. In the fibre cut it falls from 5–9 minutes to 3.3: the remainder is a care home with no coverage at all until a satellite terminal is set up. Facility and rescue sessions gain the most, because their data links are large and, without reservation, smaller traffic keeps taking the capacity they need. Routine traffic waits no longer than under first come, first served, by design.
+
+Where no network can carry a session at all, no admission policy helps. In the mountain scenario, rescuers on a pass with no TETRA coverage wait for a repeater carried in on foot (about 50 minutes) and a cut-off village waits for satellite backhaul, which is why its life-safety mean is 15.6 minutes under every policy. Capacity planning shortens those waits; the gateway cannot.
+
+The model outputs behind the replays are real Whisper and Groq responses recorded with `make record` (`scenarios/cache/`, each labelled with the model that produced it). While `gpt-oss-120b`'s daily quota was used up, synthesis fell back to `gpt-oss-20b`, as it does live. The baselines' waits depend on the background-traffic model (3-minute holding time, 5-minute patience).
 <!-- evaluation:end -->
 
 ## How it works
@@ -86,7 +115,7 @@ cp .env.example .env   # add GROQ_API_KEY
 make run               # dashboard at http://localhost:8501
 ```
 
-The dashboard runs transcription and analysis live. On Groq's free tier (8,000 tokens per minute per model) the AI analyses about a dozen sessions a minute. That is faster than the scenarios generate them in real time, but slower than accelerated playback. When the budget runs out, sessions wait on their pre-triage floor and are analysed together once it returns; the queue shows what is pending.
+The dashboard runs transcription and analysis live. Groq's free tier allows 8,000 tokens per minute and 200,000 tokens per day for each model, and a full scenario uses roughly 30,000–60,000 tokens across the two models. That is enough for a few complete live runs a day. Within a run, the AI analyses about a dozen sessions a minute: faster than the scenarios generate them in real time, slower than accelerated playback. When a model is out of budget, the dashboard says so; sessions wait on their pre-triage floor and are analysed together once budget returns. If one model's daily quota runs out, its stage moves to the other model.
 
 Choose **Automatic** in the sidebar to apply capacity interventions in plan order, or **Operator approval** to approve or reject each one yourself.
 

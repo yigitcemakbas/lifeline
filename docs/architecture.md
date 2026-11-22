@@ -61,7 +61,7 @@ All AI runs live on Groq's free tier; the dashboard has no offline or rules-only
 No weighted scores. Explicit tiers, first match wins:
 
 - **T1 life safety**: the AI's category or life threat, or a life-safety pre-triage flag on the session or any report of the same incident. AI uncertainty cannot lower this.
-- **T2 critical facility or emergency operation**. Before analysis, a responder or facility source, or an elevated pre-triage flag, also lands here.
+- **T2 critical facility or emergency operation**. Before analysis, a responder or facility source also lands here.
 - **T3 isolated population**, and sessions still awaiting analysis, which are held above routine traffic until the AI has read them.
 - **T4 routine population traffic.**
 - **T5 non-urgent.**
