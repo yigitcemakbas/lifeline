@@ -1,66 +1,145 @@
 # Lifeline architecture
 
-Lifeline answers one question: **where is connectivity needed most urgently, what is happening there, what resources are available, and how can we restore or preserve communications most effectively?**
+When a base station is congested, the network admits whichever attempt reaches a free channel first. Lifeline sits in the path between callers and the radio network. It intercepts every new session, works out what it is about, and lets the network carry sessions in order of urgency. It gets ahead of the congestion instead of leaving the order to chance.
 
-It works the same for any communications outage, whether a natural disaster, a power failure, a fibre cut or a telecom fault. A hazard is only data in a scenario file.
+The engine knows nothing about specific hazards. A disaster, a power failure and a fibre cut are all just scenario data.
 
 ## Pipeline
 
 ```
-scenario events ─► simulated channel adapters ─► Communication / TelemetryEvent
-   ─► rule-based pre-triage            (instant safety floor; never waits on the LLM)
-   ─► AI interpretation (per message)  ┐ AI layer: meaning, evidence, uncertainty.
-   ─► AI synthesis → OperationalPicture┘ No ranking, no capacity maths, no feasibility.
-   ─► network analysis (NetworkX)      (deterministic: what is usable, where, and why)
-   ─► priority policy                  (explicit tiers + ordering criteria → ordered needs)
-   ─► bandwidth allocation             (urgency-ordered min-cost flow)
-   ─► optimizer                        (lexicographic search over feasible plans)
-   ─► approval (operator or automatic) ─► simulation applies effects ─► everything re-evaluated
+scenario events ─► channel adapters ─► intercepted session (held at the gateway)
+   ─► speech-to-text (Whisper)          voice calls and TETRA transmissions
+   ─► rule-based pre-triage             instant safety floor; never waits on a model
+   ─► AI interpretation (batched)       ┐ AI layer: meaning, evidence, uncertainty.
+   ─► AI synthesis → operational picture┘ No ranking, capacity maths or feasibility.
+   ─► network analysis (NetworkX)       what is usable, where, and why
+   ─► priority policy                   explicit tiers + lexicographic criteria → queue order
+   ─► admission (every minute)          lexicographic max-flow over core, backhaul and radio
+   ─► capacity planning                 search over interventions for sessions nothing can carry
+   ─► approval (operator or automatic) ─► simulated effects ─► everything re-evaluated
 ```
 
 | Layer | Module | Deterministic? |
 |---|---|---|
-| Ingestion + pre-triage | `lifeline/ingestion/` | yes |
-| Interpretation, synthesis, correlation hints, evidence validation | `lifeline/ai/` | no (LLM), with deterministic guards |
-| Network analysis, policy, interventions, optimizer | `lifeline/optimization/` | yes |
+| Channel adapters, pre-triage | `lifeline/ingestion/` | yes |
+| Transcription, interpretation, synthesis, guards, correlation hints | `lifeline/ai/` | no (models), with deterministic guards |
+| Network analysis, policy, capacity network, admission, planning | `lifeline/optimization/` | yes |
 | Clock, dynamics, approvals, timeline | `lifeline/simulation/` | yes |
 | Operator UI | `lifeline/dashboard/` | n/a |
 
+## Sessions and channels
+
+Every source of traffic goes through an adapter (`ingestion/adapters.py`). Each adapter declares the network family the session uses and the kinds of session it carries:
+
+| Channel | Network | Sessions | Arrives as |
+|---|---|---|---|
+| Cellular | cellular | voice calls, SMS | audio (calls), text (SMS) |
+| Citizen app | cellular | data | text |
+| Facility | cellular | data link | text |
+| TETRA | TETRA | radio transmissions | audio |
+| Mesh | mesh | messages | text |
+| Satellite | satellite messaging | messages | text |
+| Telemetry | (network management) | status changes | structured |
+
+The gateway knows where every session attaches from (serving cell, GPS position, or mesh node), so it can route the session before the AI has read it. The scenario loader enforces this, and the tests enforce that every channel has an adapter and is exercised end to end.
+
 ## AI layer
 
-- **Interpretation** turns each communication into facts (each `verified`/`reported`/`inferred`, with verbatim evidence), needs mentioned, location, people range, life threat (`yes`/`no`/`unknown`), affected operations, missing information and confidence.
-- **Synthesis** runs once per checkpoint (a batch of events at the same scenario time). It receives the previous picture, the new interpretations, deterministic correlation hints, verified network facts and operator decisions, and it **updates** the operational picture: incidents and how they relate, communication needs, dependency chains (e.g. backhaul cut → towers isolated → hospital link down), contradictions, information gaps, and a change log that names the evidence behind each change.
-- **Guards** (deterministic, after every LLM call): every quote must be a verbatim substring of the referenced communication, otherwise it is removed and the fact downgraded to `inferred`. People counts are merged as the max of overlapping ranges, never summed. Every communication stays attached to the picture.
-- **Interpreters**: `GroqInterpreter` (Groq API, JSON-schema output validated by pydantic, one corrective retry on validation errors, backoff on rate limits), `CachedInterpreter` (default; replays recorded Groq outputs from `scenarios/cache/`, only when the stored input hash matches the current input) and `HeuristicInterpreter` (rule-based fallback, confidence ≤ 0.3, clearly labelled). Every fallback is listed in the dashboard sidebar.
-- **Request budget**: synthesis sends full message text only for new reports and the earlier reports hinted to match them; older messages are already summarised in the previous picture. The output-token budget shrinks as the prompt grows so that every request fits the provider's per-minute token limit.
+All AI runs live on Groq's free tier; the dashboard has no offline or rules-only mode.
 
-## Deterministic layer
+- **Transcription**: Whisper (`whisper-large-v3-turbo`) transcribes intercepted audio. Low-confidence transcripts (mean segment log-probability below −0.7) mark the session for verification.
+- **Interpretation**: one request per update covers every session ready for it, up to six (`openai/gpt-oss-20b`). For each session the model returns what it is about (life safety, critical facility, emergency operation, routine population traffic, non-urgent), who and why, where the situation is (which can differ from where the caller's phone is), people affected, life threat, facts with verbatim evidence, missing information and confidence.
+- **Synthesis**: a delta against the previous operational picture (`openai/gpt-oss-120b`). It merges sessions about the same event into incidents and links related incidents. It also traces dependency chains (backhaul cut → towers isolated → hospital cannot reach dispatch) and records contradictions, information gaps and a change log naming its evidence.
+- **Guards** (deterministic, after every model call): quotes must be verbatim substrings of the transcript or message, otherwise they are removed and the fact downgraded to `inferred`. A single citizen cannot make a fact `verified`. Zones must exist, and every session stays in the picture.
+- **Correlation hints**: union-find over sessions that are close in space and time or name the same place. Place names match through a consonant skeleton plus edit distance, because speech recognition misspells unfamiliar names: "Lail Apartments" still matches "Lale Apartments".
+- **Rate limits**: each model has its own client-side token bucket, synchronised from Groq's `x-ratelimit-*` headers, so requests wait for budget rather than failing. Output budgets are sized per request to stay within the per-minute limit. In live mode, a request that cannot be sent yet is deferred and batched with the next.
+- **Failure is never silent**: a failed or deferred request leaves the session held on its pre-triage floor and retries on the next update. Pending work and errors are shown in the dashboard.
+- **Recordings**: `make record` runs the same pipeline live and stores every output with a hash of its inputs (`scenarios/cache/`). The offline evaluation and CI replay them strictly: a missing or stale recording is an error, never a substitute.
 
-- **Network analysis**: a graph of core, backhaul, towers, satellite terminals, mesh nodes and zones. An asset is usable when it is up, powered and has a path to the core. Each zone gets a categorical connectivity state (`connected`/`congested`/`degraded`/`isolated`) with the cause traced through the graph.
-- **Priority policy**: no weighted scores. Explicit tiers apply:
-  - **T1** life safety without adequate connectivity;
-  - **T2** critical facility or emergency operation disrupted;
-  - **T3** isolated population;
-  - **T4** degraded population service;
-  - **T5** non-urgent.
+## Priority policy
 
-  Within a tier, needs are ordered lexicographically by access to help (road travel time band from the nearest hospital, clinic or rescue base; farther first, since people close to help can reach it or be reached more easily; unreachable or unknown location counts as farthest; not applied to T2, where the need is the facility itself), then the fused probability that the life threat is real, then connectivity state, then the conservative upper bound of people affected, then time waiting. Bands keep small numeric differences from flipping the order. Pre-triage life-safety flags hold a need at T1 until a person reviews it. Uncertainty adds `verification_needed`; it never lowers priority.
-- **Road routing** (`optimization/routing.py`): scenarios describe zones, not streets, so the road network is derived: the Euclidean minimum spanning tree (Kruskal with union-find, guarantees connectivity) plus each zone's 3 nearest neighbours (redundant routes). Edge length is great-circle distance × 1.3 detour; an edge takes the worse road condition of its two zones (blocked: removed; limited: 15 km/h; open: 40 km/h). One multi-source Dijkstra with per-source start offsets gives every zone its travel time from the nearest help site. Single-source Dijkstra routes mobile base stations and TETRA repeaters from their depot, which sets their ETA; when no route exists, the precondition names the blocked zones on the shortest route of the undamaged network.
-- **Evidence fusion** (`optimization/fusion.py`): the probability that a life threat is real is a Bayesian update in log-odds: prior 0.2, then each independent source adds signal × ln(likelihood ratio of its role) (responder 9, facility 6, operator 4, citizen 3). The signal is the AI's per-message reading (+1 yes, −1 no) or the pre-triage flag (+0.5); when they disagree the source is neutral and the need is flagged. Repeated messages from one source count once. People affected: Marzullo's algorithm finds the range the most reports agree on and flags outliers; ranking still uses the maximum over all reports.
-- **Bandwidth allocation** (`optimization/flow.py`): a min-cost flow solved with network simplex on integer units. Source → core → backhaul → access assets (node-split so each asset's capacity caps everything through it; radio capacity shared across covered zones) → zones → traffic classes → sink. In a zone with priority access (and capacity ≥25% of demand), each urgent voice/data need is its own class; everything else shares a best-effort pool, split proportionally. Each class has a bypass edge from the source whose cost is the penalty for unmet demand: P_r = (D+1)^(N−r) by queue position r, pools cost 1. Minimising cost is therefore exactly lexicographic: the top of the queue is served as fully as physically possible before the next item gets anything. A voice/data need counts as served only if the flow carries its full demand (population needs: half).
-- **Optimizer**: candidate interventions are generated from the scenario's assets: traffic rebalancing, priority access, satellite activation, mesh bridging, mobile base station deployment, TETRA relay and satellite backhaul. Each candidate is checked against its preconditions. The optimizer then searches, simulating each plan end to end (apply effects → network analysis → min-cost flow), the combinations of scarce resources for the plan that maximises (T1 served, T2 served, …, T5 served) lexicographically, preferring fewer resources and then a shorter ETA. Rejected alternatives are reported as *infeasible* (naming the failing precondition) or *dominated* (naming the better use of the resource).
+No weighted scores. Explicit tiers, first match wins:
+
+- **T1 life safety**: the AI's category or life threat, or a life-safety pre-triage flag on the session or any report of the same incident. AI uncertainty cannot lower this.
+- **T2 critical facility or emergency operation**. Before analysis, a responder or facility source also lands here.
+- **T3 isolated population**, and sessions still awaiting analysis, which are held above routine traffic until the AI has read them.
+- **T4 routine population traffic.**
+- **T5 non-urgent.**
+
+Within a tier, sessions are ordered lexicographically by:
+
+1. access to help, as road travel time from the nearest hospital or rescue base, in bands (farther first);
+2. the fused probability that the life threat is real;
+3. connectivity state;
+4. the conservative upper bound of people affected;
+5. arrival time.
+
+- **Road routing** (`optimization/routing.py`): the road network is derived from zone geometry:
+  - **Structure**: a Euclidean minimum spanning tree (Kruskal with union-find) plus each zone's three nearest neighbours.
+  - **Edges**: each edge takes the worse road condition of its two zones. Blocked roads are removed, limited ones run at 15 km/h, open ones at 40 km/h.
+  - **Travel times**: one multi-source Dijkstra gives every zone its travel time to help. Single-source Dijkstra routes mobile base stations and repeaters from their depot, which sets their ETA.
+- **Evidence fusion** (`optimization/fusion.py`):
+  - **Life threat**: a Bayesian update in log-odds. Each independent source adds evidence weighted by its role's likelihood ratio (responder 9, facility 6, operator 4, citizen 3), and repeats from one source count once. Where the AI and pre-triage disagree, the source is neutral and the session is flagged.
+  - **People affected**: Marzullo's algorithm finds the people count most reports agree on and flags outliers.
+
+## Admission: the gateway
+
+`optimization/admission.py` runs once per simulated minute over the capacity network in `optimization/flow.py`:
+
+- **Capacity network**: one flow graph per network family, sharing a source.
+  - Cellular: core → backhaul → access assets (towers, mobile base stations, satellite access) → zone.
+  - TETRA site → zone; bridged mesh node → zone; satellite messaging → zone.
+  - Assets are node-split, so a backhaul link's capacity caps every tower behind it, and radio capacity is shared across the zones an asset covers.
+- **Lexicographic maximum flow**: classes are routed one at a time in queue order, each by augmenting paths (Edmonds–Karp) in the residual network. A path may reroute traffic that is already admitted, for example from one covering tower to another, but can never reduce it. So the head of the queue gets capacity first and nothing admitted earlier is displaced. Sessions are all-or-nothing; background traffic is fluid. Integer units keep it exact.
+- **Each tick**:
+  1. Sessions past their holding time complete.
+  2. Connected sessions are routed first and never pre-empted. If their site fails they drop and are held again.
+  3. Connected background traffic keeps its capacity.
+  4. Held sessions and waiting background attempts are admitted in policy order.
+- **Background traffic**: the zone's ordinary demand (population × demand per person), modelled as a fluid. Calls end with a mean holding time of 3 minutes, new attempts arrive at the matching rate, and attempts waiting longer than 5 minutes give up.
+- **Lifeline's policy**:
+  - **Urgent first**: tiers 1–3 go first, in urgency order.
+  - **Capacity held back**: when a T1 or T2 session doesn't fit yet, the capacity it could already use is held back for it. A large session, such as a hospital's 12-unit data link, is then not starved by small routine traffic. This applies only if the zone could ever carry the session.
+  - **Routine traffic**: routine and non-urgent sessions keep arrival order with the background traffic. Lifeline never reorders ordinary traffic among itself.
+- **Baselines**, on the same traffic and network:
+  - `arrival`: a gateway without content analysis, first come first served, with backfilling.
+  - `uncontrolled`: no gateway. Blocked callers retry, and every waiting attempt in a zone has the same chance at freed capacity. Seeded.
+
+## Capacity planning
+
+The gateway orders traffic; it cannot carry a session where there is no capacity at all, such as a cut-off village, a mesh island or a radio dead zone. For those sessions, `optimization/interventions.py` generates candidates from the scenario's assets:
+
+- traffic rebalancing;
+- satellite activation;
+- satellite backhaul;
+- mesh bridging;
+- mobile base station deployment;
+- TETRA relay.
+
+Each candidate has explicit preconditions: an open road (Dijkstra), relocation range, power, bridge range. `optimization/allocator.py` searches combinations of scarce resources and simulates each plan end to end: effects, then network analysis, then routing every open session in queue order. The winning plan carries the most T1 sessions, then T2 and so on, preferring fewer scarce resources and then a shorter ETA. Rejected alternatives are reported as *infeasible* (naming the failed precondition) or *dominated* (naming the better use).
 
 ## Decisions and simulation
 
-The engine (`simulation/engine.py`) releases scenario events checkpoint by checkpoint and re-runs the full pipeline after each one. Interventions are approved by an operator (`approve` / `reject`) or, with `auto_approve`, by the engine in plan order. Each decision is logged with its actor and reason. An approved intervention is pending until its ETA, then its simulated effect is applied to the assets, and everything is re-evaluated. Battery drain and scheduled telemetry come from the scenario data.
+The engine (`simulation/engine.py`) advances in one-minute ticks:
+
+1. Release the events due.
+2. Run the AI stages on pending work.
+3. Rank.
+4. Admit.
+5. Re-plan.
+
+Interventions are approved by an operator (`approve` / `reject`) or, with `auto_approve`, by the engine in plan order. Each decision is logged with its actor and reason. An approved intervention takes effect after its ETA. With `compare`, the baseline gateways run alongside on the same traffic. The dashboard shows each session's wait under all three policies.
 
 ## Evaluation
 
-`lifeline/evaluation.py` (`make evaluate`) compares Lifeline's allocation policy with two baselines on the same network state and the same min-cost flow: first come, first served (every need reserved in arrival order) and best effort (no reservation, proportional sharing). It reports need-minutes fully served across each scenario replay, and the share of life-safety needs served in seeded contention trials, where many needs compete for one congested cell.
+`lifeline/evaluation.py` (`make evaluate`) runs two experiments:
+
+1. **Scenario replays** with the recorded AI outputs and automatic approval. It reports each tier group's mean wait from interception to first connection, and the share connected within 2 minutes, under the three policies.
+2. **A load sweep**: seeded Monte Carlo on one congested cell, background load 1.2× to 2× capacity. It reports life-safety mean and 90th-percentile waits.
 
 ## Safety principles
 
-- AI never invents facts, never computes capacity or feasibility, and never acts.
-- All interventions are simulated. Every decision, automatic or by an operator, is logged with its reason.
-- Nothing is discarded: low-priority needs and all communications stay visible.
-- Uncertainty and conflicts are shown, not hidden.
+- The AI never invents facts, never computes capacity or feasibility, and never acts.
+- A pre-triage floor holds possible life-safety sessions at the top until the AI has read them; a failed AI request never drops or delays a session below that floor.
+- Connected sessions are never pre-empted; routine traffic is never reordered among itself; nothing is discarded.
+- All network actions are simulated. Every decision, automatic or by an operator, is logged with its reason.

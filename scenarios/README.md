@@ -4,10 +4,10 @@ Each `*.json` file is a complete, self-contained environment validated by `lifel
 
 | File | Category | What it exercises |
 |---|---|---|
-| `quake_dense_city.json` | exercise | Correlating duplicate reports, a degraded hospital, responders on TETRA, a need that telemetry alone does not reveal |
-| `quake_mountain_valley.json` | exercise | Isolated villages, roads blocked (mobile base station infeasible), satellite/mesh/TETRA alternatives |
-| `quake_coastal_blackout.json` | exercise | Backhaul cut with powered towers, batteries draining over time, two mobile base stations competing |
-| `fibre_cut_outage.json` | validation | A non-disaster outage on the same engine |
+| `quake_dense_city.json` | exercise | 24 sessions on congested cells: duplicate reports of one collapse (with transcription errors), emergencies no keyword catches (chest pain, a gas smell), a hospital data link competing with routine calls |
+| `quake_mountain_valley.json` | exercise | A congested town cell, villages cut off (mobile base station infeasible on blocked roads), satellite messaging, a mesh island, a TETRA dead zone on the pass road |
+| `quake_coastal_blackout.json` | exercise | Towers powered but backhaul cut, batteries draining (a site going off air drops its calls), isolated port and shelter |
+| `fibre_cut_outage.json` | validation | A non-disaster outage: traffic from a dead business district congesting the neighbouring cell |
 
 ## Schema
 
@@ -39,16 +39,45 @@ Each `*.json` file is a complete, self-contained environment validated by `lifel
   "events": [
     { "t": 0, "kind": "telemetry", "channel": "telemetry",
       "payload": { "id": "TM-1", "asset_id": "T1", "changes": { "status": "down" }, "note": "..." } },
-    { "t": 2, "kind": "comm", "channel": "cellular|satellite|mesh|tetra|citizen_app|facility",
-      "payload": { "id": "C-1", "source_id": "...", "source_role": "citizen|responder|facility",
-                   "lat": 0, "lon": 0, "zone_hint": "optional zone id", "text": "...",
-                   "delivery_status": "..." } }
+    // an intercepted session; which session kinds a channel carries is fixed by its adapter
+    { "t": 3, "kind": "comm", "channel": "cellular|citizen_app|facility|tetra|mesh|satellite",
+      "payload": {
+        "id": "C-2", "source_id": "...", "source_role": "citizen|responder|facility|operator",
+        "session": "call|sms|data|radio|message",  // default: the channel's first kind
+        "cell": "T9",                    // serving access asset, and/or:
+        "lat": 0, "lon": 0,              // position (GPS, AVL), and/or:
+        "zone_hint": "zone id",          // e.g. the mesh node's zone
+        "audio": "audio/<scenario>/C-2.ogg",  // calls and radio: the intercepted audio
+        "script": "...",                 // what the audio says; used only to generate it
+        "text": "...",                   // SMS, data and messages
+        "duration_min": 3                // holding time once connected; null = until the end
+      } }
   ]
 }
 ```
 
-Rules checked on load: at least one `core` asset, links point to existing assets, sites reference existing zones, event ids are unique, and telemetry targets existing assets.
+| Channel | Session kinds | Network |
+|---|---|---|
+| `cellular` | `call` (audio), `sms` | cellular |
+| `citizen_app` | `data` | cellular |
+| `facility` | `data` | cellular |
+| `tetra` | `radio` (audio) | TETRA |
+| `mesh` | `message` | mesh |
+| `satellite` | `message` | satellite messaging |
 
-## Cached AI outputs
+Rules checked on load:
 
-`cache/<scenario_id>.json` holds real Groq outputs recorded by `make cache`. They are keyed by message id (`interpret:<id>`) and checkpoint (`synth:<n>`) and store an input hash and the model name. An entry is replayed only when its hash matches the current input, so a changed scenario or prompt falls back to the rules interpreter (listed in the sidebar) rather than replaying stale output. Never edit them by hand; re-record with `make cache` after changing a scenario's messages.
+- the network has at least one `core` asset;
+- links point to existing assets, and sites reference existing zones;
+- event ids are unique, telemetry targets existing assets, and every channel has an adapter;
+- each session is valid for its channel: audio for calls and radio, text otherwise;
+- named cells exist and audio files exist;
+- the gateway can place every session from its metadata (cell, coordinates or zone hint).
+
+## Audio
+
+`audio/<scenario_id>/*.ogg` is the intercepted audio of every call and TETRA transmission. It is synthetic speech generated from each event's `script` by `make audio` (macOS text-to-speech, then shaped with ffmpeg into narrowband telephone audio or noisy, band-limited radio audio). The engine never reads `script`: Lifeline only hears the audio, through Whisper.
+
+## Recorded AI outputs
+
+`cache/<scenario_id>.json` holds real Whisper and Groq outputs recorded by `make record`, for the offline evaluation and CI (the dashboard always runs live). Entries are keyed by session (`transcribe:<id>`), interpretation batch (`interpret:<ids>`) and synthesis update (`synth:<n>`), and store the model name and a hash of the exact inputs (for transcripts, the audio bytes). Replay is strict: a missing or stale entry raises an error rather than being replaced. Never edit recordings by hand; run `make record` after changing a scenario's sessions or the prompts.

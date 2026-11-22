@@ -1,8 +1,10 @@
 """Channel adapter interface.
 
-Every source of information (cellular, satellite, mesh, TETRA, citizen apps, facilities,
-telemetry) is reached through an adapter. Every adapter in this repository is simulated: it
-replays scenario events. A real integration would subclass `ChannelAdapter` and register it.
+Lifeline sits in the path of every access network it protects. Each source of traffic
+(cellular calls and SMS, citizen-app and facility data sessions, TETRA radio, mesh and
+satellite messaging) and the network telemetry feed reach it through an adapter that
+normalises the raw event. Every adapter in this repository replays scenario events; a real
+integration subclasses `ChannelAdapter` and registers it in `registry.py`.
 """
 
 from __future__ import annotations

@@ -1,21 +1,16 @@
-"""Lifeline operator dashboard (Streamlit). Run with `make run`."""
+"""Lifeline operator dashboard (Streamlit). Run with `make run`. Always uses the live models."""
 
 from __future__ import annotations
 
 import os
+import threading
 import time
 
 import streamlit as st
 from dotenv import load_dotenv
 
-from lifeline.ai.cache import AICache
-from lifeline.ai.interpreter import (
-    CachedInterpreter,
-    FallbackInterpreter,
-    GroqInterpreter,
-    HeuristicInterpreter,
-    Interpreter,
-)
+from lifeline.ai.interpreter import GroqInterpreter
+from lifeline.ai.transcriber import WhisperTranscriber
 from lifeline.dashboard import components as ui
 from lifeline.dashboard.map_view import build_deck
 from lifeline.dashboard.theme import CSS
@@ -23,40 +18,52 @@ from lifeline.models import Scenario
 from lifeline.simulation.engine import Engine
 from lifeline.simulation.scenario import list_scenarios
 
-AI_CACHED, AI_LIVE, AI_RULES = "Recorded AI outputs", "Live AI (Groq)", "Rules only (no AI)"
 AUTO, OPERATOR = "Automatic", "Operator approval"
 
 
-def make_interpreter(mode: str, scenario: Scenario) -> tuple[Interpreter, str]:
-    if mode == AI_LIVE:
-        groq = GroqInterpreter()
-        return FallbackInterpreter(groq, HeuristicInterpreter()), f"live {groq.backend.model}"
-    if mode == AI_RULES:
-        return HeuristicInterpreter(), "rules only"
-    cache = AICache(scenario.meta.id)
-    label = "recorded Groq outputs" if cache.available else "no recording, rules fallback"
-    return CachedInterpreter(cache, HeuristicInterpreter()), label
-
-
-def get_engine(scenario: Scenario, ai_mode: str, auto_approve: bool) -> Engine:
-    key = (scenario.meta.id, ai_mode)
-    if st.session_state.get("engine_key") != key:
-        interp, label = make_interpreter(ai_mode, scenario)
-        fresh = Engine(scenario, interp, auto_approve=auto_approve)
+def get_engine(scenario: Scenario, auto_approve: bool) -> Engine:
+    if st.session_state.get("engine_key") != scenario.meta.id:
+        interp, stt = GroqInterpreter(), WhisperTranscriber()
+        fresh = Engine(scenario, interp, stt, auto_approve=auto_approve, live=True, compare=True)
         # deep link: ?update=N opens the run at update N, e.g. to share a specific state
         target = st.query_params.get("update", "0")
+        fresh.intel.defer = False  # fast-forward: wait for budget, as real time would allow
         for _ in range(int(target) if target.isdigit() else 0):
             fresh.step()
+        fresh.intel.defer = True
         st.session_state.engine = fresh
-        st.session_state.engine_key = key
-        st.session_state.mode_label = label
+        st.session_state.engine_key = scenario.meta.id
+        st.session_state.ai_label = f"{stt.name} · {interp.name}"
         st.session_state.playing = False
     engine: Engine = st.session_state.engine
     engine.auto_approve = auto_approve
     return engine
 
 
-def sidebar(scenarios: list[Scenario]) -> tuple[Scenario, str, str, float]:
+def advance(engine: Engine) -> None:
+    """Run one engine step to completion. Streamlit interrupts the script as soon as the
+    operator clicks something; a step cut off halfway would leave the engine inconsistent, so
+    it runs in a worker thread that finishes even if this script run is interrupted. Every run
+    waits for an in-flight step before reading the engine (`wait_for_step`)."""
+    lock: threading.Lock = st.session_state.setdefault("step_lock", threading.Lock())
+
+    def run() -> None:
+        with lock:
+            engine.step()
+
+    worker = threading.Thread(target=run, daemon=True)
+    worker.start()
+    worker.join()
+
+
+def wait_for_step() -> None:
+    lock: threading.Lock | None = st.session_state.get("step_lock")
+    if lock is not None:
+        with lock:
+            pass
+
+
+def sidebar(scenarios: list[Scenario]) -> tuple[Scenario, str, float]:
     sb = st.sidebar
     sb.markdown("### Scenario")
     labels = {
@@ -66,21 +73,16 @@ def sidebar(scenarios: list[Scenario]) -> tuple[Scenario, str, str, float]:
     sid = sb.radio("Scenario", list(labels), format_func=labels.__getitem__)
     scenario = next(s for s in scenarios if s.meta.id == sid)
     sb.caption(scenario.meta.description)
-    sb.markdown("### Interpretation")
-    ai_mode = sb.radio("AI mode", [AI_CACHED, AI_LIVE, AI_RULES])
-    if ai_mode == AI_LIVE and not os.getenv("GROQ_API_KEY"):
-        sb.warning("Set GROQ_API_KEY in .env for live AI. Using recorded outputs.")
-        ai_mode = AI_CACHED
-    sb.markdown("### Decisions")
+    sb.markdown("### Capacity interventions")
     decision_mode = sb.radio(
         "Approval",
         [AUTO, OPERATOR],
-        help="Automatic applies the recommended plan in order. Operator approval waits for "
-        "you to approve or reject each intervention.",
+        help="Automatic applies the recommended capacity plan in order. Operator approval "
+        "waits for you to approve or reject each intervention.",
     )
     sb.markdown("### Playback")
-    speed = sb.slider("Seconds per update", 2.0, 30.0, 2.0, 1.0)
-    return scenario, ai_mode, decision_mode, speed
+    speed = sb.slider("Seconds per minute of scenario time", 2.0, 30.0, 2.0, 1.0)
+    return scenario, decision_mode, speed
 
 
 def controls(engine: Engine) -> None:
@@ -92,8 +94,8 @@ def controls(engine: Engine) -> None:
         st.session_state.playing = False
     c = sb.columns(2)
     if c[0].button("Step", use_container_width=True):
-        with st.spinner("Processing communications"):
-            engine.step()
+        with st.spinner("Analysing intercepted sessions"):
+            advance(engine)
     if c[1].button("Reset", use_container_width=True):
         st.session_state.engine_key = None
         st.rerun()
@@ -102,45 +104,66 @@ def controls(engine: Engine) -> None:
     sb.caption(f"{state} · {feed}")
     sb.divider()
     sb.caption(
-        "Channel adapters and network actions are simulated; Lifeline controls no real "
-        "network. The AI interprets messages; deterministic code ranks, allocates and plans."
+        "Sessions, audio and network are simulated; Lifeline controls no real network. "
+        "Transcription, interpretation and synthesis run live on Groq. The AI reads sessions; "
+        "deterministic code ranks, admits and plans."
     )
-    misses = getattr(engine.interpreter, "errors", None) or getattr(
-        engine.interpreter, "misses", None
+
+
+def missing_key() -> None:
+    st.title("Lifeline")
+    st.error(
+        "Lifeline runs its AI live and needs a Groq API key. Create a free key at "
+        "console.groq.com, put `GROQ_API_KEY=...` in `.env` (see `.env.example`) and restart."
     )
-    if misses:
-        with sb.expander(f"Rules fallbacks ({len(misses)})"):
-            for m in misses[-10:]:
-                st.caption(str(m))
+    st.stop()
 
 
 def main() -> None:
     load_dotenv()
     st.set_page_config(page_title="Lifeline", page_icon=":material/cell_tower:", layout="wide")
     ui.html(CSS)
-    scenario, ai_mode, decision_mode, speed = sidebar(list_scenarios())
-    engine = get_engine(scenario, ai_mode, auto_approve=decision_mode == AUTO)
+    if not os.getenv("GROQ_API_KEY"):
+        missing_key()
+    scenario, decision_mode, speed = sidebar(list_scenarios())
+    wait_for_step()
+    engine = get_engine(scenario, auto_approve=decision_mode == AUTO)
     controls(engine)
 
-    ui.header(engine, st.session_state.mode_label)
+    ui.header(engine, st.session_state.ai_label)
+    if engine.intel.status.notice and engine.intel.status.backlog:
+        st.warning(
+            f"AI analysis is waiting: {engine.intel.status.notice}. "
+            f"{engine.intel.status.backlog} session(s) are held on their pre-triage floor and "
+            "will be analysed together when it is available.",
+            icon=":material/hourglass_top:",
+        )
     ui.incident_timeline(engine)
-    ui.workflow(engine)
+    ui.latest_interception(engine)
     left, right = st.columns([3, 2])
     with left:
-        st.pydeck_chart(build_deck(engine), height=440, use_container_width=True)
+        st.pydeck_chart(build_deck(engine), height=420, use_container_width=True)
         ui.map_legend()
-        ui.overview(engine)
+        a, b = st.columns(2)
+        with a:
+            ui.kpis(engine)
+        with b:
+            ui.comparison(engine)
+        ui.gateways(engine)
+        ui.operational_picture(engine)
     with right:
         if decision_mode == OPERATOR:
             ui.recommended_plan(engine)
-        ui.priority_queue(engine)
-        with st.expander("Decision log"):
+        ui.queue(engine)
+        with st.expander("Capacity interventions and decisions"):
             ui.decision_log(engine)
+        with st.expander("AI pipeline status"):
+            ui.ai_status(engine)
 
     if st.session_state.get("playing"):
-        if engine.events_done and not engine.pending:
+        if engine.finished:
             st.session_state.playing = False
         else:
             time.sleep(speed)
-            engine.step()
+            advance(engine)
             st.rerun()

@@ -1,7 +1,8 @@
 """Domain models: the single source of truth for every layer.
 
-Inputs (scenario + ingestion), AI outputs (interpretation + operational picture) and
-deterministic decisions (network state, priorities, interventions) live here.
+Inputs (scenario + intercepted sessions), AI outputs (transcripts, interpretations, the
+operational picture) and deterministic decisions (network state, queue order, admission,
+interventions) live here.
 """
 
 from __future__ import annotations
@@ -22,6 +23,25 @@ class Channel(StrEnum):
     CITIZEN_APP = "citizen_app"
     FACILITY = "facility"
     TELEMETRY = "telemetry"
+
+
+class NetworkFamily(StrEnum):
+    """The radio network a session uses; each has its own capacity."""
+
+    CELLULAR = "cellular"  # towers, mobile base stations, satellite access terminals
+    TETRA = "tetra"  # responder trunked radio
+    MESH = "mesh"  # device-to-device mesh, bridged to the core
+    SATELLITE = "satellite"  # handheld satellite messaging (external constellation)
+
+
+class SessionKind(StrEnum):
+    """What a channel event is, as the gateway sees it."""
+
+    CALL = "call"  # voice call (audio, transcribed)
+    SMS = "sms"
+    DATA = "data"  # app or facility data session
+    RADIO = "radio"  # TETRA group call (audio, transcribed)
+    MESSAGE = "message"  # mesh or satellite short message
 
 
 class SourceRole(StrEnum):
@@ -175,20 +195,49 @@ class Scenario(BaseModel):
 # --------------------------------------------------------------------------- ingestion
 
 
+class Transcript(BaseModel):
+    """Speech-to-text output for an intercepted call or radio transmission."""
+
+    text: str
+    model: str
+    avg_logprob: float | None = None  # mean token log-probability over segments
+    no_speech_prob: float | None = None
+    duration_s: float | None = None
+
+    @property
+    def low_confidence(self) -> bool:
+        return (self.avg_logprob is not None and self.avg_logprob < -0.7) or (
+            self.no_speech_prob is not None and self.no_speech_prob > 0.5
+        )
+
+
 class Communication(BaseModel):
+    """One intercepted session: a call, message or data session on its way to the network."""
+
     id: str
     t: float
     channel: Channel
     adapter: str
+    kind: SessionKind
+    family: NetworkFamily
+    service: Service
     source_id: str
     source_role: SourceRole
     lat: float | None = None
     lon: float | None = None
     zone_hint: str | None = None
-    text: str
+    cell_id: str | None = None  # access asset the session was headed to
+    audio: str | None = None  # path of the intercepted audio, relative to scenarios/
+    transcript: Transcript | None = None
+    text: str = ""  # message text, or the transcript of an audio session ("" until transcribed)
+    duration_min: float | None = None  # holding time once connected; None = until scenario end
     delivery_status: str = "delivered"
     triage_floor: TriageFloor = TriageFloor.NONE
     triage_terms: list[str] = Field(default_factory=list)
+
+    @property
+    def awaiting_transcript(self) -> bool:
+        return self.audio is not None and self.transcript is None
 
 
 class TelemetryEvent(BaseModel):
@@ -197,6 +246,18 @@ class TelemetryEvent(BaseModel):
     asset_id: str
     changes: dict[str, object]
     note: str = ""
+
+
+class SessionSpec(BaseModel):
+    """What the admission gateway needs to know about an intercepted session."""
+
+    id: str
+    t_arrival: float
+    family: NetworkFamily
+    service: Service
+    zone_id: str | None
+    demand: float  # capacity units while connected
+    duration_min: float | None  # None: stays connected until the scenario ends
 
 
 # --------------------------------------------------------------------------- AI outputs
@@ -214,9 +275,17 @@ class Fact(BaseModel):
     flagged: str | None = None  # set by guards when evidence failed validation
 
 
+NeedCategory = Literal[
+    "life_safety", "critical_facility", "emergency_operation", "population", "non_urgent"
+]
+
+
 class Interpretation(BaseModel):
     comm_id: str = ""
     summary: str
+    category: NeedCategory = "population"
+    who: str = ""
+    purpose: str = ""
     facts: list[Fact]
     needs_mentioned: list[str] = Field(default_factory=list)
     location_text: str | None = None
@@ -250,14 +319,22 @@ class Incident(BaseModel):
 
 
 class CommNeed(BaseModel):
+    """What one intercepted session needs, built deterministically from its interpretation.
+
+    `zone_id` is where the session attaches to the network (from network metadata);
+    `location_zone_id` is where the emergency is, when the AI could place it (a relative calling
+    about someone elsewhere)."""
+
     id: str
     who: str
     zone_id: str | None = None
+    location_zone_id: str | None = None
     purpose: str
     service: Service
-    category: Literal[
-        "life_safety", "critical_facility", "emergency_operation", "population", "non_urgent"
-    ]
+    family: NetworkFamily = NetworkFamily.CELLULAR
+    category: NeedCategory
+    analysed: bool = True  # False while transcription or interpretation is pending
+    demand: float = 0.0  # capacity units while connected (0: derive from service)
     incident_ids: list[str] = Field(default_factory=list)
     people_min: int | None = None
     people_max: int | None = None
@@ -266,8 +343,6 @@ class CommNeed(BaseModel):
     confidence: float = Field(ge=0.0, le=1.0, default=0.5)
     verification_needed: bool = False
     first_seen_t: float = 0.0
-    status: Literal["open", "resolved"] = "open"
-    resolution: str = ""
 
 
 class DependencyStep(BaseModel):
@@ -299,20 +374,24 @@ class ChangeEntry(BaseModel):
     t: float = 0.0
     summary: str
     caused_by: list[str] = Field(default_factory=list)
-    needs_affected: list[str] = Field(default_factory=list)
 
 
 class OperationalPicture(BaseModel):
     version: int = 0
     summary: str = "Awaiting first communications."
     incidents: list[Incident] = Field(default_factory=list)
-    needs: list[CommNeed] = Field(default_factory=list)
     dependencies: list[Dependency] = Field(default_factory=list)
     contradictions: list[Contradiction] = Field(default_factory=list)
     gaps: list[InfoGap] = Field(default_factory=list)
     interpreter: str = "none"
     unlinked_comm_ids: list[str] = Field(default_factory=list)  # kept visible, never dropped
     guard_notes: list[str] = Field(default_factory=list)  # what the evidence guards changed
+
+
+class InterpretationBatch(BaseModel):
+    """One interpretation request covers every session intercepted in the same update."""
+
+    items: list[Interpretation]
 
 
 class SynthesisDelta(BaseModel):
@@ -324,11 +403,9 @@ class SynthesisDelta(BaseModel):
 
     summary: str
     incidents: list[Incident] = Field(default_factory=list)
-    needs: list[CommNeed] = Field(default_factory=list)
     dependencies: list[Dependency] = Field(default_factory=list)
     contradictions: list[Contradiction] = Field(default_factory=list)
     gaps: list[InfoGap] = Field(default_factory=list)
-    resolved_need_ids: list[str] = Field(default_factory=list)
     closed_item_ids: list[str] = Field(default_factory=list)  # contradictions/gaps settled
     changes: list[ChangeEntry] = Field(default_factory=list)
 
@@ -343,7 +420,6 @@ class ZoneState(BaseModel):
     demand: float
     channels: dict[str, float]  # channel -> usable capacity (cellular, satellite, mesh, tetra)
     causes: list[str]
-    priority_access: bool = False
 
     @property
     def ratio(self) -> float:
@@ -351,12 +427,10 @@ class ZoneState(BaseModel):
 
 
 class NeedAllocation(BaseModel):
-    """Bandwidth the min-cost flow gives one need (abstract capacity units)."""
+    """Capacity the admission flow can route to one session (abstract capacity units)."""
 
     demand: float
     allocated: float
-    mode: Literal["priority", "best_effort"]
-    pool_fraction: float | None = None  # share of the zone's best-effort pool that got through
 
     @property
     def fraction(self) -> float:
@@ -388,7 +462,7 @@ class PrioritizedNeed(BaseModel):
     tier_rule: str
     criteria: list[CriterionTrace]
     connectivity: ConnState
-    served: Literal["unserved", "planned", "served"] = "unserved"
+    status: Literal["held", "planned", "connected"] = "held"
     served_by: list[str] = Field(default_factory=list)
     flags: list[str] = Field(default_factory=list)
 
@@ -437,7 +511,7 @@ class Recommendation(BaseModel):
 
 
 TimelineKind = Literal[
-    "comm", "telemetry", "intelligence", "priority", "decision", "outcome", "system"
+    "comm", "telemetry", "intelligence", "priority", "admission", "decision", "outcome", "system"
 ]
 Actor = Literal["lifeline", "operator", ""]
 

@@ -1,240 +1,271 @@
-"""Offline evaluation of the allocation policy against two baselines.
+"""Offline evaluation: how long sessions wait for the network, with and without Lifeline.
 
-Three policies allocate the same network with the same min-cost flow; only the admission rule
-and the queue order differ:
+Three admission policies run on the same network with the same traffic (see
+`lifeline.optimization.admission`):
 
-* `lifeline`: urgent needs get reserved capacity in urgency order (Lifeline's policy);
-* `arrival`: first come, first served: every need, urgent or not, gets reserved capacity in
-  the order it was first reported;
-* `best_effort`: no reservation; every need shares its zone's capacity proportionally, as an
-  urgency-unaware network does.
+* `lifeline`: urgent sessions first, in urgency order; routine traffic first come first served;
+* `arrival`: a gateway without content analysis, first come first served;
+* `uncontrolled`: no gateway, how a congested network behaves today (blocked callers retry and
+  every waiting attempt has the same chance). Averaged over seeds.
 
 Two experiments:
 
-1. Scenario replay. Each scenario runs with automatic approval and its recorded AI outputs. At
-   every step the current network state (assets, interventions, priority-access zones) is
-   allocated under each policy, and the time each open need is fully served is integrated:
-   need-minutes served / need-minutes open, for life-safety (T1) and all urgent (T1-T2) needs.
-2. Contention trials. Seeded Monte Carlo: one congested cell, a random mix of needs arriving in
-   random order, capacity swept from 25% to 75% of total demand. Measures the share of
-   life-safety needs fully served. This isolates the effect of the queue order, which the
-   scenarios exercise only lightly (few needs compete inside the same zone).
+1. Scenario replay. Each scenario runs with its recorded AI outputs (real Whisper and Groq
+   output from `make record`) and automatic approval of capacity interventions; the baseline
+   gateways see exactly the same sessions, network state and interventions. A session's wait
+   is the time from interception to its first connection; sessions never connected count with
+   the time they waited until the end of the run.
+2. Load sweep. Seeded Monte Carlo on one congested cell: urgent and routine sessions arrive
+   at random over 30 minutes while background traffic offers 1.2x to 2x the cell's capacity.
+   This isolates the policy from the particular scenarios.
 
 Usage: `make evaluate` or `python -m lifeline.evaluation`.
 """
 
 from __future__ import annotations
 
+import math
 import random
-import sys
+import statistics
 from dataclasses import dataclass, field
 
 from lifeline.ai.cache import AICache
-from lifeline.ai.interpreter import CachedInterpreter, HeuristicInterpreter, Interpreter
+from lifeline.ai.interpreter import CachedInterpreter
+from lifeline.ai.transcriber import CachedTranscriber
 from lifeline.models import (
     Asset,
     AssetKind,
-    CommNeed,
+    NetworkFamily,
     Scenario,
     Service,
+    SessionSpec,
     Zone,
 )
-from lifeline.optimization.flow import ALL_CATEGORIES, URGENT, need_demand, with_allocation
-from lifeline.optimization.network import analyse, need_served
+from lifeline.optimization.admission import POLICIES, AdmissionController, Policy
+from lifeline.optimization.network import analyse
 from lifeline.simulation.engine import Engine
 from lifeline.simulation.scenario import list_scenarios
 
-POLICIES = ("lifeline", "arrival", "best_effort")
-POLICY_TITLES = ("Lifeline (urgency order)", "First come, first served", "Best effort")
-ADMIT = {"lifeline": URGENT, "arrival": ALL_CATEGORIES, "best_effort": frozenset[str]()}
-HORIZON_AFTER_LAST_EVENT_MIN = 30.0
+POLICY_TITLES = {
+    "lifeline": "Lifeline",
+    "arrival": "First come, first served",
+    "uncontrolled": "No gateway (today)",
+}
+GROUPS = {"Life safety": (1,), "Facility and operations": (2,), "Routine": (4, 5)}
+SEEDS = 20  # uncontrolled baseline seeds per scenario
+QUICK_MIN = 2.0  # "connected within" threshold
 
-# contention trials
-TRIALS = 500
-SEED = 7
-NEEDS_PER_TRIAL = (8, 20)
-CATEGORY_MIX = {  # share of incoming needs per category
-    "life_safety": 0.15,
-    "critical_facility": 0.10,
-    "emergency_operation": 0.15,
-    "population": 0.40,
-    "non_urgent": 0.20,
-}
-CATEGORY_RANK = {
-    "life_safety": 1,
-    "critical_facility": 2,
-    "emergency_operation": 2,
-    "population": 4,
-    "non_urgent": 5,
-}
-CAPACITY_SHARES = (0.25, 0.5, 0.75)
+# load sweep
+SWEEP_LOADS = (1.2, 1.5, 2.0)
+SWEEP_TRIALS = 100
+SWEEP_SEED = 7
+SWEEP_CAPACITY = 40.0
+SWEEP_ARRIVAL_MIN = 30
+SWEEP_HORIZON_MIN = 60
+SWEEP_MIX = {1: 0.15, 2: 0.15, 4: 0.5, 5: 0.2}  # tier -> share of scripted sessions
+SWEEP_RATE_PER_MIN = 1.0
 
 
 @dataclass
-class Coverage:
-    served: float = 0.0  # need-minutes (or trials) fully served
-    open: float = 0.0  # need-minutes (or trials) open
+class Waits:
+    """Waiting times (minutes) of one group of sessions under one policy."""
+
+    values: list[float] = field(default_factory=list)
+
+    def add(self, v: float) -> None:
+        self.values.append(v)
 
     @property
-    def share(self) -> float:
-        return self.served / self.open if self.open else 1.0
+    def mean(self) -> float:
+        return statistics.fmean(self.values) if self.values else 0.0
 
-    def add(self, weight: float, ok: bool) -> None:
-        self.open += weight
-        self.served += weight * ok
+    @property
+    def p90(self) -> float:
+        if not self.values:
+            return 0.0
+        v = sorted(self.values)
+        return v[min(len(v) - 1, int(0.9 * len(v)))]
+
+    @property
+    def quick(self) -> float:
+        return sum(w <= QUICK_MIN for w in self.values) / len(self.values) if self.values else 1.0
 
 
-def _coverage() -> dict[str, Coverage]:
-    return {p: Coverage() for p in POLICIES}
+def _waits() -> dict[str, Waits]:
+    return {p: Waits() for p in POLICIES}
 
 
 @dataclass
 class ScenarioResult:
     scenario_id: str
     name: str
-    life_safety: dict[str, Coverage] = field(default_factory=_coverage)
-    urgent: dict[str, Coverage] = field(default_factory=_coverage)
+    groups: dict[str, dict[str, Waits]] = field(
+        default_factory=lambda: {g: _waits() for g in GROUPS}
+    )
 
 
-def _order(policy: str, ranked: list[CommNeed]) -> list[CommNeed]:
-    if policy == "arrival":
-        return sorted(ranked, key=lambda n: (n.first_seen_t, n.id))
-    return ranked
+def group_of(tier: int) -> str | None:
+    return next((g for g, tiers in GROUPS.items() if tier in tiers), None)
 
 
-def _served_ids(
-    assets: list[Asset],
-    zones: list[Zone],
-    dpp: float,
-    priority_zones: set[str],
-    ranked: list[CommNeed],
-    policy: str,
-) -> set[str]:
-    order = _order(policy, ranked)
-    snap = analyse(assets, zones, dpp, priority_zones)
-    snap = with_allocation(snap, assets, zones, order, dpp, priority_zones, ADMIT[policy])
-    return {n.id for n in order if need_served(n, snap)}
+def controller_waits(engine: Engine) -> dict[Policy, dict[str, float]]:
+    """Per policy, every session's wait so far (baseline seeds averaged)."""
+    out: dict[Policy, dict[str, float]] = {"lifeline": {}, "arrival": {}, "uncontrolled": {}}
+    seeds = [b for b in engine.baselines if b.policy == "uncontrolled"]
+    arrival = next((b for b in engine.baselines if b.policy == "arrival"), None)
+    for sid in engine.gateway.states:
+        out["lifeline"][sid] = engine.gateway.wait(sid, engine.t)
+        if arrival:
+            out["arrival"][sid] = arrival.wait(sid, engine.t)
+        if seeds:
+            out["uncontrolled"][sid] = statistics.fmean(b.wait(sid, engine.t) for b in seeds)
+    return out
 
 
 # --------------------------------------------------------------------------- 1. scenarios
 
 
-def evaluate_scenario(scenario: Scenario, interpreter: Interpreter) -> ScenarioResult:
-    engine = Engine(scenario, interpreter, auto_approve=True)
-    result = ScenarioResult(scenario.meta.id, scenario.meta.name)
-    horizon = max(e.t for e in scenario.events) + HORIZON_AFTER_LAST_EVENT_MIN
-    engine.step()
-    while engine.t < horizon:
-        t0 = engine.t
-        tiers = {p.need.id: p.tier for p in engine.priorities}
-        ranked = [p.need for p in engine.priorities]
-        served = {
-            policy: _served_ids(
-                engine.assets, engine.zones, engine.dpp, engine.priority_zones, ranked, policy
-            )
-            for policy in POLICIES
-        }
+def recorded_engine(scenario: Scenario, seeds: int = SEEDS) -> Engine:
+    cache = AICache(scenario.meta.id)
+    return Engine(
+        scenario,
+        CachedInterpreter(cache),
+        CachedTranscriber(cache),
+        auto_approve=True,
+        compare=True,
+        baseline_seeds=seeds,
+    )
+
+
+def evaluate_scenario(engine: Engine) -> ScenarioResult:
+    while engine.t < engine.end_t:
         engine.step()
-        dt = min(engine.t, horizon) - t0
+    result = ScenarioResult(engine.scenario.meta.id, engine.scenario.meta.name)
+    waits = controller_waits(engine)
+    for sid, tier in engine.tiers.items():
+        g = group_of(tier)
+        if g is None:
+            continue
         for policy in POLICIES:
-            for nid, tier in tiers.items():
-                ok = nid in served[policy]
-                if tier == 1:
-                    result.life_safety[policy].add(dt, ok)
-                if tier <= 2:
-                    result.urgent[policy].add(dt, ok)
+            result.groups[g][policy].add(waits[policy][sid])
     return result
 
 
-def recorded_interpreter(scenario: Scenario) -> CachedInterpreter:
-    return CachedInterpreter(AICache(scenario.meta.id), HeuristicInterpreter())
+# --------------------------------------------------------------------------- 2. load sweep
 
 
-# --------------------------------------------------------------------------- 2. contention
+def _sweep_network(load: float) -> tuple[list[Asset], list[Zone], float]:
+    dpp = 0.01
+    population = round(load * SWEEP_CAPACITY / dpp)
+    zone = Zone(id="Z", name="Z", lat=0.0, lon=0.0, radius_m=500, population=population)
+    assets = [
+        Asset(id="CORE", name="core", kind=AssetKind.CORE, lat=0.0, lon=0.0),
+        Asset(
+            id="T",
+            name="cell",
+            kind=AssetKind.CELL_TOWER,
+            lat=0.0,
+            lon=0.0,
+            capacity=SWEEP_CAPACITY,
+            coverage_zones=["Z"],
+            links=["CORE"],
+        ),
+    ]
+    return assets, [zone], dpp
 
 
-def _trial_needs(rng: random.Random) -> list[CommNeed]:
-    cats, weights = zip(*CATEGORY_MIX.items(), strict=True)
-    needs = []
-    for i in range(rng.randint(*NEEDS_PER_TRIAL)):
-        cat = rng.choices(cats, weights)[0]
-        service = Service.DATA if rng.random() < 0.3 else Service.VOICE
-        needs.append(
-            CommNeed(
-                id=f"N{i}",
-                who=f"need {i}",
-                zone_id="Z",
-                purpose="synthetic",
-                service=service,
-                category=cat,
-                first_seen_t=float(i),  # arrival order = generation order
+def _sweep_sessions(rng: random.Random) -> tuple[list[SessionSpec], dict[str, int]]:
+    tiers, shares = zip(*SWEEP_MIX.items(), strict=True)
+    specs: list[SessionSpec] = []
+    tier_of: dict[str, int] = {}
+    for minute in range(SWEEP_ARRIVAL_MIN):
+        for _ in range(_poisson(rng, SWEEP_RATE_PER_MIN)):
+            sid = f"S{len(specs)}"
+            tier = rng.choices(tiers, shares)[0]
+            data = tier == 2 and rng.random() < 0.5
+            specs.append(
+                SessionSpec(
+                    id=sid,
+                    t_arrival=float(minute),
+                    family=NetworkFamily.CELLULAR,
+                    service=Service.DATA if data else Service.VOICE,
+                    zone_id="Z",
+                    demand=12.0 if data else 1.0,
+                    duration_min=10.0 if data else 3.0,
+                )
             )
-        )
-    return needs
+            tier_of[sid] = tier
+    return specs, tier_of
 
 
-def contention_trials(
-    capacity_share: float, trials: int = TRIALS, seed: int = SEED
-) -> dict[str, Coverage]:
-    """Share of life-safety needs fully served when one congested cell carries all needs."""
+def _poisson(rng: random.Random, lam: float) -> int:
+    k, p, limit = 0, 1.0, math.exp(-lam)
+    while True:
+        p *= rng.random()
+        if p <= limit:
+            return k
+        k += 1
+
+
+def load_sweep(load: float, trials: int = SWEEP_TRIALS, seed: int = SWEEP_SEED) -> dict[str, Waits]:
+    """Life-safety waits on one cell whose background load is `load` x its capacity."""
     rng = random.Random(seed)
-    zone = Zone(id="Z", name="Z", lat=0.0, lon=0.0, radius_m=500, population=0)
-    out = _coverage()
-    for _ in range(trials):
-        needs = _trial_needs(rng)
-        if not any(n.category == "life_safety" for n in needs):
-            continue
-        capacity = capacity_share * sum(need_demand(n) for n in needs)
-        assets = [
-            Asset(id="CORE", name="core", kind=AssetKind.CORE, lat=0.0, lon=0.0),
-            Asset(
-                id="T",
-                name="cell",
-                kind=AssetKind.CELL_TOWER,
-                lat=0.0,
-                lon=0.0,
-                capacity=capacity,
-                coverage_zones=["Z"],
-                links=["CORE"],
-            ),
-        ]
-        ranked = sorted(needs, key=lambda n: (CATEGORY_RANK[n.category], n.first_seen_t))
-        for policy in POLICIES:
-            served = _served_ids(assets, [zone], 0.0, {"Z"}, ranked, policy)
-            for n in needs:
-                if n.category == "life_safety":
-                    out[policy].add(1.0, n.id in served)
+    assets, zones, dpp = _sweep_network(load)
+    snap = analyse(assets, zones, dpp)
+    out = _waits()
+    for trial in range(trials):
+        specs, tier_of = _sweep_sessions(rng)
+        gates = {p: AdmissionController(p, seed=trial) for p in POLICIES}
+        for minute in range(SWEEP_HORIZON_MIN + 1):
+            t = float(minute)
+            arrived = [s for s in specs if s.t_arrival <= t]
+            ranked = [s.id for s in sorted(arrived, key=lambda s: (tier_of[s.id], s.t_arrival))]
+            for g in gates.values():
+                g.tick(t, arrived, ranked, tier_of, assets, zones, snap, dpp)
+        for p, g in gates.items():
+            for s in specs:
+                if tier_of[s.id] == 1:
+                    out[p].add(g.wait(s.id, float(SWEEP_HORIZON_MIN)))
     return out
 
 
 # --------------------------------------------------------------------------- report
 
 
-def _row(label: str, cov: dict[str, Coverage]) -> str:
-    return f"| {label} | " + " | ".join(f"{cov[p].share:.0%}" for p in POLICIES) + " |"
+def _cell(w: Waits) -> str:
+    return f"{w.mean:.1f} min ({w.quick:.0%})"
 
 
-def report(results: list[ScenarioResult], contention: dict[float, dict[str, Coverage]]) -> str:
-    head = "| | " + " | ".join(POLICY_TITLES) + " |\n|---|---|---|---|"
-    lines = ["Scenario replay: need-minutes fully served", "", head]
+def report(results: list[ScenarioResult], sweep: dict[float, dict[str, Waits]]) -> str:
+    head = "| | " + " | ".join(POLICY_TITLES[p] for p in POLICIES) + " |\n|---|---|---|---|"
+    lines = [
+        "Scenario replay: mean wait from interception to connection "
+        f"(share connected within {QUICK_MIN:.0f} min)",
+        "",
+        head,
+    ]
     for r in results:
-        lines.append(_row(f"{r.name}: life-safety", r.life_safety))
-        lines.append(_row(f"{r.name}: all urgent", r.urgent))
-    lines += ["", f"Contention trials: life-safety needs fully served ({TRIALS} trials)", "", head]
-    for share, cov in contention.items():
-        lines.append(_row(f"capacity {share:.0%} of demand", cov))
+        for g, waits in r.groups.items():
+            n = len(waits["lifeline"].values)
+            if n:
+                cells = " | ".join(_cell(waits[p]) for p in POLICIES)
+                lines.append(f"| {r.name}: {g.lower()} ({n}) | {cells} |")
+    lines += [
+        "",
+        f"Load sweep: life-safety mean wait / 90th percentile ({SWEEP_TRIALS} trials per load)",
+        "",
+        head,
+    ]
+    for load, waits in sweep.items():
+        cells = " | ".join(f"{waits[p].mean:.1f} / {waits[p].p90:.0f} min" for p in POLICIES)
+        lines.append(f"| background {load:.1f}x capacity | {cells} |")
     return "\n".join(lines)
 
 
 def main() -> int:
-    results = []
-    for s in list_scenarios():
-        interp = recorded_interpreter(s)
-        results.append(evaluate_scenario(s, interp))
-        if interp.misses:
-            print(f"warning: {s.meta.id}: {len(interp.misses)} rules fallbacks", file=sys.stderr)
-    contention = {share: contention_trials(share) for share in CAPACITY_SHARES}
-    print(report(results, contention))
+    results = [evaluate_scenario(recorded_engine(s)) for s in list_scenarios()]
+    sweep = {load: load_sweep(load) for load in SWEEP_LOADS}
+    print(report(results, sweep))
     return 0
 
 

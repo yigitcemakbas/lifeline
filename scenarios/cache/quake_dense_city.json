@@ -1,1073 +1,1188 @@
 {
  "interpret:C-1": {
-  "hash": "bfa2a3025b0f1987",
-  "model": "openai/gpt-oss-120b",
+  "hash": "3e7423eddc02dc94",
+  "model": "openai/gpt-oss-20b",
   "output": {
-   "comm_id": "C-1",
-   "confidence": 0.98,
-   "facts": [
+   "items": [
     {
-     "claim": "The building at Lale Apartments block C has collapsed.",
-     "evidence": [
+     "category": "life_safety",
+     "comm_id": "C-1",
+     "confidence": 0.9,
+     "facts": [
       {
-       "quote": "The building at Lale Apartments block C has collapsed!!",
-       "source_id": "C-1"
+       "claim": "building collapsed",
+       "evidence": [
+        {
+         "quote": "The building at Lale Apartments block C has collapsed!!",
+         "source_id": "C-1"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "people inside",
+       "evidence": [
+        {
+         "quote": "I can hear people shouting from inside",
+         "source_id": "C-1"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "help requested",
+       "evidence": [
+        {
+         "quote": "Please send help",
+         "source_id": "C-1"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
       }
      ],
-     "flagged": null,
-     "status": "reported"
-    },
-    {
-     "claim": "People are shouting from inside the collapsed building.",
-     "evidence": [
-      {
-       "quote": "I can hear people shouting from inside.",
-       "source_id": "C-1"
-      }
+     "interpreter": "openai/gpt-oss-20b",
+     "life_threat": "yes",
+     "location_text": null,
+     "missing_info": [
+      "number of people inside"
      ],
-     "flagged": null,
-     "status": "reported"
-    },
-    {
-     "claim": "The citizen is requesting emergency assistance.",
-     "evidence": [
-      {
-       "quote": "Please send help",
-       "source_id": "C-1"
-      }
-     ],
-     "flagged": null,
-     "status": "reported"
+     "needs_mentioned": [],
+     "operations_affected": [],
+     "people_max": null,
+     "people_min": null,
+     "purpose": "request emergency assistance",
+     "summary": "Building at Lale Apartments block C collapsed with people inside, caller requests help",
+     "who": "citizen reporting collapsed building",
+     "zone_id": "Z-NORTH"
     }
-   ],
-   "interpreter": "groq:openai/gpt-oss-120b",
-   "life_threat": "yes",
-   "location_text": "Lale Apartments block C, North Residential zone",
-   "missing_info": [
-    "Number of people trapped inside",
-    "Exact condition of the structure and any secondary collapse risk",
-    "Access routes for rescue teams",
-    "Availability of fire/safety equipment on site"
-   ],
-   "needs_mentioned": [
-    "Rescue teams",
-    "Medical assistance"
-   ],
-   "operations_affected": [
-    "Emergency response"
-   ],
-   "people_max": null,
-   "people_min": null,
-   "summary": "A citizen reports that the building at Lale Apartments block C has collapsed with people shouting from inside.",
-   "zone_id": "Z-NORTH"
+   ]
   }
  },
- "interpret:C-2": {
-  "hash": "fc461209bc12924c",
-  "model": "openai/gpt-oss-120b",
+ "interpret:C-12": {
+  "hash": "0466a30b63b60d7f",
+  "model": "openai/gpt-oss-20b",
   "output": {
-   "comm_id": "C-2",
-   "confidence": 0.98,
-   "facts": [
+   "items": [
     {
-     "claim": "The mother and two neighbours are inside Lale Apartments C block 3rd floor.",
-     "evidence": [
+     "category": "life_safety",
+     "comm_id": "C-12",
+     "confidence": 0.8,
+     "facts": [
       {
-       "quote": "my mother and 2 neighbours are inside lale apartments C block 3rd floor.",
-       "source_id": "C-2"
+       "claim": "gas smell on Poplar Street",
+       "evidence": [
+        {
+         "quote": "There is a strong smell of gas on Poplar Street.",
+         "source_id": "C-12"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "people are standing outside smoking near Block A",
+       "evidence": [
+        {
+         "quote": "Near Block A people are standing outside smoking.",
+         "source_id": "C-12"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "needs gas shutoff before something happens",
+       "evidence": [
+        {
+         "quote": "Somebody needs to shut the gas off before something happens.",
+         "source_id": "C-12"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
       }
      ],
-     "flagged": null,
-     "status": "reported"
-    },
-    {
-     "claim": "The mother is not answering her phone.",
-     "evidence": [
-      {
-       "quote": "she is not answering her phone.",
-       "source_id": "C-2"
-      }
+     "interpreter": "openai/gpt-oss-20b",
+     "life_threat": "yes",
+     "location_text": "Poplar Street",
+     "missing_info": [
+      "exact coordinates of the gas leak",
+      "number of people present"
      ],
-     "flagged": null,
-     "status": "reported"
-    },
-    {
-     "claim": "The sender is requesting that someone go to the location.",
-     "evidence": [
-      {
-       "quote": "please someone go there",
-       "source_id": "C-2"
-      }
+     "needs_mentioned": [],
+     "operations_affected": [
+      "gas shutoff operation"
      ],
-     "flagged": null,
-     "status": "reported"
+     "people_max": null,
+     "people_min": null,
+     "purpose": "request gas shutoff",
+     "summary": "Caller reports a strong gas smell on Poplar Street and requests the gas to be shut off before an incident occurs.",
+     "who": "citizen reporting gas leak",
+     "zone_id": null
     }
-   ],
-   "interpreter": "groq:openai/gpt-oss-120b",
-   "life_threat": "unknown",
-   "location_text": "Lale Apartments C block 3rd floor",
-   "missing_info": [
-    "Condition of the mother and neighbours",
-    "Exact unit number or door identifier",
-    "Contact phone number for the mother",
-    "Who is authorized to respond"
-   ],
-   "needs_mentioned": [],
-   "operations_affected": [
-    "emergency response"
-   ],
-   "people_max": 3,
-   "people_min": 3,
-   "summary": "A citizen reports that their mother and two neighbours are inside Lale Apartments C block 3rd floor and are not answering the phone, requesting assistance.",
-   "zone_id": "Z-NORTH"
+   ]
   }
  },
- "interpret:C-3": {
-  "hash": "e00265e99fd1b838",
-  "model": "openai/gpt-oss-120b",
+ "interpret:C-13": {
+  "hash": "5009ae024cc74796",
+  "model": "openai/gpt-oss-20b",
   "output": {
-   "comm_id": "C-3",
-   "confidence": 0.97,
-   "facts": [
+   "items": [
     {
-     "claim": "A grandfather is trapped under a fallen garden wall on Ridge Lane.",
-     "evidence": [
+     "category": "non_urgent",
+     "comm_id": "C-13",
+     "confidence": 0.9,
+     "facts": [
       {
-       "quote": "grandfather trapped under the fallen garden wall on Ridge Lane",
-       "source_id": "C-3"
+       "claim": "wall fell onto car",
+       "evidence": [
+        {
+         "quote": "A wall fell onto my car on Ridge Lane",
+         "source_id": "C-13"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "request to open case number",
+       "evidence": [
+        {
+         "quote": "Can you open a case number for me?",
+         "source_id": "C-13"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
       }
      ],
-     "flagged": null,
-     "status": "reported"
-    },
-    {
-     "claim": "Two children are with the trapped grandfather.",
-     "evidence": [
-      {
-       "quote": "2 kids with him",
-       "source_id": "C-3"
-      }
+     "interpreter": "openai/gpt-oss-20b",
+     "life_threat": "unknown",
+     "location_text": "Ridge Lane",
+     "missing_info": [
+      "exact address of incident"
      ],
-     "flagged": null,
-     "status": "reported"
-    },
-    {
-     "claim": "The caller cannot get through on 112 and the call keeps dropping.",
-     "evidence": [
-      {
-       "quote": "cant get through on 112 keeps dropping",
-       "source_id": "C-3"
-      }
-     ],
-     "flagged": null,
-     "status": "reported"
-    },
-    {
-     "claim": "The caller's phone battery is at 10%.",
-     "evidence": [
-      {
-       "quote": "my battery is 10%",
-       "source_id": "C-3"
-      }
-     ],
-     "flagged": null,
-     "status": "reported"
+     "needs_mentioned": [],
+     "operations_affected": [],
+     "people_max": null,
+     "people_min": null,
+     "purpose": "open case number",
+     "summary": "Caller reports a wall fell onto their car and requests a case number.",
+     "who": "caller reporting wall damage to car",
+     "zone_id": null
     }
-   ],
-   "interpreter": "groq:openai/gpt-oss-120b",
-   "life_threat": "yes",
-   "location_text": "Ridge Lane",
-   "missing_info": [
-    "Exact address or coordinates of the incident site",
-    "Condition of the grandfather (injuries, consciousness)",
-    "Time since the incident began",
-    "Availability of nearby responders or rescue units",
-    "Whether any other communication methods (e.g., radio) are possible"
-   ],
-   "needs_mentioned": [
-    "Rescue assistance for the trapped individuals",
-    "Medical aid for potential injuries",
-    "Alternative communication method to reach emergency services"
-   ],
-   "operations_affected": [
-    "emergency communications (112 call dropping)"
-   ],
-   "people_max": 3,
-   "people_min": 3,
-   "summary": "A citizen reports a grandfather trapped under a fallen garden wall on Ridge Lane with two children, unable to maintain a 112 call and low phone battery.",
-   "zone_id": "Z-HILL"
+   ]
   }
  },
- "interpret:C-4": {
-  "hash": "f00c1d3e62443290",
-  "model": "openai/gpt-oss-120b",
+ "interpret:C-14": {
+  "hash": "7f3d2b88443fd0c8",
+  "model": "openai/gpt-oss-20b",
   "output": {
-   "comm_id": "C-4",
-   "confidence": 0.98,
-   "facts": [
+   "items": [
     {
-     "claim": "Roof tiles fell onto parked cars at the harbour front promenade",
-     "evidence": [
+     "category": "population",
+     "comm_id": "C-14",
+     "confidence": 0.9,
+     "facts": [
       {
-       "quote": "Roof tiles fell onto parked cars at the harbour front promenade",
-       "source_id": "C-4"
+       "claim": "phones barely working",
+       "evidence": [
+        {
+         "quote": "phones barely working",
+         "source_id": "C-14"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
       }
      ],
-     "flagged": null,
-     "status": "reported"
+     "interpreter": "openai/gpt-oss-20b",
+     "life_threat": "unknown",
+     "location_text": "grandma's",
+     "missing_info": [
+      "exact location of grandma's",
+      "current network status"
+     ],
+     "needs_mentioned": [],
+     "operations_affected": [],
+     "people_max": null,
+     "people_min": null,
+     "purpose": "check\u2011in, report safety",
+     "summary": "Caller reports being safe at grandma's but phones barely working.",
+     "who": "caller (child) reporting mother",
+     "zone_id": null
+    }
+   ]
+  }
+ },
+ "interpret:C-15": {
+  "hash": "08a92a3aecaf175d",
+  "model": "openai/gpt-oss-20b",
+  "output": {
+   "items": [
+    {
+     "category": "critical_facility",
+     "comm_id": "C-15",
+     "confidence": 0.95,
+     "facts": [
+      {
+       "claim": "12 trauma patients are present at Aster General Hospital",
+       "evidence": [
+        {
+         "quote": "We have 12 trauma patients",
+         "source_id": "C-15"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "O-negative blood is running out",
+       "evidence": [
+        {
+         "quote": "we are running out of O-negative blood",
+         "source_id": "C-15"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "A request is made to the Regional Blood Bank to send units",
+       "evidence": [
+        {
+         "quote": "I need the Regional Blood Bank to send units now",
+         "source_id": "C-15"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      }
+     ],
+     "interpreter": "openai/gpt-oss-20b",
+     "life_threat": "unknown",
+     "location_text": "Aster General Hospital",
+     "missing_info": [],
+     "needs_mentioned": [],
+     "operations_affected": [
+      "blood supply"
+     ],
+     "people_max": 12,
+     "people_min": 12,
+     "purpose": "request blood supply",
+     "summary": "Dr. Aidan reports 12 trauma patients and lack of O-negative blood at Aster General Hospital.",
+     "who": "Dr. Aidan",
+     "zone_id": "Z-MED"
+    }
+   ]
+  }
+ },
+ "interpret:C-16": {
+  "hash": "c806b1dd87adef05",
+  "model": "openai/gpt-oss-20b",
+  "output": {
+   "items": [
+    {
+     "category": "life_safety",
+     "comm_id": "C-16",
+     "confidence": 0.9,
+     "facts": [
+      {
+       "claim": "neighbor not breathing",
+       "evidence": [
+        {
+         "quote": "She is not breathing.",
+         "source_id": "C-16"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "rescuers need a doctor on the phone",
+       "evidence": [
+        {
+         "quote": "The rescuers need a doctor on the phone right now.",
+         "source_id": "C-16"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "location is Lail Apartments",
+       "evidence": [
+        {
+         "quote": "I'm at Lail Apartments.",
+         "source_id": "C-16"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      }
+     ],
+     "interpreter": "openai/gpt-oss-20b",
+     "life_threat": "yes",
+     "location_text": "Lail Apartments",
+     "missing_info": [
+      "number of people in the apartment"
+     ],
+     "needs_mentioned": [],
+     "operations_affected": [],
+     "people_max": null,
+     "people_min": null,
+     "purpose": "connect doctor",
+     "summary": "Caller reports neighbor in Lail Apartments not breathing and requests a doctor on the phone.",
+     "who": "",
+     "zone_id": "Z-NORTH"
+    }
+   ]
+  }
+ },
+ "interpret:C-17": {
+  "hash": "e282145cc5ddfc2b",
+  "model": "openai/gpt-oss-20b",
+  "output": {
+   "items": [
+    {
+     "category": "population",
+     "comm_id": "C-17",
+     "confidence": 0.95,
+     "facts": [
+      {
+       "claim": "Caller reports being fine",
+       "evidence": [
+        {
+         "quote": "Hey, it's me, are you watching the news? Crazy. Anyway, I'm fine, the flat is fine. Talk soon, bye.",
+         "source_id": "C-17"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "Caller reports flat is fine",
+       "evidence": [
+        {
+         "quote": "the flat is fine",
+         "source_id": "C-17"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      }
+     ],
+     "interpreter": "openai/gpt-oss-20b",
+     "life_threat": "no",
+     "location_text": null,
+     "missing_info": [
+      "Location of the flat"
+     ],
+     "needs_mentioned": [],
+     "operations_affected": [],
+     "people_max": null,
+     "people_min": null,
+     "purpose": "Check-in",
+     "summary": "Citizen reports that they are fine and their flat is fine.",
+     "who": "",
+     "zone_id": null
+    }
+   ]
+  }
+ },
+ "interpret:C-18": {
+  "hash": "c678af93b753f4df",
+  "model": "openai/gpt-oss-20b",
+  "output": {
+   "items": [
+    {
+     "category": "life_safety",
+     "comm_id": "C-18",
+     "confidence": 0.8,
+     "facts": [
+      {
+       "claim": "Grandmother on Mosk Lane has power outage",
+       "evidence": [
+        {
+         "quote": "She uses a home oxygen machine and the power is out",
+         "source_id": "C-18"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "Oxygen machine battery has about two hours left",
+       "evidence": [
+        {
+         "quote": "The battery has maybe two hours left",
+         "source_id": "C-18"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "Need replacement oxygen or transport for grandmother",
+       "evidence": [
+        {
+         "quote": "We need a replacement or someone to take her in",
+         "source_id": "C-18"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      }
+     ],
+     "interpreter": "openai/gpt-oss-20b",
+     "life_threat": "yes",
+     "location_text": "Mosk Lane",
+     "missing_info": [
+      "Exact location of Mosk Lane within a zone",
+      "Confirmation that power is indeed out"
+     ],
+     "needs_mentioned": [],
+     "operations_affected": [],
+     "people_max": null,
+     "people_min": null,
+     "purpose": "request replacement oxygen or transport",
+     "summary": "Caller reports grandmother on Mosk Lane with power outage and low battery on oxygen machine.",
+     "who": "caller reporting grandmother",
+     "zone_id": null
+    }
+   ]
+  }
+ },
+ "interpret:C-19": {
+  "hash": "85a6122381f84635",
+  "model": "openai/gpt-oss-20b",
+  "output": {
+   "items": [
+    {
+     "category": "population",
+     "comm_id": "C-19",
+     "confidence": 0.9,
+     "facts": [
+      {
+       "claim": "stadium shelter open?",
+       "evidence": [
+        {
+         "quote": "is the stadium shelter open?",
+         "source_id": "C-19"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "2 kids present",
+       "evidence": [
+        {
+         "quote": "we have 2 kids",
+         "source_id": "C-19"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "no water available",
+       "evidence": [
+        {
+         "quote": "no water",
+         "source_id": "C-19"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      }
+     ],
+     "interpreter": "openai/gpt-oss-20b",
+     "life_threat": "unknown",
+     "location_text": null,
+     "missing_info": [
+      "status of stadium shelter",
+      "availability of water"
+     ],
+     "needs_mentioned": [],
+     "operations_affected": [],
+     "people_max": 2,
+     "people_min": 2,
+     "purpose": "check shelter status",
+     "summary": "Caller asks if stadium shelter is open, reports having 2 kids and no water.",
+     "who": "citizen with 2 kids",
+     "zone_id": null
+    }
+   ]
+  }
+ },
+ "interpret:C-2+C-6": {
+  "hash": "d808365904302aa8",
+  "model": "openai/gpt-oss-20b",
+  "output": {
+   "items": [
+    {
+     "category": "life_safety",
+     "comm_id": "C-2",
+     "confidence": 0.95,
+     "facts": [
+      {
+       "claim": "Building collapsed",
+       "evidence": [
+        {
+         "quote": "The building came down",
+         "source_id": "C-2"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "Three occupants trapped",
+       "evidence": [
+        {
+         "quote": "My mother and two neighbors are inside Lail Apartments",
+         "source_id": "C-2"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "Caller cannot reach occupants",
+       "evidence": [
+        {
+         "quote": "She is not answering her phone",
+         "source_id": "C-2"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      }
+     ],
+     "interpreter": "openai/gpt-oss-20b",
+     "life_threat": "yes",
+     "location_text": "Lail Apartments, Block C, third floor",
+     "missing_info": [],
+     "needs_mentioned": [],
+     "operations_affected": [],
+     "people_max": 3,
+     "people_min": 3,
+     "purpose": "request rescue",
+     "summary": "Caller reports building collapse at Lail Apartments with occupants trapped.",
+     "who": "caller reporting mother and neighbors",
+     "zone_id": "Z-NORTH"
     },
     {
-     "claim": "Nobody was hurt as far as the reporter can see",
-     "evidence": [
+     "category": "population",
+     "comm_id": "C-6",
+     "confidence": 0.9,
+     "facts": [
       {
-       "quote": "nobody hurt as far as I can see",
-       "source_id": "C-4"
+       "claim": "All occupants are outside and safe",
+       "evidence": [
+        {
+         "quote": "We're fine, we're all out on the street",
+         "source_id": "C-6"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "Building has cracks in stairwell",
+       "evidence": [
+        {
+         "quote": "The building is okay, just some cracks in the stairwell",
+         "source_id": "C-6"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "Caller will call later",
+       "evidence": [
+        {
+         "quote": "I'll call you later tonight",
+         "source_id": "C-6"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
       }
      ],
-     "flagged": null,
-     "status": "reported"
+     "interpreter": "openai/gpt-oss-20b",
+     "life_threat": "no",
+     "location_text": "outside street near building",
+     "missing_info": [],
+     "needs_mentioned": [],
+     "operations_affected": [],
+     "people_max": 2,
+     "people_min": 2,
+     "purpose": "status update",
+     "summary": "Caller informs father they are safe outside after minor building cracks.",
+     "who": "caller informing father",
+     "zone_id": "Z-OLD"
     }
-   ],
-   "interpreter": "groq:openai/gpt-oss-120b",
-   "life_threat": "no",
-   "location_text": "harbour front promenade",
-   "missing_info": [
-    "Official confirmation of injuries or casualties",
-    "Extent of property damage to vehicles",
-    "Responsibility for cleanup and road safety"
-   ],
-   "needs_mentioned": [],
-   "operations_affected": [],
-   "people_max": null,
-   "people_min": null,
-   "summary": "Roof tiles fell onto parked cars at the harbour front promenade with no apparent injuries.",
-   "zone_id": "Z-HARB"
+   ]
+  }
+ },
+ "interpret:C-3+C-9": {
+  "hash": "2edbbb599d9a1248",
+  "model": "openai/gpt-oss-20b",
+  "output": {
+   "items": [
+    {
+     "category": "life_safety",
+     "comm_id": "C-3",
+     "confidence": 0.9,
+     "facts": [
+      {
+       "claim": "Grandfather trapped under garden wall",
+       "evidence": [
+        {
+         "quote": "My grandfather is trapped under the garden wall that fell on Ridge Lane.",
+         "source_id": "C-3"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "Two children are with him",
+       "evidence": [
+        {
+         "quote": "There are two kids with him.",
+         "source_id": "C-3"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "Phone call drops and battery is almost dead",
+       "evidence": [
+        {
+         "quote": "I keep calling 112 and it drops. My battery is almost dead.",
+         "source_id": "C-3"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      }
+     ],
+     "interpreter": "openai/gpt-oss-20b",
+     "life_threat": "yes",
+     "location_text": "Ridge Lane",
+     "missing_info": [
+      "exact location of wall",
+      "status of rescue services"
+     ],
+     "needs_mentioned": [],
+     "operations_affected": [],
+     "people_max": 3,
+     "people_min": 3,
+     "purpose": "request emergency rescue",
+     "summary": "Grandfather trapped under garden wall on Ridge Lane with two children, phone dropping, battery low.",
+     "who": "grandfather and two children",
+     "zone_id": "Z-HILL"
+    },
+    {
+     "category": "life_safety",
+     "comm_id": "C-9",
+     "confidence": 0.85,
+     "facts": [
+      {
+       "claim": "Husband has chest pains since shaking",
+       "evidence": [
+        {
+         "quote": "my husband has had chest pains since the shaking.",
+         "source_id": "C-9"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "Husband cannot stand up and is sweating",
+       "evidence": [
+        {
+         "quote": "He is sweating and he cannot stand up.",
+         "source_id": "C-9"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "Ambulance number does not answer",
+       "evidence": [
+        {
+         "quote": "the ambulance number does not answer.",
+         "source_id": "C-9"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      }
+     ],
+     "interpreter": "openai/gpt-oss-20b",
+     "life_threat": "yes",
+     "location_text": "bakery street",
+     "missing_info": [
+      "exact address",
+      "ambulance status"
+     ],
+     "needs_mentioned": [],
+     "operations_affected": [],
+     "people_max": 1,
+     "people_min": 1,
+     "purpose": "request ambulance",
+     "summary": "Husband experiencing chest pains and cannot stand after shaking, ambulance not answering on bakery street.",
+     "who": "husband",
+     "zone_id": "Z-OLD"
+    }
+   ]
+  }
+ },
+ "interpret:C-4+C-10": {
+  "hash": "0bec024c149cf19a",
+  "model": "openai/gpt-oss-20b",
+  "output": {
+   "items": [
+    {
+     "category": "non_urgent",
+     "comm_id": "C-4",
+     "confidence": 0.9,
+     "facts": [
+      {
+       "claim": "Roof tiles fell onto parked cars",
+       "evidence": [
+        {
+         "quote": "Roof tiles fell onto parked cars at the harbour front promenade",
+         "source_id": "C-4"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "No injuries reported",
+       "evidence": [
+        {
+         "quote": "nobody hurt as far as I can see",
+         "source_id": "C-4"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      }
+     ],
+     "interpreter": "openai/gpt-oss-20b",
+     "life_threat": "no",
+     "location_text": "harbour front promenade",
+     "missing_info": [],
+     "needs_mentioned": [],
+     "operations_affected": [],
+     "people_max": null,
+     "people_min": null,
+     "purpose": "report incident",
+     "summary": "Roof tiles fell onto parked cars at the harbour front promenade, no injuries reported.",
+     "who": "citizen",
+     "zone_id": "Z-HARB"
+    },
+    {
+     "category": "population",
+     "comm_id": "C-10",
+     "confidence": 0.85,
+     "facts": [
+      {
+       "claim": "Caller is asking if the football match is still going ahead",
+       "evidence": [
+        {
+         "quote": "Hi, I'm calling about the football match at the stadium tonight. Is it still going ahead",
+         "source_id": "C-10"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "Caller wants refund information",
+       "evidence": [
+        {
+         "quote": "or should I ask for a refund on my tickets?",
+         "source_id": "C-10"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      }
+     ],
+     "interpreter": "openai/gpt-oss-20b",
+     "life_threat": "unknown",
+     "location_text": "stadium",
+     "missing_info": [],
+     "needs_mentioned": [],
+     "operations_affected": [],
+     "people_max": null,
+     "people_min": null,
+     "purpose": "ask about event status",
+     "summary": "Caller inquires about the status of the football match at the stadium tonight.",
+     "who": "citizen",
+     "zone_id": null
+    }
+   ]
   }
  },
  "interpret:C-5": {
-  "hash": "79a299eadf8204df",
-  "model": "openai/gpt-oss-120b",
+  "hash": "dc264bbbeaa8237d",
+  "model": "openai/gpt-oss-20b",
   "output": {
-   "comm_id": "C-5",
-   "confidence": 0.95,
-   "facts": [
+   "items": [
     {
-     "claim": "Approximately 20 people live in Lale Apartments block C.",
-     "evidence": [
+     "category": "population",
+     "comm_id": "C-5",
+     "confidence": 0.9,
+     "facts": [
       {
-       "quote": "Lale apartments block C - around 20 people live there",
-       "source_id": "C-5"
+       "claim": "around 20 people live in block C",
+       "evidence": [
+        {
+         "quote": "around 20 people live there",
+         "source_id": "C-5"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
       }
      ],
-     "flagged": null,
-     "status": "reported"
-    },
-    {
-     "claim": "The citizen does not know how many residents were home when the event occurred.",
-     "evidence": [
-      {
-       "quote": "I don't know how many were home when it happened",
-       "source_id": "C-5"
-      }
+     "interpreter": "openai/gpt-oss-20b",
+     "life_threat": "unknown",
+     "location_text": "Lale apartments block C",
+     "missing_info": [
+      "exact number of people present when incident occurred"
      ],
-     "flagged": null,
-     "status": "reported"
+     "needs_mentioned": [],
+     "operations_affected": [],
+     "people_max": null,
+     "people_min": null,
+     "purpose": "provide occupancy information",
+     "summary": "Citizen reports that about 20 people live in Lale apartments block C.",
+     "who": "citizen reporting Lale apartments block C",
+     "zone_id": "Z-NORTH"
     }
-   ],
-   "interpreter": "groq:openai/gpt-oss-120b",
-   "life_threat": "unknown",
-   "location_text": "Lale apartments block C",
-   "missing_info": [
-    "What specific incident occurred",
-    "Current status of residents (injured, safe, missing)",
-    "Exact number of people present at the time",
-    "Any emergency services required"
-   ],
-   "needs_mentioned": [],
-   "operations_affected": [],
-   "people_max": 20,
-   "people_min": null,
-   "summary": "A citizen reports that approximately 20 people reside in Lale Apartments block C, but does not know how many were present at the time of the incident.",
-   "zone_id": "Z-NORTH"
+   ]
   }
  },
- "interpret:F-1": {
-  "hash": "d72efaaaf5f653b5",
-  "model": "openai/gpt-oss-120b",
+ "interpret:F-1+C-7": {
+  "hash": "2d15ff5eea9fefb2",
+  "model": "openai/gpt-oss-20b",
   "output": {
-   "comm_id": "F-1",
-   "confidence": 0.97,
-   "facts": [
+   "items": [
     {
-     "claim": "The hospital's main fibre link is down.",
-     "evidence": [
+     "category": "critical_facility",
+     "comm_id": "F-1",
+     "confidence": 0.95,
+     "facts": [
       {
-       "quote": "our main fibre link is down",
-       "source_id": "F-1"
+       "claim": "Fibre link down",
+       "evidence": [
+        {
+         "quote": "our main fibre link is down",
+         "source_id": "F-1"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "Running on degraded 4G router",
+       "evidence": [
+        {
+         "quote": "we are running on one degraded 4G router",
+         "source_id": "F-1"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "40 ICU patients on site",
+       "evidence": [
+        {
+         "quote": "40 ICU patients on site",
+         "source_id": "F-1"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
       }
      ],
-     "flagged": null,
-     "status": "reported"
+     "interpreter": "openai/gpt-oss-20b",
+     "life_threat": "unknown",
+     "location_text": "Aster General Hospital",
+     "missing_info": [
+      "current bandwidth of 4G router",
+      "status of ambulance dispatch system"
+     ],
+     "needs_mentioned": [],
+     "operations_affected": [
+      "ambulance dispatch",
+      "imaging to other hospitals"
+     ],
+     "people_max": 40,
+     "people_min": 40,
+     "purpose": "request network support for critical medical operations",
+     "summary": "Aster General Hospital reports fibre link failure and limited 4G connectivity, impacting ambulance dispatch and imaging, with 40 ICU patients and incoming casualties.",
+     "who": "Aster General Hospital staff",
+     "zone_id": "Z-MED"
     },
     {
-     "claim": "The hospital is running on one degraded 4G router.",
-     "evidence": [
+     "category": "population",
+     "comm_id": "C-7",
+     "confidence": 0.9,
+     "facts": [
       {
-       "quote": "we are running on one degraded 4G router",
-       "source_id": "F-1"
+       "claim": "Citizen is fine",
+       "evidence": [
+        {
+         "quote": "I'm okay, I'm okay",
+         "source_id": "C-7"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "Lines are terrible",
+       "evidence": [
+        {
+         "quote": "the lines are terrible",
+         "source_id": "C-7"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
       }
      ],
-     "flagged": null,
-     "status": "reported"
-    },
-    {
-     "claim": "The hospital cannot reach the ambulance dispatch system.",
-     "evidence": [
-      {
-       "quote": "We cannot reach the ambulance dispatch system",
-       "source_id": "F-1"
-      }
+     "interpreter": "openai/gpt-oss-20b",
+     "life_threat": "no",
+     "location_text": "hospital car park",
+     "missing_info": [
+      "exact location of citizen",
+      "whether mother is reachable"
      ],
-     "flagged": null,
-     "status": "reported"
-    },
-    {
-     "claim": "The hospital cannot send imaging to other hospitals.",
-     "evidence": [
-      {
-       "quote": "or send imaging to other hospitals",
-       "source_id": "F-1"
-      }
-     ],
-     "flagged": null,
-     "status": "reported"
-    },
-    {
-     "claim": "There are 40 ICU patients on site.",
-     "evidence": [
-      {
-       "quote": "40 ICU patients on site",
-       "source_id": "F-1"
-      }
-     ],
-     "flagged": null,
-     "status": "reported"
-    },
-    {
-     "claim": "Casualties are starting to arrive.",
-     "evidence": [
-      {
-       "quote": "casualties are starting to arrive",
-       "source_id": "F-1"
-      }
-     ],
-     "flagged": null,
-     "status": "reported"
+     "needs_mentioned": [],
+     "operations_affected": [],
+     "people_max": null,
+     "people_min": null,
+     "purpose": "inform family of safety",
+     "summary": "Citizen in hospital car park reports poor line quality and is fine, asking to relay message to mother.",
+     "who": "Citizen in hospital car park",
+     "zone_id": "Z-MED"
     }
-   ],
-   "interpreter": "groq:openai/gpt-oss-120b",
-   "life_threat": "yes",
-   "location_text": null,
-   "missing_info": [
-    "Number of incoming casualties",
-    "Status of backup power systems",
-    "Estimated time to restore fibre link",
-    "Availability of alternative communication channels"
-   ],
-   "needs_mentioned": [
-    "Repair of main fibre link",
-    "Alternative communication for ambulance dispatch and imaging"
-   ],
-   "operations_affected": [
-    "ambulance dispatch communication",
-    "medical imaging transmission"
-   ],
-   "people_max": null,
-   "people_min": 40,
-   "summary": "Aster General Hospital reports its main fibre link is down, operating on a degraded 4G router, unable to contact ambulance dispatch or transmit imaging, with 40 ICU patients on site and incoming casualties.",
-   "zone_id": "Z-MED"
+   ]
   }
  },
  "interpret:F-2": {
-  "hash": "f42abd6e36fc399f",
-  "model": "openai/gpt-oss-120b",
+  "hash": "d3a5ab2b035ae28b",
+  "model": "openai/gpt-oss-20b",
   "output": {
-   "comm_id": "F-2",
-   "confidence": 0.98,
-   "facts": [
-    {
-     "claim": "Aster General Hospital staff are now using personal phones.",
-     "evidence": [
-      {
-       "quote": "staff are now using personal phones",
-       "source_id": "F-2"
-      }
-     ],
-     "flagged": null,
-     "status": "reported"
-    },
-    {
-     "claim": "Aster General Hospital is not receiving patient pre\u2011alerts from ambulances in the field.",
-     "evidence": [
-      {
-       "quote": "We are not receiving patient pre-alerts from ambulances in the field.",
-       "source_id": "F-2"
-      }
-     ],
-     "flagged": null,
-     "status": "reported"
-    }
-   ],
-   "interpreter": "groq:openai/gpt-oss-120b",
-   "life_threat": "unknown",
-   "location_text": null,
-   "missing_info": [
-    "Reason for loss of pre\u2011alert messages",
-    "Number of patients affected",
-    "Alternative communication method being used",
-    "Expected duration of the issue"
-   ],
-   "needs_mentioned": [],
-   "operations_affected": [
-    "Emergency medical communication with ambulances"
-   ],
-   "people_max": null,
-   "people_min": null,
-   "summary": "Aster General Hospital reports staff are using personal phones and are not receiving patient pre\u2011alerts from ambulances.",
-   "zone_id": "Z-MED"
-  }
- },
- "interpret:MS-1": {
-  "hash": "847096674fc4078f",
-  "model": "openai/gpt-oss-120b",
-  "output": {
-   "comm_id": "MS-1",
-   "confidence": 0.98,
-   "facts": [
-    {
-     "claim": "Approximately 30 people are gathered at the square.",
-     "evidence": [
-      {
-       "quote": "about 30 of us gathered at the square",
-       "source_id": "MS-1"
-      }
-     ],
-     "flagged": null,
-     "status": "reported"
-    },
-    {
-     "claim": "Phone service is barely working.",
-     "evidence": [
-      {
-       "quote": "phones barely work",
-       "source_id": "MS-1"
-      }
-     ],
-     "flagged": null,
-     "status": "reported"
-    },
-    {
-     "claim": "The group includes some elderly individuals.",
-     "evidence": [
-      {
-       "quote": "some elderly with us",
-       "source_id": "MS-1"
-      }
-     ],
-     "flagged": null,
-     "status": "reported"
-    },
-    {
-     "claim": "The group is requesting information on which shelters are open.",
-     "evidence": [
-      {
-       "quote": "Need info on which shelters are open",
-       "source_id": "MS-1"
-      }
-     ],
-     "flagged": null,
-     "status": "reported"
-    }
-   ],
-   "interpreter": "groq:openai/gpt-oss-120b",
-   "life_threat": "unknown",
-   "location_text": "old town mesh",
-   "missing_info": [
-    "Exact number of people present",
-    "Specific shelters that are currently open"
-   ],
-   "needs_mentioned": [
-    "Information on open shelters"
-   ],
-   "operations_affected": [
-    "communication"
-   ],
-   "people_max": null,
-   "people_min": null,
-   "summary": "A citizen reports roughly 30 people gathered at Old Town Square with limited phone service and requests shelter availability information, noting the presence of elderly individuals.",
-   "zone_id": "Z-OLD"
-  }
- },
- "interpret:R-1": {
-  "hash": "12a1b93cd37720df",
-  "model": "openai/gpt-oss-120b",
-  "output": {
-   "comm_id": "R-1",
-   "confidence": 0.97,
-   "facts": [
-    {
-     "claim": "Team 3 is on site at Lale Apartments block C.",
-     "evidence": [
-      {
-       "quote": "Team 3 on site at Lale Apartments block C.",
-       "source_id": "R-1"
-      }
-     ],
-     "flagged": null,
-     "status": "reported"
-    },
-    {
-     "claim": "There is a partial collapse at Lale Apartments block C.",
-     "evidence": [
-      {
-       "quote": "Partial collapse, we have visual on six to ten people trapped under rubble",
-       "source_id": "R-1"
-      }
-     ],
-     "flagged": null,
-     "status": "reported"
-    },
-    {
-     "claim": "Six to ten people are trapped under rubble.",
-     "evidence": [
-      {
-       "quote": "six to ten people trapped under rubble",
-       "source_id": "R-1"
-      }
-     ],
-     "flagged": null,
-     "status": "reported"
-    },
-    {
-     "claim": "Two people are confirmed alive by voice contact.",
-     "evidence": [
-      {
-       "quote": "two confirmed alive by voice contact",
-       "source_id": "R-1"
-      }
-     ],
-     "flagged": null,
-     "status": "reported"
-    },
-    {
-     "claim": "The responder's data terminal cannot connect.",
-     "evidence": [
-      {
-       "quote": "Our data terminal cannot connect",
-       "source_id": "R-1"
-      }
-     ],
-     "flagged": null,
-     "status": "reported"
-    },
-    {
-     "claim": "A data link to the hospital is needed for triage coordination.",
-     "evidence": [
-      {
-       "quote": "we need a data link to the hospital for triage coordination",
-       "source_id": "R-1"
-      }
-     ],
-     "flagged": null,
-     "status": "reported"
-    }
-   ],
-   "interpreter": "groq:openai/gpt-oss-120b",
-   "life_threat": "yes",
-   "location_text": "Lale Apartments block C, North Residential",
-   "missing_info": [
-    "Exact condition and injuries of the trapped individuals beyond the two confirmed alive",
-    "Total number of survivors vs. casualties",
-    "Specific resources required (e.g., rescue equipment, medical personnel)",
-    "Contact details for the hospital to establish the data link"
-   ],
-   "needs_mentioned": [
-    "data link to hospital",
-    "triage coordination"
-   ],
-   "operations_affected": [
-    "data communication",
-    "triage coordination"
-   ],
-   "people_max": 10,
-   "people_min": 6,
-   "summary": "Responder reports a partial collapse at Lale Apartments block C with 6\u201110 people trapped, two confirmed alive, and loss of data connectivity requiring a hospital link.",
-   "zone_id": "Z-NORTH"
-  }
- },
- "interpret:R-2": {
-  "hash": "1ad57fc1d73de73d",
-  "model": "openai/gpt-oss-120b",
-  "output": {
-   "comm_id": "R-2",
-   "confidence": 0.98,
-   "facts": [
-    {
-     "claim": "Four people were extracted alive from block C.",
-     "evidence": [
-      {
-       "quote": "Four people extracted alive from block C",
-       "source_id": "R-2"
-      }
-     ],
-     "flagged": null,
-     "status": "reported"
-    },
-    {
-     "claim": "At least three people are still trapped at block C.",
-     "evidence": [
-      {
-       "quote": "at least three still trapped",
-       "source_id": "R-2"
-      }
-     ],
-     "flagged": null,
-     "status": "reported"
-    },
-    {
-     "claim": "Ambulance coordination is needed.",
-     "evidence": [
-      {
-       "quote": "We need ambulance coordination",
-       "source_id": "R-2"
-      }
-     ],
-     "flagged": null,
-     "status": "reported"
-    },
-    {
-     "claim": "Mobile phones on site are useless.",
-     "evidence": [
-      {
-       "quote": "mobile phones on site are useless",
-       "source_id": "R-2"
-      }
-     ],
-     "flagged": null,
-     "status": "reported"
-    }
-   ],
-   "interpreter": "groq:openai/gpt-oss-120b",
-   "life_threat": "unknown",
-   "location_text": "block C",
-   "missing_info": [
-    "Exact location of block C within the zone",
-    "Condition and injuries of the trapped individuals",
-    "Exact number of people still trapped",
-    "Availability of other communication methods"
-   ],
-   "needs_mentioned": [
-    "ambulance coordination"
-   ],
-   "operations_affected": [
-    "Emergency medical response",
-    "On\u2011site communications"
-   ],
-   "people_max": null,
-   "people_min": 7,
-   "summary": "Responder reports four people rescued, at least three still trapped, and lack of mobile phone service at block C.",
-   "zone_id": "Z-NORTH"
-  }
- },
- "synth:1": {
-  "hash": "0212212152b253b4",
-  "model": "openai/gpt-oss-120b",
-  "output": {
-   "changes": [
-    {
-     "caused_by": [
-      "TM-1",
-      "TM-2",
-      "TM-3"
-     ],
-     "needs_affected": [
-      "NEED-1",
-      "NEED-2"
-     ],
-     "summary": "Added three incidents of tower failures and derived communication needs for North Residential residents and Aster General Hospital.",
-     "t": 0.0
-    }
-   ],
-   "closed_item_ids": [],
-   "contradictions": [],
-   "dependencies": [
-    {
-     "id": "DEP-1",
-     "status": "reported",
-     "steps": [
-      {
-       "description": "T1 loss of signal isolates North-A area",
-       "evidence": [
-        {
-         "quote": "T1 North-A: loss of signal, cabinet alarm",
-         "source_id": "TM-1"
-        }
-       ]
-      },
-      {
-       "description": "T2 loss of signal isolates North-B area",
-       "evidence": [
-        {
-         "quote": "T2 North-B: loss of signal",
-         "source_id": "TM-2"
-        }
-       ]
-      }
-     ],
-     "title": "North Residential tower outages isolate residents"
-    },
-    {
-     "id": "DEP-2",
-     "status": "reported",
-     "steps": [
-      {
-       "description": "T4 power and transmission alarm may disrupt hospital data links",
-       "evidence": [
-        {
-         "quote": "T4 Medical-A: power and transmission alarm",
-         "source_id": "TM-3"
-        }
-       ]
-      }
-     ],
-     "title": "Medical district tower power alarm threatens hospital communications"
-    }
-   ],
-   "gaps": [
-    {
-     "id": "GAP-1",
-     "question": "How many residents are affected by the T1 and T2 outages?",
-     "why_it_matters": "Determines scale of population communication need"
-    },
-    {
-     "id": "GAP-2",
-     "question": "Is the hospital's backup power functional after the T4 alarm?",
-     "why_it_matters": "Impacts critical facility's ability to maintain life\u2011safety communications"
-    }
-   ],
-   "incidents": [
-    {
-     "comm_ids": [
-      "TM-1"
-     ],
-     "confidence": 0.5,
-     "facts": [
-      {
-       "claim": "loss of signal at T1 North-A",
-       "evidence": [
-        {
-         "quote": "T1 North-A: loss of signal, cabinet alarm",
-         "source_id": "TM-1"
-        }
-       ],
-       "flagged": null,
-       "status": "reported"
-      }
-     ],
-     "id": "INC-1",
-     "life_threat": "unknown",
-     "people_max": null,
-     "people_min": null,
-     "related": [],
-     "title": "T1 North-A loss of signal, cabinet alarm",
-     "zone_id": "Z-NORTH"
-    },
-    {
-     "comm_ids": [
-      "TM-2"
-     ],
-     "confidence": 0.5,
-     "facts": [
-      {
-       "claim": "loss of signal at T2 North-B",
-       "evidence": [
-        {
-         "quote": "T2 North-B: loss of signal",
-         "source_id": "TM-2"
-        }
-       ],
-       "flagged": null,
-       "status": "reported"
-      }
-     ],
-     "id": "INC-2",
-     "life_threat": "unknown",
-     "people_max": null,
-     "people_min": null,
-     "related": [],
-     "title": "T2 North-B loss of signal",
-     "zone_id": "Z-NORTH"
-    },
-    {
-     "comm_ids": [
-      "TM-3"
-     ],
-     "confidence": 0.5,
-     "facts": [
-      {
-       "claim": "power and transmission alarm at T4 Medical-A",
-       "evidence": [
-        {
-         "quote": "T4 Medical-A: power and transmission alarm",
-         "source_id": "TM-3"
-        }
-       ],
-       "flagged": null,
-       "status": "reported"
-      }
-     ],
-     "id": "INC-3",
-     "life_threat": "unknown",
-     "people_max": null,
-     "people_min": null,
-     "related": [],
-     "title": "T4 Medical-A power and transmission alarm",
-     "zone_id": "Z-MED"
-    }
-   ],
-   "needs": [
-    {
-     "category": "population",
-     "confidence": 0.5,
-     "evidence": [],
-     "first_seen_t": 0.0,
-     "id": "NEED-1",
-     "incident_ids": [
-      "INC-1",
-      "INC-2"
-     ],
-     "life_threat": "unknown",
-     "people_max": null,
-     "people_min": null,
-     "purpose": "Residents need to contact family and receive emergency alerts",
-     "resolution": "",
-     "service": "voice",
-     "status": "open",
-     "verification_needed": true,
-     "who": "Residents of North Residential",
-     "zone_id": "Z-NORTH"
-    },
+   "items": [
     {
      "category": "critical_facility",
-     "confidence": 0.5,
-     "evidence": [],
-     "first_seen_t": 0.0,
-     "id": "NEED-2",
-     "incident_ids": [
-      "INC-3"
-     ],
-     "life_threat": "unknown",
-     "people_max": null,
-     "people_min": null,
-     "purpose": "Hospital needs patient data transmission and coordination",
-     "resolution": "",
-     "service": "data",
-     "status": "open",
-     "verification_needed": true,
-     "who": "Aster General Hospital staff",
-     "zone_id": "Z-MED"
-    }
-   ],
-   "resolved_need_ids": [],
-   "summary": "Three tower failures have been identified: two in the North Residential zone (T1 and T2) and one at the medical district (T4). These outages create immediate communication needs for residents and for Aster General Hospital staff. The picture now includes incidents, derived needs, dependencies, gaps and a change log."
-  }
- },
- "synth:10": {
-  "hash": "7790f211f9bc8f5d",
-  "model": "openai/gpt-oss-120b",
-  "output": {
-   "changes": [
-    {
-     "caused_by": [
-      "TM-4"
-     ],
-     "needs_affected": [],
-     "summary": "Added new incident for T5 overload and related dependency; identified new information gap on mitigation timeline.",
-     "t": 12.0
-    }
-   ],
-   "closed_item_ids": [],
-   "contradictions": [],
-   "dependencies": [
-    {
-     "id": "DEP-7",
-     "status": "reported",
-     "steps": [
-      {
-       "description": "T5 overload reduces capacity for voice calls to Aster General Hospital",
-       "evidence": [
-        {
-         "quote": "T5 Medical-B: utilisation 100%, call setup failures rising",
-         "source_id": "TM-4"
-        }
-       ]
-      }
-     ],
-     "title": "Medical district tower overload impacts hospital communications"
-    }
-   ],
-   "gaps": [
-    {
-     "id": "GAP-16",
-     "question": "What is the expected time to mitigate T5 overload and restore normal call setup rates?",
-     "why_it_matters": "Hospital and responder voice communications may be further degraded."
-    }
-   ],
-   "incidents": [
-    {
-     "comm_ids": [
-      "TM-4"
-     ],
-     "confidence": 0.6,
+     "comm_id": "F-2",
+     "confidence": 0.9,
      "facts": [
       {
-       "claim": "T5 Medical-B utilisation 100% with call setup failures rising",
+       "claim": "Hospital is not receiving patient pre\u2011alerts from ambulances",
        "evidence": [
         {
-         "quote": "T5 Medical-B: utilisation 100%, call setup failures rising",
-         "source_id": "TM-4"
+         "quote": "We are not receiving patient pre-alerts from ambulances in the field.",
+         "source_id": "F-2"
         }
        ],
        "flagged": null,
        "status": "reported"
       }
      ],
-     "id": "INC-9",
+     "interpreter": "openai/gpt-oss-20b",
      "life_threat": "unknown",
+     "location_text": null,
+     "missing_info": [
+      "Number of pre\u2011alerts lost",
+      "Impact on patient triage"
+     ],
+     "needs_mentioned": [],
+     "operations_affected": [
+      "Patient pre\u2011alert system"
+     ],
      "people_max": null,
      "people_min": null,
-     "related": [],
-     "title": "T5 Medical-B overload causing call failures",
+     "purpose": "Restore ambulance pre\u2011alert communications",
+     "summary": "Aster General Hospital reports loss of ambulance pre\u2011alert communications.",
+     "who": "Aster General staff",
      "zone_id": "Z-MED"
     }
-   ],
-   "needs": [],
-   "resolved_need_ids": [],
-   "summary": "Telemetry shows T5 Medical-B at full utilisation with rising call setup failures, indicating a new communications degradation in the Medical District. No other operational changes reported."
+   ]
   }
  },
- "synth:11": {
-  "hash": "111952fbdfa35c61",
-  "model": "openai/gpt-oss-120b",
+ "interpret:MS-1+C-11": {
+  "hash": "d1336953729657ed",
+  "model": "openai/gpt-oss-20b",
   "output": {
-   "changes": [
+   "items": [
     {
-     "caused_by": [
-      "R-2",
-      "R-1"
-     ],
-     "needs_affected": [
-      "NEED-4",
-      "NEED-11"
-     ],
-     "summary": "Added four rescued survivors and at least three still trapped to incident INC-4; created new life\u2011safety voice need for ambulance coordination; added dependency linking collapse to ambulance need; recorded new gaps on location and victim condition.",
-     "t": 0.0
-    }
-   ],
-   "closed_item_ids": [],
-   "contradictions": [],
-   "dependencies": [
-    {
-     "id": "DEP-8",
-     "status": "inferred",
-     "steps": [
+     "category": "population",
+     "comm_id": "MS-1",
+     "confidence": 0.9,
+     "facts": [
       {
-       "description": "Building collapse leaves victims trapped and mobile phones unusable, preventing self\u2011call for help.",
+       "claim": "about 30 people are gathered at Old Town Square",
        "evidence": [
         {
-         "quote": "mobile phones on site are useless",
-         "source_id": "R-2"
-        },
-        {
-         "quote": "Four people extracted alive from block C, at least three still trapped",
-         "source_id": "R-2"
+         "quote": "about 30 of us gathered at the square",
+         "source_id": "MS-1"
         }
-       ]
+       ],
+       "flagged": null,
+       "status": "reported"
       },
       {
-       "description": "Responder team requests ambulance coordination, creating a communication need.",
+       "claim": "phones barely work",
        "evidence": [
         {
-         "quote": "We need ambulance coordination",
-         "source_id": "R-2"
+         "quote": "phones barely work",
+         "source_id": "MS-1"
         }
-       ]
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "some elderly are present",
+       "evidence": [
+        {
+         "quote": "some elderly with us",
+         "source_id": "MS-1"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
       }
      ],
-     "title": "Collapse isolates victims and creates need for ambulance coordination"
-    }
-   ],
-   "gaps": [
-    {
-     "id": "GAP-17",
-     "question": "Exact location of block C within the zone",
-     "why_it_matters": "Needed for precise rescue routing and resource allocation"
+     "interpreter": "openai/gpt-oss-20b",
+     "life_threat": "unknown",
+     "location_text": "Old Town Square",
+     "missing_info": [
+      "which shelters are open"
+     ],
+     "needs_mentioned": [],
+     "operations_affected": [],
+     "people_max": 30,
+     "people_min": 30,
+     "purpose": "obtain shelter info",
+     "summary": "A group of about 30 people in Old Town Square report poor phone service and request shelter information.",
+     "who": "group of 30 residents",
+     "zone_id": "Z-OLD"
     },
     {
-     "id": "GAP-18",
-     "question": "Condition and injuries of the still\u2011trapped individuals",
-     "why_it_matters": "Impacts medical triage and urgency of ambulance dispatch"
-    }
-   ],
-   "incidents": [
-    {
-     "comm_ids": [
-      "C-1",
-      "C-2",
-      "R-1",
-      "C-5",
-      "R-2"
-     ],
-     "confidence": 0.5,
+     "category": "population",
+     "comm_id": "C-11",
+     "confidence": 0.8,
      "facts": [
       {
-       "claim": "Four people extracted alive from block C.",
+       "claim": "office has been evacuated",
        "evidence": [
         {
-         "quote": "Four people extracted alive from block C",
-         "source_id": "R-2"
+         "quote": "the office evacuated",
+         "source_id": "C-11"
         }
        ],
        "flagged": null,
        "status": "reported"
       },
       {
-       "claim": "At least three people are still trapped at block C.",
+       "claim": "caller is walking home along the harbor",
        "evidence": [
         {
-         "quote": "at least three still trapped",
-         "source_id": "R-2"
+         "quote": "I'm walking home along the harbor",
+         "source_id": "C-11"
         }
        ],
        "flagged": null,
        "status": "reported"
       },
       {
-       "claim": "Mobile phones on site are useless.",
+       "claim": "caller is fine",
        "evidence": [
         {
-         "quote": "mobile phones on site are useless",
-         "source_id": "R-2"
+         "quote": "I'm fine",
+         "source_id": "C-11"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      }
+     ],
+     "interpreter": "openai/gpt-oss-20b",
+     "life_threat": "no",
+     "location_text": "Harbour Front",
+     "missing_info": [],
+     "needs_mentioned": [],
+     "operations_affected": [],
+     "people_max": null,
+     "people_min": null,
+     "purpose": "inform family of safety and evacuation status",
+     "summary": "A citizen reports that the office has evacuated and that they are walking home along the harbor, stating they are fine and asking to keep kids inside.",
+     "who": "citizen",
+     "zone_id": "Z-HARB"
+    }
+   ]
+  }
+ },
+ "interpret:R-1+C-8": {
+  "hash": "1e2a8b2f0789b0a3",
+  "model": "openai/gpt-oss-20b",
+  "output": {
+   "items": [
+    {
+     "category": "emergency_operation",
+     "comm_id": "R-1",
+     "confidence": 0.95,
+     "facts": [
+      {
+       "claim": "Partial collapse at Lail Apartments, Block C.",
+       "evidence": [
+        {
+         "quote": "Control, this is team three on site at Lail Apartments, Block C partial collapse.",
+         "source_id": "R-1"
         }
        ],
        "flagged": null,
        "status": "reported"
       },
       {
-       "claim": "Partial collapse, visual on six to ten people trapped, two confirmed alive by voice contact.",
+       "claim": "Six to ten people trapped under rubble, two confirmed alive by voice contact.",
        "evidence": [
         {
-         "quote": "Partial collapse, we have visual on six to ten people trapped under rubble, two confirmed alive by voice contact",
+         "quote": "We have visual on six to ten people trapped under rubble, two confirmed alive by voice contact.",
+         "source_id": "R-1"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "Data terminal cannot connect; need data link to hospital for triage coordination.",
+       "evidence": [
+        {
+         "quote": "Our data terminal cannot connect. We need a data link to the hospital for triage coordination.",
          "source_id": "R-1"
         }
        ],
@@ -1075,228 +1190,147 @@
        "status": "reported"
       }
      ],
-     "id": "INC-4",
-     "life_threat": "unknown",
-     "people_max": null,
-     "people_min": 7,
-     "related": [],
-     "title": "Lale Apartments Block C collapse",
-     "zone_id": "Z-NORTH"
-    }
-   ],
-   "needs": [
-    {
-     "category": "life_safety",
-     "confidence": 0.5,
-     "evidence": [],
-     "first_seen_t": 14.0,
-     "id": "NEED-11",
-     "incident_ids": [
-      "INC-4"
-     ],
+     "interpreter": "openai/gpt-oss-20b",
      "life_threat": "yes",
-     "people_max": null,
-     "people_min": 3,
-     "purpose": "ambulance coordination for rescued and still\u2011trapped victims",
-     "resolution": "",
-     "service": "voice",
-     "status": "open",
-     "verification_needed": true,
-     "who": "Trapped residents of Lale Apartments Block C",
+     "location_text": "Lail Apartments, Block C",
+     "missing_info": [],
+     "needs_mentioned": [],
+     "operations_affected": [
+      "data link to hospital"
+     ],
+     "people_max": 10,
+     "people_min": 6,
+     "purpose": "request data link for triage",
+     "summary": "Team three reports partial collapse at Lail Apartments with trapped people and requests data link to hospital.",
+     "who": "",
      "zone_id": "Z-NORTH"
-    }
-   ],
-   "resolved_need_ids": [],
-   "summary": "Responder updates confirm four survivors rescued from Lale Apartments Block C and at least three remain trapped, with mobile phones unusable on site. Ambulance coordination is now required, adding a new life\u2011safety communication need."
-  }
- },
- "synth:12": {
-  "hash": "b22f9437ccdc3f83",
-  "model": "openai/gpt-oss-120b",
-  "output": {
-   "changes": [
+    },
     {
-     "caused_by": [
-      "F-2"
-     ],
-     "needs_affected": [
-      "NEED-6"
-     ],
-     "summary": "Added reported facts to incident INC-5 about staff using personal phones and missing ambulance pre\u2011alerts; updated need NEED-6 with new evidence linking the issue to emergency medical coordination.",
-     "t": 0.0
-    }
-   ],
-   "closed_item_ids": [],
-   "contradictions": [],
-   "dependencies": [
-    {
-     "id": "DEP-5",
-     "status": "reported",
-     "steps": [
-      {
-       "description": "Main fibre link failure forces reliance on personal phones.",
-       "evidence": [
-        {
-         "quote": "staff are now using personal phones",
-         "source_id": "F-2"
-        }
-       ]
-      },
-      {
-       "description": "Loss of hospital's data channel prevents receipt of ambulance pre\u2011alerts.",
-       "evidence": [
-        {
-         "quote": "We are not receiving patient pre\u2011alerts from ambulances in the field.",
-         "source_id": "F-2"
-        }
-       ]
-      }
-     ],
-     "title": "Aster General Hospital communications outage"
-    }
-   ],
-   "gaps": [],
-   "incidents": [
-    {
-     "comm_ids": [
-      "F-1",
-      "F-2"
-     ],
-     "confidence": 0.7,
+     "category": "population",
+     "comm_id": "C-8",
+     "confidence": 0.9,
      "facts": [
       {
-       "claim": "Hospital staff are now using personal phones.",
+       "claim": "Citizen is asking to be called back.",
        "evidence": [
         {
-         "quote": "staff are now using personal phones",
-         "source_id": "F-2"
+         "quote": "are you ok?? call me when you can",
+         "source_id": "C-8"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      }
+     ],
+     "interpreter": "openai/gpt-oss-20b",
+     "life_threat": "unknown",
+     "location_text": null,
+     "missing_info": [],
+     "needs_mentioned": [],
+     "operations_affected": [],
+     "people_max": null,
+     "people_min": null,
+     "purpose": "request call back",
+     "summary": "Citizen from Harbour Front asks for a call back after an unknown event.",
+     "who": "",
+     "zone_id": "Z-HARB"
+    }
+   ]
+  }
+ },
+ "interpret:R-2": {
+  "hash": "9e89bc9a6bb99654",
+  "model": "openai/gpt-oss-20b",
+  "output": {
+   "items": [
+    {
+     "category": "emergency_operation",
+     "comm_id": "R-2",
+     "confidence": 0.95,
+     "facts": [
+      {
+       "claim": "Four people extracted alive from Block C",
+       "evidence": [
+        {
+         "quote": "Four people extracted alive from Block C",
+         "source_id": "R-2"
         }
        ],
        "flagged": null,
        "status": "reported"
       },
       {
-       "claim": "Hospital is not receiving patient pre\u2011alerts from ambulances.",
+       "claim": "At least three people still trapped",
        "evidence": [
         {
-         "quote": "We are not receiving patient pre\u2011alerts from ambulances in the field.",
-         "source_id": "F-2"
+         "quote": "At least three still trapped",
+         "source_id": "R-2"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "Mobile phones on site are useless",
+       "evidence": [
+        {
+         "quote": "Mobile phones on site are useless",
+         "source_id": "R-2"
         }
        ],
        "flagged": null,
        "status": "reported"
       }
      ],
-     "id": "INC-5",
-     "life_threat": "yes",
-     "people_max": null,
-     "people_min": null,
-     "related": [],
-     "title": "Aster General Hospital main fibre link down",
-     "zone_id": "Z-MED"
-    }
-   ],
-   "needs": [
-    {
-     "category": "critical_facility",
-     "confidence": 0.8,
-     "evidence": [
-      {
-       "quote": "We are not receiving patient pre\u2011alerts from ambulances in the field.",
-       "source_id": "F-2"
-      }
+     "interpreter": "openai/gpt-oss-20b",
+     "life_threat": "unknown",
+     "location_text": "Block C",
+     "missing_info": [
+      "Exact location of Block C within zone",
+      "Number of responders on site",
+      "Current status of trapped individuals"
      ],
-     "first_seen_t": 15.0,
-     "id": "NEED-6",
-     "incident_ids": [
-      "INC-5"
+     "needs_mentioned": [],
+     "operations_affected": [
+      "Ambulance coordination"
      ],
-     "life_threat": "yes",
-     "people_max": null,
-     "people_min": 40,
-     "purpose": "receive patient pre\u2011alerts and coordinate ambulance arrivals",
-     "resolution": "",
-     "service": "voice",
-     "status": "open",
-     "verification_needed": false,
-     "who": "Aster General Hospital staff and ambulance dispatch",
-     "zone_id": "Z-MED"
+     "people_max": 4,
+     "people_min": 3,
+     "purpose": "Request ambulance coordination",
+     "summary": "Team three reports four people rescued from Block C, three still trapped, and requests ambulance coordination due to lack of mobile phone service.",
+     "who": "Team three responder",
+     "zone_id": "Z-NORTH"
     }
-   ],
-   "resolved_need_ids": [],
-   "summary": "Aster General Hospital reports staff are resorting to personal phones and are not receiving patient pre\u2011alerts from ambulances, confirming a critical communication gap for emergency medical coordination."
+   ]
   }
  },
- "synth:2": {
-  "hash": "06743e141932bfee",
+ "synth:1": {
+  "hash": "98c844618ff28e61",
   "model": "openai/gpt-oss-120b",
   "output": {
    "changes": [
     {
-     "caused_by": [
-      "C-1"
-     ],
-     "needs_affected": [
-      "NEED-3"
-     ],
-     "summary": "Added incident for Lale Apartments Block C collapse and associated life\u2011safety need, dependency, and information gaps.",
+     "caused_by": [],
+     "summary": "Added new incident for building collapse at Lale Apartments block C.",
      "t": 2.0
     }
    ],
    "closed_item_ids": [],
    "contradictions": [],
-   "dependencies": [
-    {
-     "id": "DEP-3",
-     "status": "reported",
-     "steps": [
-      {
-       "description": "Collapse of Lale Apartments Block C creates trapped residents needing rescue",
-       "evidence": [
-        {
-         "quote": "The building at Lale Apartments block C has collapsed!!",
-         "source_id": "C-1"
-        }
-       ]
-      }
-     ],
-     "title": "Building collapse isolates residents and requires emergency response"
-    }
-   ],
-   "gaps": [
-    {
-     "id": "GAP-3",
-     "question": "Number of people trapped inside the collapsed building?",
-     "why_it_matters": "Needed to allocate rescue resources"
-    },
-    {
-     "id": "GAP-4",
-     "question": "Exact condition of the structure and any secondary collapse risk?",
-     "why_it_matters": "Safety of rescue teams"
-    },
-    {
-     "id": "GAP-5",
-     "question": "Access routes for rescue teams to the collapse site?",
-     "why_it_matters": "Plan safe entry"
-    },
-    {
-     "id": "GAP-6",
-     "question": "Availability of fire/safety equipment on site?",
-     "why_it_matters": "Support rescue operations"
-    }
-   ],
+   "dependencies": [],
+   "gaps": [],
    "incidents": [
     {
      "comm_ids": [
       "C-1"
      ],
-     "confidence": 0.5,
+     "confidence": 0.8,
      "facts": [
       {
        "claim": "The building at Lale Apartments block C has collapsed.",
        "evidence": [
         {
-         "quote": "The building at Lale Apartments block C has collapsed!!",
+         "quote": "The building at Lale Apartments block C has collapsed!! I can hear people shouting from inside. Please send help",
          "source_id": "C-1"
         }
        ],
@@ -1313,428 +1347,310 @@
        ],
        "flagged": null,
        "status": "reported"
-      },
-      {
-       "claim": "The citizen is requesting emergency assistance.",
-       "evidence": [
-        {
-         "quote": "Please send help",
-         "source_id": "C-1"
-        }
-       ],
-       "flagged": null,
-       "status": "reported"
       }
      ],
-     "id": "INC-4",
+     "id": "INC-1",
      "life_threat": "yes",
      "people_max": null,
      "people_min": null,
      "related": [],
-     "title": "Lale Apartments Block C collapse",
+     "title": "Building collapse at Lale Apartments block C",
      "zone_id": "Z-NORTH"
     }
    ],
-   "needs": [
-    {
-     "category": "life_safety",
-     "confidence": 0.5,
-     "evidence": [],
-     "first_seen_t": 2.0,
-     "id": "NEED-3",
-     "incident_ids": [
-      "INC-4"
-     ],
-     "life_threat": "yes",
-     "people_max": null,
-     "people_min": null,
-     "purpose": "Rescue trapped residents from collapsed building",
-     "resolution": "",
-     "service": "voice",
-     "status": "open",
-     "verification_needed": false,
-     "who": "Emergency responders in North Residential",
-     "zone_id": "Z-NORTH"
-    }
-   ],
-   "resolved_need_ids": [],
-   "summary": "A building collapse at Lale Apartments Block C in the North Residential zone has been added as a new incident, creating an immediate life\u2011safety communication need for emergency responders and generating several information gaps. The incident, need, dependency, and gaps are linked to the citizen report C\u20111."
+   "summary": "A building collapse reported at Lale Apartments block C in the North Residential zone, with people shouting from inside, indicating a life\u2011threatening situation."
   }
  },
- "synth:3": {
-  "hash": "7101953fea3e1215",
-  "model": "openai/gpt-oss-120b",
+ "synth:10": {
+  "hash": "d040f5b49e9dc7f0",
+  "model": "openai/gpt-oss-20b",
   "output": {
    "changes": [
     {
-     "caused_by": [
-      "C-2"
-     ],
-     "needs_affected": [
-      "NEED-4"
-     ],
-     "summary": "Incident INC-4 updated with additional communication IDs (C-2) and three new reported facts about trapped individuals.",
-     "t": 3.0
-    },
-    {
-     "caused_by": [
-      "C-2"
-     ],
-     "needs_affected": [
-      "NEED-4"
-     ],
-     "summary": "Added new life\u2011safety need NEED-4 for rescue of the mother and two neighbours.",
-     "t": 3.0
-    },
-    {
-     "caused_by": [
-      "C-2"
-     ],
-     "needs_affected": [
-      "NEED-4"
-     ],
-     "summary": "Created dependency DEP-4 linking the collapse to the need for rescue access.",
-     "t": 3.0
-    },
-    {
-     "caused_by": [
-      "C-2"
-     ],
-     "needs_affected": [],
-     "summary": "Added gaps GAP-7 and GAP-8 to capture missing location and condition details of trapped persons.",
-     "t": 3.0
+     "caused_by": [],
+     "summary": "Added new fact that Aster General Hospital cannot receive ambulance pre\u2011alert communications and is using personal phones; created dependency DEP-3.",
+     "t": 15.0
     }
    ],
    "closed_item_ids": [],
    "contradictions": [],
    "dependencies": [
     {
-     "id": "DEP-4",
-     "status": "reported",
+     "id": "DEP-1",
+     "status": "verified",
      "steps": [
       {
-       "description": "Rescue teams need to locate and access the 3rd\u2011floor unit where the mother and two neighbours are trapped.",
+       "description": "Main fibre link down",
        "evidence": [
         {
-         "quote": "my mother and 2 neighbours are inside lale apartments C block 3rd floor.",
-         "source_id": "C-2"
+         "quote": "our main fibre link is down",
+         "source_id": "F-1"
+        }
+       ]
+      },
+      {
+       "description": "Running on degraded 4G router",
+       "evidence": [
+        {
+         "quote": "running on one degraded 4G router",
+         "source_id": "F-1"
         }
        ]
       }
      ],
-     "title": "Building collapse requires rescue of trapped residents"
+     "title": "Fibre outage at Aster General Hospital"
+    },
+    {
+     "id": "DEP-2",
+     "status": "verified",
+     "steps": [
+      {
+       "description": "Unable to reach ambulance dispatch system",
+       "evidence": [
+        {
+         "quote": "cannot reach the ambulance dispatch system",
+         "source_id": "F-1"
+        }
+       ]
+      }
+     ],
+     "title": "Data link failure from Lail Apartments to Aster General Hospital"
+    },
+    {
+     "id": "DEP-3",
+     "status": "reported",
+     "steps": [
+      {
+       "description": "Hospital not receiving pre\u2011alert data from ambulances",
+       "evidence": [
+        {
+         "quote": "We are not receiving patient pre-alerts from ambulances in the field.",
+         "source_id": "F-2"
+        }
+       ]
+      }
+     ],
+     "title": "Ambulance pre\u2011alert system failure at Aster General Hospital"
     }
    ],
    "gaps": [
     {
-     "id": "GAP-7",
-     "question": "Exact unit number or door identifier for the trapped individuals in Lale Apartments Block C?",
+     "id": "GAP-2",
+     "question": "Exact location of Lale Apartments block\u202fC within Z\u2011NORTH",
+     "why_it_matters": "Needed for precise rescue routing"
+    },
+    {
+     "id": "GAP-3",
+     "question": "Current status of O\u2011negative blood supply at Aster General",
+     "why_it_matters": "Critical for patient care"
+    }
+   ],
+   "incidents": [
+    {
+     "comm_ids": [
+      "F-1",
+      "C-15",
+      "F-2"
+     ],
+     "confidence": 1.0,
+     "facts": [
+      {
+       "claim": "Hospital cannot receive ambulance pre\u2011alert communications",
+       "evidence": [
+        {
+         "quote": "We are not receiving patient pre-alerts from ambulances in the field.",
+         "source_id": "F-2"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "Hospital is using personal phones for communication",
+       "evidence": [
+        {
+         "quote": "staff are now using personal phones",
+         "source_id": "F-2"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      }
+     ],
+     "id": "INC-3",
+     "life_threat": "unknown",
+     "people_max": null,
+     "people_min": null,
+     "related": [],
+     "title": "Fibre link failure at Aster General Hospital",
+     "zone_id": "Z-MED"
+    }
+   ],
+   "summary": "Aster General Hospital\u2019s ambulance pre\u2011alert system is now non\u2011functional, adding a new operational constraint to the existing fibre outage. The hospital remains unable to receive pre\u2011alert data from ambulances, and personal phones are being used for communication. No new casualty counts or location changes were reported."
+  }
+ },
+ "synth:11": {
+  "hash": "bf328f2c2cb9a036",
+  "model": "openai/gpt-oss-20b",
+  "output": {
+   "changes": [
+    {
+     "caused_by": [],
+     "summary": "Added new fact to INC\u20112: neighbor not breathing, doctor needed via phone.",
+     "t": 16.0
+    }
+   ],
+   "closed_item_ids": [],
+   "contradictions": [],
+   "dependencies": [
+    {
+     "id": "DEP-1",
+     "status": "verified",
+     "steps": [],
+     "title": "Fibre outage at Aster General Hospital"
+    },
+    {
+     "id": "DEP-2",
+     "status": "verified",
+     "steps": [],
+     "title": "Data link failure from Lail Apartments to Aster General Hospital"
+    },
+    {
+     "id": "DEP-3",
+     "status": "verified",
+     "steps": [],
+     "title": "Ambulance pre\u2011alert system failure at Aster General Hospital"
+    }
+   ],
+   "gaps": [
+    {
+     "id": "GAP-2",
+     "question": "Exact location of Lale Apartments block\u202fC within Z\u2011NORTH",
      "why_it_matters": ""
     },
     {
-     "id": "GAP-8",
-     "question": "Condition of the mother and neighbours currently inside the collapsed building?",
+     "id": "GAP-3",
+     "question": "Current status of O\u2011negative blood supply at Aster General",
      "why_it_matters": ""
     }
    ],
    "incidents": [
+    {
+     "comm_ids": [
+      "C-2",
+      "R-1",
+      "C-5",
+      "R-2",
+      "C-16"
+     ],
+     "confidence": 0.5,
+     "facts": [
+      {
+       "claim": "A neighbor at Lail Apartments block\u202fC is not breathing and requires a doctor on the phone",
+       "evidence": [
+        {
+         "quote": "I'm at Lail Apartments. They just pulled my neighbor out. She is not breathing. The rescuers need a doctor on the phone right now. Please connect us.",
+         "source_id": "C-16"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      }
+     ],
+     "id": "INC-2",
+     "life_threat": "yes",
+     "people_max": 4,
+     "people_min": 3,
+     "related": [],
+     "title": "Building collapse at Lail Apartments block C",
+     "zone_id": "Z-NORTH"
+    },
     {
      "comm_ids": [
       "C-1",
-      "C-2"
+      "C-5"
      ],
      "confidence": 0.5,
-     "facts": [
-      {
-       "claim": "The mother and two neighbours are inside Lale Apartments C block 3rd floor.",
-       "evidence": [
-        {
-         "quote": "my mother and 2 neighbours are inside lale apartments C block 3rd floor.",
-         "source_id": "C-2"
-        }
-       ],
-       "flagged": null,
-       "status": "reported"
-      },
-      {
-       "claim": "The mother is not answering her phone.",
-       "evidence": [
-        {
-         "quote": "she is not answering her phone.",
-         "source_id": "C-2"
-        }
-       ],
-       "flagged": null,
-       "status": "reported"
-      },
-      {
-       "claim": "The sender is requesting that someone go to the location.",
-       "evidence": [
-        {
-         "quote": "please someone go there",
-         "source_id": "C-2"
-        }
-       ],
-       "flagged": null,
-       "status": "reported"
-      }
+     "facts": [],
+     "id": "INC-1",
+     "life_threat": "yes",
+     "people_max": 20,
+     "people_min": 20,
+     "related": [],
+     "title": "Building collapse at Lale Apartments block C",
+     "zone_id": "Z-NORTH"
+    },
+    {
+     "comm_ids": [
+      "F-1",
+      "C-15",
+      "F-2"
      ],
-     "id": "INC-4",
+     "confidence": 0.5,
+     "facts": [],
+     "id": "INC-3",
      "life_threat": "unknown",
+     "people_max": null,
+     "people_min": null,
+     "related": [],
+     "title": "Fibre link failure at Aster General Hospital",
+     "zone_id": "Z-MED"
+    },
+    {
+     "comm_ids": [
+      "C-3"
+     ],
+     "confidence": 0.5,
+     "facts": [],
+     "id": "INC-4",
+     "life_threat": "yes",
      "people_max": 3,
      "people_min": 3,
      "related": [],
-     "title": "Lale Apartments Block C collapse",
-     "zone_id": "Z-NORTH"
-    }
-   ],
-   "needs": [
-    {
-     "category": "life_safety",
-     "confidence": 0.5,
-     "evidence": [],
-     "first_seen_t": 3.0,
-     "id": "NEED-4",
-     "incident_ids": [
-      "INC-4"
-     ],
-     "life_threat": "unknown",
-     "people_max": 3,
-     "people_min": 3,
-     "purpose": "rescue assistance",
-     "resolution": "",
-     "service": "voice",
-     "status": "open",
-     "verification_needed": true,
-     "who": "Mother and two neighbours inside Lale Apartments C block 3rd floor",
-     "zone_id": "Z-NORTH"
-    }
-   ],
-   "resolved_need_ids": [],
-   "summary": "New citizen report C-2 adds detail that three individuals (a mother and two neighbours) are trapped on the 3rd floor of Lale Apartments Block C, prompting an updated incident record and a new life\u2011safety communication need. Additional information gaps about exact unit location and condition of the trapped persons are recorded."
-  }
- },
- "synth:4": {
-  "hash": "c7cf4f84187d5cf7",
-  "model": "openai/gpt-oss-120b",
-  "output": {
-   "changes": [
-    {
-     "caused_by": [
-      "F-1"
-     ],
-     "needs_affected": [
-      "NEED-5",
-      "NEED-6"
-     ],
-     "summary": "Added incident for hospital fibre outage and two new communication needs (data and voice) for the hospital; added dependency chain for hospital communications; recorded new gaps about backup power and restoration time.",
-     "t": 0.0
-    }
-   ],
-   "closed_item_ids": [],
-   "contradictions": [],
-   "dependencies": [
-    {
-     "id": "DEP-5",
-     "status": "reported",
-     "steps": [
-      {
-       "description": "Main fibre link failure isolates hospital data communications.",
-       "evidence": [
-        {
-         "quote": "our main fibre link is down",
-         "source_id": "F-1"
-        }
-       ]
-      },
-      {
-       "description": "Degraded 4G router limits voice contact with ambulance dispatch.",
-       "evidence": [
-        {
-         "quote": "We cannot reach the ambulance dispatch system",
-         "source_id": "F-1"
-        }
-       ]
-      },
-      {
-       "description": "Loss of communication hampers care for 40 ICU patients and incoming casualties.",
-       "evidence": [
-        {
-         "quote": "40 ICU patients on site",
-         "source_id": "F-1"
-        },
-        {
-         "quote": "casualties are starting to arrive",
-         "source_id": "F-1"
-        }
-       ]
-      }
-     ],
-     "title": "Aster General Hospital communications outage"
-    }
-   ],
-   "gaps": [
-    {
-     "id": "GAP-9",
-     "question": "Is backup power at Aster General Hospital functional?",
-     "why_it_matters": "Backup power determines ability to restore communications."
+     "title": "Grandfather trapped under garden wall on Ridge Lane",
+     "zone_id": "Z-HILL"
     },
-    {
-     "id": "GAP-10",
-     "question": "Estimated time to restore the hospital's fibre link or alternative backhaul availability?",
-     "why_it_matters": "Helps plan patient transfer and emergency logistics."
-    }
-   ],
-   "incidents": [
     {
      "comm_ids": [
-      "F-1"
+      "C-9"
      ],
      "confidence": 0.5,
-     "facts": [
-      {
-       "claim": "The hospital's main fibre link is down.",
-       "evidence": [
-        {
-         "quote": "our main fibre link is down",
-         "source_id": "F-1"
-        }
-       ],
-       "flagged": null,
-       "status": "reported"
-      },
-      {
-       "claim": "The hospital is running on one degraded 4G router.",
-       "evidence": [
-        {
-         "quote": "we are running on one degraded 4G router",
-         "source_id": "F-1"
-        }
-       ],
-       "flagged": null,
-       "status": "reported"
-      },
-      {
-       "claim": "The hospital cannot reach the ambulance dispatch system.",
-       "evidence": [
-        {
-         "quote": "We cannot reach the ambulance dispatch system",
-         "source_id": "F-1"
-        }
-       ],
-       "flagged": null,
-       "status": "reported"
-      },
-      {
-       "claim": "The hospital cannot send imaging to other hospitals.",
-       "evidence": [
-        {
-         "quote": "or send imaging to other hospitals",
-         "source_id": "F-1"
-        }
-       ],
-       "flagged": null,
-       "status": "reported"
-      },
-      {
-       "claim": "There are 40 ICU patients on site.",
-       "evidence": [
-        {
-         "quote": "40 ICU patients on site",
-         "source_id": "F-1"
-        }
-       ],
-       "flagged": null,
-       "status": "reported"
-      },
-      {
-       "claim": "Casualties are starting to arrive.",
-       "evidence": [
-        {
-         "quote": "casualties are starting to arrive",
-         "source_id": "F-1"
-        }
-       ],
-       "flagged": null,
-       "status": "reported"
-      }
-     ],
+     "facts": [],
      "id": "INC-5",
      "life_threat": "yes",
-     "people_max": null,
-     "people_min": 40,
-     "related": [
-      {
-       "incident_id": "INC-3",
-       "note": "Both affect Medical District",
-       "relation": "same_area"
-      }
-     ],
-     "title": "Aster General Hospital main fibre link down",
-     "zone_id": "Z-MED"
-    }
-   ],
-   "needs": [
-    {
-     "category": "critical_facility",
-     "confidence": 0.7,
-     "evidence": [],
-     "first_seen_t": 4.0,
-     "id": "NEED-5",
-     "incident_ids": [
-      "INC-5"
-     ],
-     "life_threat": "yes",
-     "people_max": null,
-     "people_min": 40,
-     "purpose": "Transmit patient data and imaging to other hospitals",
-     "resolution": "",
-     "service": "data",
-     "status": "open",
-     "verification_needed": false,
-     "who": "Aster General Hospital staff and emergency dispatch",
-     "zone_id": "Z-MED"
+     "people_max": 1,
+     "people_min": 1,
+     "related": [],
+     "title": "Husband with chest pains on Bakery Street",
+     "zone_id": "Z-OLD"
     },
     {
-     "category": "critical_facility",
-     "confidence": 0.7,
-     "evidence": [],
-     "first_seen_t": 4.0,
-     "id": "NEED-6",
-     "incident_ids": [
-      "INC-5"
+     "comm_ids": [
+      "C-12"
      ],
+     "confidence": 0.5,
+     "facts": [],
+     "id": "INC-6",
      "life_threat": "yes",
      "people_max": null,
-     "people_min": 40,
-     "purpose": "Coordinate ambulance dispatch and emergency response",
-     "resolution": "",
-     "service": "voice",
-     "status": "open",
-     "verification_needed": false,
-     "who": "Aster General Hospital staff and ambulance dispatch",
-     "zone_id": "Z-MED"
+     "people_min": null,
+     "related": [],
+     "title": "Gas leak on Poplar Street",
+     "zone_id": "Z-OLD"
     }
    ],
-   "resolved_need_ids": [],
-   "summary": "Aster General Hospital reports loss of its main fibre link, operating on a degraded 4G router and unable to contact ambulance dispatch or transmit imaging, while caring for 40 ICU patients and receiving new casualties. In North Residential, the collapse of Lale Apartments Block C continues to trap three residents on the 3rd floor. Communication needs for hospital data and voice, and for rescue of the trapped residents, remain open."
+   "summary": "A new call (C\u201116) confirms a non\u2011breathing victim at Lail Apartments block\u202fC and requests a doctor on the phone, adding a medical\u2011coordination need to the existing incident. No new casualty counts or location changes were reported."
   }
  },
- "synth:5": {
-  "hash": "fcf0ed4da4e657be",
-  "model": "openai/gpt-oss-120b",
+ "synth:12": {
+  "hash": "d8e4d10433431fa7",
+  "model": "openai/gpt-oss-20b",
   "output": {
    "changes": [
     {
-     "caused_by": [
-      "R-1"
-     ],
-     "needs_affected": [
-      "NEED-4",
-      "NEED-7"
-     ],
-     "summary": "Updated casualty numbers and life\u2011threat status for Lale Apartments collapse; added data link need for triage.",
-     "t": 5.0
+     "caused_by": [],
+     "summary": "Added new incident INC-7 for power outage on Mosk Lane; no other changes.",
+     "t": 18.0
     }
    ],
    "closed_item_ids": [],
@@ -1742,30 +1658,309 @@
    "dependencies": [],
    "gaps": [
     {
-     "id": "GAP-3",
-     "question": "Number of people trapped inside the collapsed building?",
-     "why_it_matters": "Accurate casualty count is needed for rescue resource allocation."
-    },
-    {
-     "id": "GAP-8",
-     "question": "Condition of the mother and neighbours currently inside the collapsed building?",
-     "why_it_matters": "Determines urgency and medical response needed."
+     "id": "GAP-4",
+     "question": "Exact location of Mosk Lane within the city zones",
+     "why_it_matters": "Needed to assign the incident to a zone for resource allocation"
     }
    ],
    "incidents": [
     {
      "comm_ids": [
-      "C-1",
+      "C-18"
+     ],
+     "confidence": 0.8,
+     "facts": [
+      {
+       "claim": "Grandmother on Mosk Lane has a power outage affecting her oxygen machine",
+       "evidence": [
+        {
+         "quote": "I'm calling for my grandmother on Mosk Lane. She uses a home oxygen machine and the power is out. The battery has maybe two hours left. We need a replacement or someone to take her in.",
+         "source_id": "C-18"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      }
+     ],
+     "id": "INC-7",
+     "life_threat": "yes",
+     "people_max": null,
+     "people_min": null,
+     "related": [],
+     "title": "Power outage affecting oxygen machine on Mosk Lane",
+     "zone_id": null
+    }
+   ],
+   "summary": "A new life\u2011safety incident (C\u201118) reports a grandmother on Mosk Lane with a power outage affecting her oxygen machine. No other incidents or infrastructure changes were confirmed. The exact location of Mosk Lane remains unknown."
+  }
+ },
+ "synth:13": {
+  "hash": "01361a438b79d88e",
+  "model": "openai/gpt-oss-20b",
+  "output": {
+   "changes": [
+    {
+     "caused_by": [],
+     "summary": "Added new gap regarding stadium shelter status based on citizen query C\u201119.",
+     "t": 20.0
+    }
+   ],
+   "closed_item_ids": [],
+   "contradictions": [],
+   "dependencies": [],
+   "gaps": [
+    {
+     "id": "GAP-5",
+     "question": "Is the stadium shelter open and operational?",
+     "why_it_matters": "Determining shelter availability is critical for directing evacuees and allocating resources."
+    }
+   ],
+   "incidents": [],
+   "summary": "A new citizen query (C\u201119) reports that two children are at the stadium shelter with no water, but the shelter\u2019s operational status is unverified. No new incidents or infrastructure failures have been confirmed. The status of the stadium shelter remains unknown."
+  }
+ },
+ "synth:2": {
+  "hash": "0603a32f0305ed15",
+  "model": "openai/gpt-oss-20b",
+  "output": {
+   "changes": [
+    {
+     "caused_by": [],
+     "summary": "Added new incident INC-2 for Lail Apartments collapse",
+     "t": 3.0
+    }
+   ],
+   "closed_item_ids": [],
+   "contradictions": [],
+   "dependencies": [],
+   "gaps": [
+    {
+     "id": "GAP-1",
+     "question": "Exact location of Lail Apartments block C within Z-NORTH",
+     "why_it_matters": "Needed for dispatch routing"
+    }
+   ],
+   "incidents": [
+    {
+     "comm_ids": [
+      "C-2"
+     ],
+     "confidence": 0.8,
+     "facts": [
+      {
+       "claim": "Building collapsed at Lail Apartments block C",
+       "evidence": [
+        {
+         "quote": "Hello? Hello? Please. My mother and two neighbors are inside Lail Apartments. Block C, third floor. The building came down.",
+         "source_id": "C-2"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "Three occupants trapped",
+       "evidence": [
+        {
+         "quote": "My mother and two neighbors are inside Lail Apartments. Block C, third floor. The building came down.",
+         "source_id": "C-2"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      }
+     ],
+     "id": "INC-2",
+     "life_threat": "yes",
+     "people_max": 3,
+     "people_min": 3,
+     "related": [],
+     "title": "Building collapse at Lail Apartments block C",
+     "zone_id": "Z-NORTH"
+    }
+   ],
+   "summary": "A second building collapse is reported at Lail Apartments block C in the North Residential zone, with three occupants trapped. The incident is distinct from the earlier Lale Apartments collapse. No new infrastructure dependencies or contradictions identified."
+  }
+ },
+ "synth:3": {
+  "hash": "6658c517944e9234",
+  "model": "openai/gpt-oss-20b",
+  "output": {
+   "changes": [
+    {
+     "caused_by": [],
+     "summary": "Added incident INC-3 and dependency DEP-1 based on F-1",
+     "t": 4.0
+    }
+   ],
+   "closed_item_ids": [],
+   "contradictions": [],
+   "dependencies": [
+    {
+     "id": "DEP-1",
+     "status": "verified",
+     "steps": [
+      {
+       "description": "Fibre link failure at Aster General Hospital",
+       "evidence": [
+        {
+         "quote": "our main fibre link is down",
+         "source_id": "F-1"
+        }
+       ]
+      },
+      {
+       "description": "Only one degraded 4G router remains",
+       "evidence": [
+        {
+         "quote": "we are running on one degraded 4G router",
+         "source_id": "F-1"
+        }
+       ]
+      },
+      {
+       "description": "Ambulance dispatch system unreachable",
+       "evidence": [
+        {
+         "quote": "We cannot reach the ambulance dispatch system",
+         "source_id": "F-1"
+        }
+       ]
+      },
+      {
+       "description": "Imaging to other hospitals cannot be sent",
+       "evidence": [
+        {
+         "quote": "or send imaging to other hospitals",
+         "source_id": "F-1"
+        }
+       ]
+      }
+     ],
+     "title": "Fibre outage at Aster General Hospital"
+    }
+   ],
+   "gaps": [],
+   "incidents": [
+    {
+     "comm_ids": [
+      "F-1"
+     ],
+     "confidence": 1.0,
+     "facts": [
+      {
+       "claim": "Main fibre link is down and only one degraded 4G router is available",
+       "evidence": [
+        {
+         "quote": "our main fibre link is down and we are running on one degraded 4G router",
+         "source_id": "F-1"
+        }
+       ],
+       "flagged": null,
+       "status": "verified"
+      },
+      {
+       "claim": "Cannot reach ambulance dispatch system or send imaging to other hospitals",
+       "evidence": [
+        {
+         "quote": "We cannot reach the ambulance dispatch system or send imaging to other hospitals",
+         "source_id": "F-1"
+        }
+       ],
+       "flagged": null,
+       "status": "verified"
+      },
+      {
+       "claim": "40 ICU patients on site and casualties are starting to arrive",
+       "evidence": [
+        {
+         "quote": "40 ICU patients on site and casualties are starting to arrive",
+         "source_id": "F-1"
+        }
+       ],
+       "flagged": null,
+       "status": "verified"
+      }
+     ],
+     "id": "INC-3",
+     "life_threat": "unknown",
+     "people_max": 40,
+     "people_min": 40,
+     "related": [],
+     "title": "Fibre link failure at Aster General Hospital",
+     "zone_id": "Z-MED"
+    }
+   ],
+   "summary": "Aster General Hospital in the Medical District reports a fibre link failure and degraded 4G connectivity, preventing ambulance dispatch and inter\u2011hospital imaging. The incident adds a new critical facility failure (INC\u20113) and a dependency chain (DEP\u20111) linking the fibre outage to operational impacts."
+  }
+ },
+ "synth:4": {
+  "hash": "a503cffbf1d5e008",
+  "model": "openai/gpt-oss-20b",
+  "output": {
+   "changes": [
+    {
+     "caused_by": [],
+     "summary": "Updated casualty count for INC-2 and added DEP-2 based on R-1",
+     "t": 5.0
+    }
+   ],
+   "closed_item_ids": [],
+   "contradictions": [
+    {
+     "description": "Reported casualty count for Lail Apartments collapse differs between sources",
+     "evidence": [
+      {
+       "quote": "The building at Lale Apartments block C has collapsed!! I can hear people shouting from inside. Please send help",
+       "source_id": "C-1"
+      },
+      {
+       "quote": "Hello? Hello? Please. My mother and two neighbors are inside Lail Apartments. Block C, third floor. The building came down.",
+       "source_id": "C-2"
+      }
+     ],
+     "id": "CON-1",
+     "suggested_verification": "Cross\u2011check with on\u2011scene responder reports"
+    }
+   ],
+   "dependencies": [
+    {
+     "id": "DEP-2",
+     "status": "reported",
+     "steps": [
+      {
+       "description": "Data terminal at Lail Apartments cannot connect to hospital",
+       "evidence": [
+        {
+         "quote": "Our data terminal cannot connect",
+         "source_id": "R-1"
+        }
+       ]
+      }
+     ],
+     "title": "Data link failure from Lail Apartments to Aster General Hospital"
+    }
+   ],
+   "gaps": [
+    {
+     "id": "GAP-1",
+     "question": "Exact location of Lail Apartments block C within Z-NORTH",
+     "why_it_matters": "Needed for navigation and resource allocation"
+    }
+   ],
+   "incidents": [
+    {
+     "comm_ids": [
       "C-2",
       "R-1"
      ],
-     "confidence": 0.5,
+     "confidence": 0.8,
      "facts": [
       {
-       "claim": "Partial collapse at Lale Apartments Block C with 6\u201110 people trapped",
+       "claim": "6\u201110 people trapped under rubble",
        "evidence": [
         {
-         "quote": "Partial collapse, we have visual on six to ten people trapped under rubble",
+         "quote": "We have visual on six to ten people trapped under rubble",
          "source_id": "R-1"
         }
        ],
@@ -1773,7 +1968,7 @@
        "status": "reported"
       },
       {
-       "claim": "Two people confirmed alive by voice contact",
+       "claim": "Two confirmed alive by voice contact",
        "evidence": [
         {
          "quote": "two confirmed alive by voice contact",
@@ -1782,136 +1977,46 @@
        ],
        "flagged": null,
        "status": "reported"
+      },
+      {
+       "claim": "Data terminal cannot connect to hospital",
+       "evidence": [
+        {
+         "quote": "Our data terminal cannot connect",
+         "source_id": "R-1"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
       }
      ],
-     "id": "INC-4",
+     "id": "INC-2",
      "life_threat": "yes",
      "people_max": 10,
      "people_min": 6,
      "related": [],
-     "title": "Lale Apartments Block C collapse",
+     "title": "Building collapse at Lail Apartments block C",
      "zone_id": "Z-NORTH"
     }
    ],
-   "needs": [
-    {
-     "category": "emergency_operation",
-     "confidence": 0.7,
-     "evidence": [
-      {
-       "quote": "Our data terminal cannot connect",
-       "source_id": "R-1"
-      },
-      {
-       "quote": "we need a data link to the hospital for triage coordination",
-       "source_id": "R-1"
-      }
-     ],
-     "first_seen_t": 5.0,
-     "id": "NEED-7",
-     "incident_ids": [
-      "INC-4"
-     ],
-     "life_threat": "yes",
-     "people_max": null,
-     "people_min": null,
-     "purpose": "establish data link to Aster General Hospital for triage coordination",
-     "resolution": "",
-     "service": "data",
-     "status": "open",
-     "verification_needed": false,
-     "who": "Responder Team 3 and triage coordinators",
-     "zone_id": "Z-NORTH"
-    },
-    {
-     "category": "life_safety",
-     "confidence": 0.8,
-     "evidence": [
-      {
-       "quote": "my mother and 2 neighbours are inside lale apartments C block 3rd floor. she is not answering her phone. please someone go there",
-       "source_id": "C-2"
-      }
-     ],
-     "first_seen_t": 0.0,
-     "id": "NEED-4",
-     "incident_ids": [],
-     "life_threat": "unknown",
-     "people_max": null,
-     "people_min": null,
-     "purpose": "voice contact to locate and rescue the trapped residents",
-     "resolution": "",
-     "service": "voice",
-     "status": "open",
-     "verification_needed": false,
-     "who": "Mother and two neighbours inside Lale Apartments C block 3rd floor",
-     "zone_id": "Z-NORTH"
-    }
-   ],
-   "resolved_need_ids": [],
-   "summary": "Responder Team 3 confirms a partial collapse at Lale Apartments Block C with 6\u201110 people trapped, two alive by voice contact, and reports loss of data connectivity requiring a hospital link. Incident INC-4 updated with higher casualty range and life\u2011threat status. New communication need for data link to the hospital added."
+   "summary": "Team three reports a partial collapse at Lail Apartments block C with 6\u201110 trapped people and a data link failure to the hospital. The reported casualty count for the same collapse has increased from 3 to 6\u201110, creating a contradiction. A new dependency links the data link failure to the hospital\u2019s triage coordination."
   }
  },
- "synth:6": {
-  "hash": "559b8559874689a9",
-  "model": "openai/gpt-oss-120b",
+ "synth:5": {
+  "hash": "15ae772c403c54cf",
+  "model": "openai/gpt-oss-20b",
   "output": {
    "changes": [
     {
-     "caused_by": [
-      "C-3"
-     ],
-     "needs_affected": [
-      "NEED-8"
-     ],
-     "summary": "Added new incident INC-6 for Ridge Lane collapse and associated life\u2011safety need NEED-8; introduced dependency DEP-6; recorded gaps for location and victim condition.",
+     "caused_by": [],
+     "summary": "Two new life\u2011safety incidents reported: a grandfather trapped under a garden wall on Ridge Lane with two children (C\u20113) and a husband with chest pains unable to stand on Bakery Street (C\u20119). Both incidents are confirmed as life\u2011threatening and have no known operational impact beyond the immediate rescue.",
      "t": 6.0
     }
    ],
    "closed_item_ids": [],
    "contradictions": [],
-   "dependencies": [
-    {
-     "id": "DEP-6",
-     "status": "reported",
-     "steps": [
-      {
-       "description": "Collapse creates physical barrier and disables cellular 112 call",
-       "evidence": [
-        {
-         "quote": "grandfather trapped under the fallen garden wall on Ridge Lane",
-         "source_id": "C-3"
-        },
-        {
-         "quote": "cant get through on 112 keeps dropping",
-         "source_id": "C-3"
-        }
-       ]
-      },
-      {
-       "description": "Responder voice communication needed to coordinate rescue",
-       "evidence": [
-        {
-         "quote": "my battery is 10%",
-         "source_id": "C-3"
-        }
-       ]
-      }
-     ],
-     "title": "Ridge Lane garden wall collapse isolates victims and blocks 112 call"
-    }
-   ],
-   "gaps": [
-    {
-     "id": "GAP-11",
-     "question": "Exact address or coordinates of the Ridge Lane incident site",
-     "why_it_matters": "Needed for responder navigation and rapid deployment"
-    },
-    {
-     "id": "GAP-12",
-     "question": "Condition of the grandfather (injuries, consciousness) and children",
-     "why_it_matters": "Determines medical triage priority"
-    }
-   ],
+   "dependencies": [],
+   "gaps": [],
    "incidents": [
     {
      "comm_ids": [
@@ -1920,44 +2025,135 @@
      "confidence": 0.5,
      "facts": [
       {
-       "claim": "A grandfather is trapped under a fallen garden wall on Ridge Lane.",
+       "claim": "Grandfather trapped under garden wall that fell on Ridge Lane with two children",
        "evidence": [
         {
-         "quote": "grandfather trapped under the fallen garden wall on Ridge Lane",
+         "quote": "My grandfather is trapped under the garden wall that fell on Ridge Lane. There are two kids with him.",
          "source_id": "C-3"
+        }
+       ],
+       "flagged": null,
+       "status": "verified"
+      },
+      {
+       "claim": "Phone call drops and battery is almost dead",
+       "evidence": [
+        {
+         "quote": "I keep calling 112 and it drops. My battery is almost dead.",
+         "source_id": "C-3"
+        }
+       ],
+       "flagged": null,
+       "status": "verified"
+      }
+     ],
+     "id": "INC-4",
+     "life_threat": "yes",
+     "people_max": 3,
+     "people_min": 3,
+     "related": [],
+     "title": "Grandfather trapped under garden wall on Ridge Lane",
+     "zone_id": "Z-HILL"
+    },
+    {
+     "comm_ids": [
+      "C-9"
+     ],
+     "confidence": 0.5,
+     "facts": [
+      {
+       "claim": "Husband has chest pains and cannot stand after shaking",
+       "evidence": [
+        {
+         "quote": "my husband has had chest pains since the shaking. He is sweating and he cannot stand up.",
+         "source_id": "C-9"
+        }
+       ],
+       "flagged": null,
+       "status": "verified"
+      },
+      {
+       "claim": "Ambulance number does not answer",
+       "evidence": [
+        {
+         "quote": "the ambulance number does not answer.",
+         "source_id": "C-9"
+        }
+       ],
+       "flagged": null,
+       "status": "verified"
+      }
+     ],
+     "id": "INC-5",
+     "life_threat": "yes",
+     "people_max": 1,
+     "people_min": 1,
+     "related": [],
+     "title": "Husband with chest pains on Bakery Street",
+     "zone_id": "Z-OLD"
+    }
+   ],
+   "summary": "Two new life\u2011safety incidents reported: a grandfather trapped under a garden wall on Ridge Lane with two children (C\u20113) and a husband with chest pains unable to stand on Bakery Street (C\u20119). Both incidents are confirmed as life\u2011threatening and have no known operational impact beyond the immediate rescue."
+  }
+ },
+ "synth:6": {
+  "hash": "65f81d620a4320e9",
+  "model": "openai/gpt-oss-20b",
+  "output": {
+   "changes": [
+    {
+     "caused_by": [],
+     "summary": "No changes to existing picture",
+     "t": 8.0
+    }
+   ],
+   "closed_item_ids": [],
+   "contradictions": [],
+   "dependencies": [],
+   "gaps": [],
+   "incidents": [],
+   "summary": "No new life\u2011safety incidents or operational impacts have been reported in this update."
+  }
+ },
+ "synth:7": {
+  "hash": "6183edef1ae73e1c",
+  "model": "openai/gpt-oss-20b",
+  "output": {
+   "changes": [
+    {
+     "caused_by": [],
+     "summary": "Added new incident INC-6 for gas leak on Poplar Street",
+     "t": 9.0
+    }
+   ],
+   "closed_item_ids": [],
+   "contradictions": [],
+   "dependencies": [],
+   "gaps": [],
+   "incidents": [
+    {
+     "comm_ids": [
+      "C-12"
+     ],
+     "confidence": 0.8,
+     "facts": [
+      {
+       "claim": "Strong smell of gas on Poplar Street",
+       "evidence": [
+        {
+         "quote": "There is a strong smell of gas on Poplar Street. Near Block A people are standing outside smoking. Somebody needs to shut the gas off before something happens.",
+         "source_id": "C-12"
         }
        ],
        "flagged": null,
        "status": "reported"
       },
       {
-       "claim": "Two children are with the trapped grandfather.",
+       "claim": "People are standing outside smoking near Block A",
        "evidence": [
         {
-         "quote": "2 kids with him",
-         "source_id": "C-3"
-        }
-       ],
-       "flagged": null,
-       "status": "reported"
-      },
-      {
-       "claim": "The caller cannot get through on 112 and the call keeps dropping.",
-       "evidence": [
-        {
-         "quote": "cant get through on 112 keeps dropping",
-         "source_id": "C-3"
-        }
-       ],
-       "flagged": null,
-       "status": "reported"
-      },
-      {
-       "claim": "The caller's phone battery is at 10%.",
-       "evidence": [
-        {
-         "quote": "my battery is 10%",
-         "source_id": "C-3"
+         "quote": "Near Block A people are standing outside smoking",
+         "source_id": "C-12"
         }
        ],
        "flagged": null,
@@ -1966,275 +2162,465 @@
      ],
      "id": "INC-6",
      "life_threat": "yes",
-     "people_max": 3,
-     "people_min": 3,
-     "related": [],
-     "title": "Grandfather and two children trapped under garden wall on Ridge Lane",
-     "zone_id": "Z-HILL"
-    }
-   ],
-   "needs": [
-    {
-     "category": "life_safety",
-     "confidence": 0.6,
-     "evidence": [],
-     "first_seen_t": 6.0,
-     "id": "NEED-8",
-     "incident_ids": [
-      "INC-6"
-     ],
-     "life_threat": "yes",
-     "people_max": 3,
-     "people_min": 3,
-     "purpose": "coordinate rescue of trapped grandfather and children",
-     "resolution": "",
-     "service": "voice",
-     "status": "open",
-     "verification_needed": true,
-     "who": "Emergency responders in Hillside Quarter",
-     "zone_id": "Z-HILL"
-    }
-   ],
-   "resolved_need_ids": [],
-   "summary": "A new life\u2011safety incident reported on Ridge Lane in the Hillside Quarter involves a grandfather and two children trapped under a fallen garden wall, with emergency 112 calls dropping. The report is the sole source, creating an urgent need for voice communication for responders in zone Z-HILL. No contradictions identified; gaps remain around precise location and condition of the victims."
-  }
- },
- "synth:7": {
-  "hash": "58dc1d4d45fdefdd",
-  "model": "openai/gpt-oss-120b",
-  "output": {
-   "changes": [
-    {
-     "caused_by": [
-      "C-4"
-     ],
-     "needs_affected": [
-      "NEED-9"
-     ],
-     "summary": "Added incident INC-7 for roof\u2011tile fall and need NEED-9 for cleanup coordination; added gap GAP-13 for precise location.",
-     "t": 7.0
-    }
-   ],
-   "closed_item_ids": [],
-   "contradictions": [],
-   "dependencies": [],
-   "gaps": [
-    {
-     "id": "GAP-13",
-     "question": "Exact address or coordinates of the Harbour Front roof\u2011tile incident site",
-     "why_it_matters": "Precise location needed for dispatch of cleanup crews and traffic control"
-    }
-   ],
-   "incidents": [
-    {
-     "comm_ids": [
-      "C-4"
-     ],
-     "confidence": 0.5,
-     "facts": [
-      {
-       "claim": "Roof tiles fell onto parked cars at the harbour front promenade",
-       "evidence": [
-        {
-         "quote": "Roof tiles fell onto parked cars at the harbour front promenade",
-         "source_id": "C-4"
-        }
-       ],
-       "flagged": null,
-       "status": "reported"
-      },
-      {
-       "claim": "Nobody was hurt as far as the reporter can see",
-       "evidence": [
-        {
-         "quote": "nobody hurt as far as I can see",
-         "source_id": "C-4"
-        }
-       ],
-       "flagged": null,
-       "status": "reported"
-      }
-     ],
-     "id": "INC-7",
-     "life_threat": "no",
      "people_max": null,
      "people_min": null,
      "related": [],
-     "title": "Roof tiles fell onto parked cars at Harbour Front promenade",
-     "zone_id": "Z-HARB"
+     "title": "Gas leak on Poplar Street",
+     "zone_id": "Z-OLD"
     }
    ],
-   "needs": [
-    {
-     "category": "non_urgent",
-     "confidence": 0.5,
-     "evidence": [],
-     "first_seen_t": 7.0,
-     "id": "NEED-9",
-     "incident_ids": [
-      "INC-7"
-     ],
-     "life_threat": "no",
-     "people_max": null,
-     "people_min": null,
-     "purpose": "coordinate vehicle cleanup and ensure road safety after roof\u2011tile fall",
-     "resolution": "",
-     "service": "voice",
-     "status": "open",
-     "verification_needed": false,
-     "who": "Harbour Front promenade users and municipal cleanup crews",
-     "zone_id": "Z-HARB"
-    }
-   ],
-   "resolved_need_ids": [],
-   "summary": "A roof\u2011tile fall was reported at the Harbour Front promenade with no injuries observed. The incident adds a non\u2011life\u2011threat event in zone Z-HARB, creating a new non\u2011urgent communication need for coordination of cleanup and road safety. Existing incidents and needs remain unchanged."
+   "summary": "A new life\u2011safety incident has been reported: a strong gas smell on Poplar Street with people smoking near Block A, requiring a gas shut\u2011off operation."
   }
  },
  "synth:8": {
-  "hash": "c7c26f4bca66208e",
-  "model": "openai/gpt-oss-120b",
+  "hash": "bba06a1e991f307e",
+  "model": "openai/gpt-oss-20b",
   "output": {
    "changes": [
     {
      "caused_by": [
-      "MS-1"
+      "C-5",
+      "C-15"
      ],
-     "needs_affected": [
-      "NEED-10"
-     ],
-     "summary": "Added incident INC-8 for Old Town crowd and need NEED-10 for shelter information.",
-     "t": 8.0
+     "summary": "Updated population estimate for Lale Apartments block\u202fC and added blood\u2011supply urgency at Aster General",
+     "t": 0.0
     }
    ],
-   "closed_item_ids": [],
-   "contradictions": [],
-   "dependencies": [],
-   "gaps": [
+   "closed_item_ids": [
+    "CON-1",
+    "GAP-1"
+   ],
+   "contradictions": [
     {
-     "id": "GAP-14",
-     "question": "Exact number of people present at Old Town Square",
-     "why_it_matters": "determines scale of communication need"
+     "description": "Reported casualty count for Lail Apartments collapse differs between sources",
+     "evidence": [
+      {
+       "quote": "We have visual on six to ten people trapped under rubble",
+       "source_id": "R-1"
+      },
+      {
+       "quote": "My mother and two neighbors are inside Lail Apartments. Block C, third floor. The building came down.",
+       "source_id": "C-2"
+      }
+     ],
+     "id": "CON-1",
+     "suggested_verification": "Cross\u2011check with on\u2011scene team reports and CCTV footage"
+    }
+   ],
+   "dependencies": [
+    {
+     "id": "DEP-1",
+     "status": "verified",
+     "steps": [
+      {
+       "description": "Fibre link down at Aster General Hospital",
+       "evidence": [
+        {
+         "quote": "our main fibre link is down",
+         "source_id": "F-1"
+        }
+       ]
+      },
+      {
+       "description": "Hospital cannot reach ambulance dispatch or send imaging",
+       "evidence": [
+        {
+         "quote": "We cannot reach the ambulance dispatch system or send imaging to other hospitals",
+         "source_id": "F-1"
+        }
+       ]
+      }
+     ],
+     "title": "Fibre outage at Aster General Hospital"
     },
     {
-     "id": "GAP-15",
-     "question": "Specific shelters that are currently open for the Old Town crowd",
-     "why_it_matters": "provides actionable information to the affected population"
+     "id": "DEP-2",
+     "status": "reported",
+     "steps": [
+      {
+       "description": "Team three at Lail Apartments cannot connect data terminal",
+       "evidence": [
+        {
+         "quote": "Our data terminal cannot connect",
+         "source_id": "R-1"
+        }
+       ]
+      }
+     ],
+     "title": "Data link failure from Lail Apartments to Aster General Hospital"
+    }
+   ],
+   "gaps": [
+    {
+     "id": "GAP-2",
+     "question": "Exact location of Lale Apartments block\u202fC within Z\u2011NORTH",
+     "why_it_matters": "Needed for routing rescue teams"
+    },
+    {
+     "id": "GAP-3",
+     "question": "Current status of O\u2011negative blood supply at Aster General",
+     "why_it_matters": "Critical for patient survival"
     }
    ],
    "incidents": [
     {
      "comm_ids": [
-      "MS-1"
+      "C-1",
+      "C-5"
      ],
-     "confidence": 0.5,
+     "confidence": 0.8,
      "facts": [
       {
-       "claim": "Approximately 30 people are gathered at the square.",
+       "claim": "Approximately 20 residents live in block\u202fC",
        "evidence": [
         {
-         "quote": "about 30 of us gathered at the square",
-         "source_id": "MS-1"
-        }
-       ],
-       "flagged": null,
-       "status": "reported"
-      },
-      {
-       "claim": "Phone service is barely working.",
-       "evidence": [
-        {
-         "quote": "phones barely work",
-         "source_id": "MS-1"
-        }
-       ],
-       "flagged": null,
-       "status": "reported"
-      },
-      {
-       "claim": "The group includes some elderly individuals.",
-       "evidence": [
-        {
-         "quote": "some elderly with us",
-         "source_id": "MS-1"
-        }
-       ],
-       "flagged": null,
-       "status": "reported"
-      },
-      {
-       "claim": "The group is requesting information on which shelters are open.",
-       "evidence": [
-        {
-         "quote": "Need info on which shelters are open",
-         "source_id": "MS-1"
+         "quote": "Lale apartments block C - around 20 people live there",
+         "source_id": "C-5"
         }
        ],
        "flagged": null,
        "status": "reported"
       }
      ],
-     "id": "INC-8",
-     "life_threat": "unknown",
-     "people_max": null,
-     "people_min": null,
+     "id": "INC-1",
+     "life_threat": "yes",
+     "people_max": 20,
+     "people_min": 20,
      "related": [],
-     "title": "Crowd gathering at Old Town Square with limited phone service",
-     "zone_id": "Z-OLD"
-    }
-   ],
-   "needs": [
+     "title": "Building collapse at Lale Apartments block C",
+     "zone_id": "Z-NORTH"
+    },
     {
-     "category": "population",
-     "confidence": 0.5,
-     "evidence": [
+     "comm_ids": [
+      "C-2",
+      "R-1"
+     ],
+     "confidence": 0.9,
+     "facts": [
       {
-       "quote": "Need info on which shelters are open",
-       "source_id": "MS-1"
+       "claim": "6\u201110 people trapped under rubble",
+       "evidence": [
+        {
+         "quote": "We have visual on six to ten people trapped under rubble",
+         "source_id": "R-1"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
       }
      ],
-     "first_seen_t": 8.0,
-     "id": "NEED-10",
-     "incident_ids": [
-      "INC-8"
+     "id": "INC-2",
+     "life_threat": "yes",
+     "people_max": 10,
+     "people_min": 6,
+     "related": [],
+     "title": "Building collapse at Lail Apartments block C",
+     "zone_id": "Z-NORTH"
+    },
+    {
+     "comm_ids": [
+      "F-1",
+      "C-15"
      ],
+     "confidence": 0.9,
+     "facts": [
+      {
+       "claim": "12 trauma patients and lack of O\u2011negative blood",
+       "evidence": [
+        {
+         "quote": "We have 12 trauma patients and we are running out of O-negative blood",
+         "source_id": "C-15"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      }
+     ],
+     "id": "INC-3",
      "life_threat": "unknown",
-     "people_max": null,
-     "people_min": null,
-     "purpose": "obtain information on open shelters",
-     "resolution": "",
-     "service": "voice",
-     "status": "open",
-     "verification_needed": true,
-     "who": "People gathered at Old Town Square",
-     "zone_id": "Z-OLD"
+     "people_max": 12,
+     "people_min": 12,
+     "related": [],
+     "title": "Fibre link failure at Aster General Hospital",
+     "zone_id": "Z-MED"
     }
    ],
-   "resolved_need_ids": [],
-   "summary": "A citizen report from Old Town indicates about 30 people gathered at the square with limited phone service, seeking shelter information. This creates a new non\u2011life\u2011threat incident and a population communication need for shelter status updates. Existing incidents and needs remain otherwise unchanged."
+   "summary": "A new population estimate for Lale Apartments block\u202fC confirms about 20 residents, and Dr.\u202fAidan reports 12 trauma patients and an urgent need for O\u2011negative blood at Aster General Hospital. The collapsed building at Lail Apartments remains a life\u2011threat incident with 6\u201110 trapped persons. No new infrastructure failures are reported."
   }
  },
  "synth:9": {
-  "hash": "a44be690f7e7727b",
-  "model": "openai/gpt-oss-120b",
+  "hash": "5809b9dacba3f0ae",
+  "model": "openai/gpt-oss-20b",
   "output": {
    "changes": [
     {
-     "caused_by": [
-      "C-5"
-     ],
-     "needs_affected": [],
-     "summary": "Added interpretation of citizen report C-5 confirming residence count (~20) but no impact on incident severity or needs.",
-     "t": 10.0
+     "caused_by": [],
+     "summary": "Updated trapped\u2011person count for Lail Apartments block\u202fC to 3\u20114 and added facts on rescue status, phone outage, and ambulance coordination. Sources: R-2, R-1, C-2, C-5.",
+     "t": 14.0
     }
    ],
    "closed_item_ids": [],
    "contradictions": [],
-   "dependencies": [],
-   "gaps": [],
-   "incidents": [],
-   "needs": [],
-   "resolved_need_ids": [],
-   "summary": "No new operational changes detected; the recent citizen report clarifies that about 20 people reside in Lale Apartments block C but does not alter the known casualty estimates or existing communication needs."
+   "dependencies": [
+    {
+     "id": "DEP-2",
+     "status": "verified",
+     "steps": [
+      {
+       "description": "Data terminal at Lail Apartments cannot connect to hospital",
+       "evidence": [
+        {
+         "quote": "Our data terminal cannot connect. We need a data link to the hospital for triage coordination.",
+         "source_id": "R-1"
+        }
+       ]
+      }
+     ],
+     "title": "Data link failure from Lail Apartments to Aster General Hospital"
+    }
+   ],
+   "gaps": [
+    {
+     "id": "GAP-2",
+     "question": "Exact location of Lale Apartments block\u202fC within Z\u2011NORTH",
+     "why_it_matters": "Precise location needed for rescue routing"
+    },
+    {
+     "id": "GAP-3",
+     "question": "Current status of O\u2011negative blood supply at Aster General",
+     "why_it_matters": ""
+    }
+   ],
+   "incidents": [
+    {
+     "comm_ids": [
+      "C-2",
+      "R-1",
+      "C-5",
+      "R-2"
+     ],
+     "confidence": 0.5,
+     "facts": [
+      {
+       "claim": "Four people extracted alive from Block\u202fC",
+       "evidence": [
+        {
+         "quote": "Four people extracted alive from Block C. At least three still trapped. We need ambulance coordination. Mobile phones on site are useless.",
+         "source_id": "R-2"
+        }
+       ],
+       "flagged": null,
+       "status": "verified"
+      },
+      {
+       "claim": "At least three still trapped under rubble",
+       "evidence": [
+        {
+         "quote": "We have visual on six to ten people trapped under rubble, two confirmed alive by voice contact.",
+         "source_id": "R-1"
+        }
+       ],
+       "flagged": null,
+       "status": "verified"
+      },
+      {
+       "claim": "Mobile phones on site are useless",
+       "evidence": [
+        {
+         "quote": "Mobile phones on site are useless.",
+         "source_id": "R-2"
+        }
+       ],
+       "flagged": null,
+       "status": "verified"
+      },
+      {
+       "claim": "Ambulance coordination needed",
+       "evidence": [
+        {
+         "quote": "We need ambulance coordination.",
+         "source_id": "R-2"
+        }
+       ],
+       "flagged": null,
+       "status": "verified"
+      }
+     ],
+     "id": "INC-2",
+     "life_threat": "yes",
+     "people_max": 4,
+     "people_min": 3,
+     "related": [],
+     "title": "Building collapse at Lail Apartments block C",
+     "zone_id": "Z-NORTH"
+    }
+   ],
+   "summary": "Team three reports four people rescued from Lail Apartments block\u202fC, with at least three still trapped and a lack of mobile phone service. The trapped\u2011person count is now narrowed to 3\u20114, replacing the earlier 6\u201110 estimate. Ambulance coordination is urgently required."
+  }
+ },
+ "transcribe:C-10": {
+  "hash": "dfdde4393009b2e2",
+  "model": "whisper-large-v3-turbo",
+  "output": {
+   "avg_logprob": -0.115,
+   "duration_s": 7.875249664,
+   "model": "whisper-large-v3-turbo",
+   "no_speech_prob": 0.0,
+   "text": "Hi, I'm calling about the football match at the stadium tonight. Is it still going ahead, or should I ask for a refund on my tickets?"
+  }
+ },
+ "transcribe:C-11": {
+  "hash": "2d6b074a19539515",
+  "model": "whisper-large-v3-turbo",
+  "output": {
+   "avg_logprob": -0.191,
+   "duration_s": 9.097124864,
+   "model": "whisper-large-v3-turbo",
+   "no_speech_prob": 0.0,
+   "text": "Babe, the office evacuated. I'm walking home along the harbor. I'm fine. Just keep the kids inside, okay? I'll be there in half an hour."
+  }
+ },
+ "transcribe:C-12": {
+  "hash": "17f820db9135989d",
+  "model": "whisper-large-v3-turbo",
+  "output": {
+   "avg_logprob": -0.164,
+   "duration_s": 10.017250304,
+   "model": "whisper-large-v3-turbo",
+   "no_speech_prob": 0.0,
+   "text": "There is a strong smell of gas on Poplar Street. Near Block A people are standing outside smoking. Somebody needs to shut the gas off before something happens."
+  }
+ },
+ "transcribe:C-13": {
+  "hash": "cc95b3962c433aa3",
+  "model": "whisper-large-v3-turbo",
+  "output": {
+   "avg_logprob": -0.121,
+   "duration_s": 8.0303744,
+   "model": "whisper-large-v3-turbo",
+   "no_speech_prob": 0.0,
+   "text": "Hello, I need to report a claim. A wall fell onto my car on Ridge Lane. Can you open a case number for me? It's a gray hatchback."
+  }
+ },
+ "transcribe:C-15": {
+  "hash": "9c05538b504e5c27",
+  "model": "whisper-large-v3-turbo",
+  "output": {
+   "avg_logprob": -0.131,
+   "duration_s": 11.10099968,
+   "model": "whisper-large-v3-turbo",
+   "no_speech_prob": 0.0,
+   "text": "This is Dr. Aidan at Astor General. I'm calling from my own phone. We have 12 trauma patients and we are running out of O-negative blood. I need the Regional Blood Bank to send units now."
+  }
+ },
+ "transcribe:C-16": {
+  "hash": "40f3c7695f12c3f0",
+  "model": "whisper-large-v3-turbo",
+  "output": {
+   "avg_logprob": -0.148,
+   "duration_s": 9.012124672,
+   "model": "whisper-large-v3-turbo",
+   "no_speech_prob": 0.0,
+   "text": "I'm at Lail Apartments. They just pulled my neighbor out. She is not breathing. The rescuers need a doctor on the phone right now. Please connect us."
+  }
+ },
+ "transcribe:C-17": {
+  "hash": "562b8df8dfc62a1b",
+  "model": "whisper-large-v3-turbo",
+  "output": {
+   "avg_logprob": -0.155,
+   "duration_s": 7.944500224,
+   "model": "whisper-large-v3-turbo",
+   "no_speech_prob": 0.0,
+   "text": "Hey, it's me, are you watching the news? Crazy. Anyway, I'm fine, the flat is fine. Talk soon, bye."
+  }
+ },
+ "transcribe:C-18": {
+  "hash": "05445f1b07f557fe",
+  "model": "whisper-large-v3-turbo",
+  "output": {
+   "avg_logprob": -0.104,
+   "duration_s": 10.746375168,
+   "model": "whisper-large-v3-turbo",
+   "no_speech_prob": 0.0,
+   "text": "I'm calling for my grandmother on Mosk Lane. She uses a home oxygen machine and the power is out. The battery has maybe two hours left. We need a replacement or someone to take her in."
+  }
+ },
+ "transcribe:C-2": {
+  "hash": "813fbfa04b0ad659",
+  "model": "whisper-large-v3-turbo",
+  "output": {
+   "avg_logprob": -0.191,
+   "duration_s": 12.814374912,
+   "model": "whisper-large-v3-turbo",
+   "no_speech_prob": 0.0,
+   "text": "Hello? Hello? Please. My mother and two neighbors are inside Lail Apartments. Block C, third floor. The building came down. She is not answering her phone. Please, someone has to go there."
+  }
+ },
+ "transcribe:C-3": {
+  "hash": "1cc1db2e6f0f84bc",
+  "model": "whisper-large-v3-turbo",
+  "output": {
+   "avg_logprob": -0.113,
+   "duration_s": 11.112250368,
+   "model": "whisper-large-v3-turbo",
+   "no_speech_prob": 0.0,
+   "text": "My grandfather is trapped under the garden wall that fell on Ridge Lane. There are two kids with him. I keep calling 112 and it drops. My battery is almost dead. Please send someone."
+  }
+ },
+ "transcribe:C-6": {
+  "hash": "453ef7f8983ecb92",
+  "model": "whisper-large-v3-turbo",
+  "output": {
+   "avg_logprob": -0.124,
+   "duration_s": 10.064874496,
+   "model": "whisper-large-v3-turbo",
+   "no_speech_prob": 0.0,
+   "text": "Hi dad, it's me. We're fine, we're all out on the street. The building is okay, just some cracks in the stairwell. Don't worry, I'll call you later tonight."
+  }
+ },
+ "transcribe:C-7": {
+  "hash": "7d4741bac3401258",
+  "model": "whisper-large-v3-turbo",
+  "output": {
+   "avg_logprob": -0.085,
+   "duration_s": 10.608625664,
+   "model": "whisper-large-v3-turbo",
+   "no_speech_prob": 0.0,
+   "text": "Hello, can you hear me? I'm at the hospital car park. I'm okay, I'm okay. Tell mum I'm fine, the lines are terrible, I'll try again later."
+  }
+ },
+ "transcribe:C-9": {
+  "hash": "2cdec463700ce7dd",
+  "model": "whisper-large-v3-turbo",
+  "output": {
+   "avg_logprob": -0.183,
+   "duration_s": 12.649499648,
+   "model": "whisper-large-v3-turbo",
+   "no_speech_prob": 0.0,
+   "text": "Please help, my husband has had chest pains since the shaking. He is sweating and he cannot stand up. We are on bakery street in the old town and the ambulance number does not answer."
+  }
+ },
+ "transcribe:R-1": {
+  "hash": "fce842badd6a59ae",
+  "model": "whisper-large-v3-turbo",
+  "output": {
+   "avg_logprob": -0.274,
+   "duration_s": 20.817874944,
+   "model": "whisper-large-v3-turbo",
+   "no_speech_prob": 0.0,
+   "text": "Control, this is team three on site at Lail Apartments, Block C partial collapse. We have visual on six to ten people trapped under rubble, two confirmed alive by voice contact. Our data terminal cannot connect. We need a data link to the hospital for triage coordination. Over."
+  }
+ },
+ "transcribe:R-2": {
+  "hash": "3334f265404ed24b",
+  "model": "whisper-large-v3-turbo",
+  "output": {
+   "avg_logprob": -0.283,
+   "duration_s": 12.923250688,
+   "model": "whisper-large-v3-turbo",
+   "no_speech_prob": 0.0,
+   "text": "Control, team three. Four people extracted alive from Block C. At least three still trapped. We need ambulance coordination. Mobile phones on site are useless. Over."
   }
  }
 }

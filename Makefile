@@ -1,7 +1,7 @@
 PY ?= .venv/bin/python
 PIP ?= $(PY) -m pip
 
-.PHONY: install fmt lint typecheck test build check run cache evaluate
+.PHONY: install fmt lint typecheck test build check run record audio evaluate
 
 install:
 	$(PIP) install -e ".[dev]"
@@ -28,8 +28,11 @@ check: lint typecheck test
 run:
 	$(PY) -m streamlit run main.py
 
-cache:
-	$(PY) scripts/build_cache.py
+record:
+	$(PY) scripts/record.py
+
+audio:
+	$(PY) scripts/synthesize_audio.py
 
 evaluate:
 	$(PY) -m lifeline.evaluation

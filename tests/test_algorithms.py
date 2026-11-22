@@ -1,27 +1,19 @@
 """Road routing (Dijkstra), evidence fusion (Bayes + Marzullo), urgency-ordered min-cost flow."""
 
 from lifeline.models import (
-    Asset,
-    AssetKind,
-    AssetStatus,
-    Channel,
     CommNeed,
     Communication,
-    ConnState,
     Interpretation,
-    NetworkSnapshot,
     RoadAccess,
     Service,
     SourceRole,
     Tri,
     TriageFloor,
     Zone,
-    ZoneState,
 )
 from lifeline.optimization import fusion
-from lifeline.optimization.flow import allocate
-from lifeline.optimization.network import analyse
 from lifeline.optimization.routing import RoadNetwork, _mst
+from tests.fakes import make_comm
 
 # ----------------------------------------------------------------------------- routing
 
@@ -66,16 +58,7 @@ def test_blocked_zone_is_unreachable_and_named() -> None:
 
 
 def _msg(cid: str, source: str, role: SourceRole, floor: TriageFloor) -> Communication:
-    return Communication(
-        id=cid,
-        t=0,
-        channel=Channel.CELLULAR,
-        adapter="x",
-        source_id=source,
-        source_role=role,
-        text="x",
-        triage_floor=floor,
-    )
+    return make_comm(cid, "x", role=role, floor=floor, source=source)
 
 
 def _reading(cid: str, threat: Tri, lo: int | None = None, hi: int | None = None) -> Interpretation:
@@ -131,89 +114,3 @@ def test_people_estimate_flags_outliers_but_keeps_conservative_upper_bound() -> 
     assert (est.lo, est.hi, est.agree, est.total) == (6, 7, 2, 3)
     assert est.outliers == [(20, 20)]
     assert est.upper_bound == 20
-
-
-# ----------------------------------------------------------------------------- flow
-
-
-def _assets(tower_cap: float, backhaul_cap: float = 0.0) -> list[Asset]:
-    return [
-        Asset(id="CORE", name="core", kind=AssetKind.CORE, lat=47.5, lon=21.6),
-        Asset(
-            id="BH",
-            name="bh",
-            kind=AssetKind.BACKHAUL_LINK,
-            lat=47.5,
-            lon=21.6,
-            capacity=backhaul_cap,
-            links=["CORE"],
-        ),
-        Asset(
-            id="T",
-            name="tower",
-            kind=AssetKind.CELL_TOWER,
-            lat=47.5,
-            lon=21.6,
-            capacity=tower_cap,
-            coverage_zones=["Z"],
-            links=["BH"],
-            status=AssetStatus.UP,
-        ),
-    ]
-
-
-def _urgent(nid: str, service: Service = Service.VOICE) -> CommNeed:
-    return CommNeed(
-        id=nid, who=nid, zone_id="Z", purpose="p", service=service, category="life_safety"
-    )
-
-
-def test_priority_access_serves_the_queue_top_down() -> None:
-    zone = _zone("Z", 21.6, pop=1000)  # background demand 10 units at 0.01/person
-    assets = _assets(tower_cap=4.0)
-    snap = analyse(assets, [zone], 0.01, {"Z"})
-    # capacity 4 vs demand 10 -> ratio 0.4, enough for priority access to work
-    queue = [_urgent("first", Service.DATA), _urgent("second"), _urgent("third")]
-    out = allocate(assets, [zone], snap, queue, 0.01, {"Z"})
-    assert out["first"].allocated == 3.0 and out["first"].mode == "priority"
-    assert out["second"].allocated == 1.0
-    assert out["third"].allocated == 0.0  # capacity ran out further down the queue
-
-
-def test_without_priority_access_everyone_shares_proportionally() -> None:
-    zone = _zone("Z", 21.6, pop=1000)
-    assets = _assets(tower_cap=4.0)
-    snap = analyse(assets, [zone], 0.01, set())
-    out = allocate(assets, [zone], snap, [_urgent("a"), _urgent("b")], 0.01, set())
-    assert out["a"].mode == "best_effort"
-    assert out["a"].fraction == out["b"].fraction < 0.5
-
-
-def test_backhaul_capacity_caps_everything_behind_it() -> None:
-    zone = _zone("Z", 21.6, pop=100)  # background 1 unit
-    assets = _assets(tower_cap=50.0, backhaul_cap=2.5)
-    snap = analyse(assets, [zone], 0.01, {"Z"})
-    assert snap.zones["Z"].state == ConnState.CONNECTED
-    out = allocate(assets, [zone], snap, [_urgent("a", Service.DATA), _urgent("b")], 0.01, {"Z"})
-    assert out["a"].allocated == 2.5  # the top need takes the whole bottleneck
-    assert out["b"].allocated == 0.0
-
-
-def test_unserved_zone_gets_nothing() -> None:
-    zone = _zone("Z", 21.6)
-    snap = NetworkSnapshot(
-        zones={
-            "Z": ZoneState(
-                zone_id="Z",
-                state=ConnState.ISOLATED,
-                capacity=0,
-                demand=10,
-                channels={},
-                causes=[],
-            )
-        },
-        usable_assets=[],
-        unusable={},
-    )
-    out = allocate([], [zone], snap, [_urgent("a")], 0.01, set())
-    assert out["a"].allocated == 0.0

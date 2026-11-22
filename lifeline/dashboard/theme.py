@@ -10,11 +10,11 @@ def _hex(rgb: list[int]) -> str:
 
 
 TIER_LABEL = {
-    1: "Critical: life safety",
-    2: "High: essential service",
-    3: "Isolated area",
-    4: "Degraded service",
-    5: "Low",
+    1: "Life safety",
+    2: "Facility / operations",
+    3: "Isolated / awaiting analysis",
+    4: "Routine",
+    5: "Non-urgent",
 }
 TIER_RGB = {
     1: [229, 72, 77],
@@ -40,10 +40,11 @@ ASSET_LEGEND = [
     ("working site", _hex(ASSET_RGB["usable"])),
     ("standby resource", _hex(ASSET_RGB["standby"])),
 ]
-SERVED_STYLE = {
-    "served": ("Served", "#3dd68c"),
-    "planned": ("Restoration en route", "#f5a524"),
-    "unserved": ("Waiting for capacity", "#8a94a3"),
+STATUS_STYLE = {
+    "held": ("Held at gateway", "#8a94a3"),
+    "planned": ("Held; capacity en route", "#f5a524"),
+    "connected": ("Connected", "#3dd68c"),
+    "completed": ("Completed", "#5d6876"),
 }
 FACT_COLOR = {
     FactStatus.VERIFIED: "#3dd68c",
@@ -174,6 +175,17 @@ h4.ll-sub { margin:10px 0 6px 0; font-size:.78rem; color:var(--dim); font-weight
 .wf-dec { font-size:.78rem; font-weight:700; color:var(--txt); margin-top:2px; }
 .wf-res { font-size:.74rem; color:#3dd68c; margin-top:3px; }
 
+/* gateway table */
+.gw { display:grid; grid-template-columns: 1.4fr 1fr 2fr; gap:2px 10px; align-items:center;
+  font-size:.74rem; color:var(--soft); }
+.gw .hdr { color:var(--dim); font-size:.66rem; }
+.gw-bar { height:7px; background:#1d232c; border-radius:3px; overflow:hidden; }
+.gw-bar i { display:block; height:100%; }
+.cmp { display:grid; grid-template-columns:auto repeat(3, 1fr); gap:2px 10px; font-size:.74rem;
+  color:var(--soft); }
+.cmp .hdr { color:var(--dim); font-size:.66rem; }
+.cmp b { color:var(--txt); font-variant-numeric:tabular-nums; }
+
 /* priority queue */
 .pq { display:flex; gap:10px; background:var(--panel); border:1px solid var(--line);
   border-radius:6px; padding:7px 10px; margin:5px 0; }
@@ -183,6 +195,12 @@ h4.ll-sub { margin:10px 0 6px 0; font-size:.78rem; color:var(--dim); font-weight
 .pq-who { font-size:.82rem; font-weight:700; color:var(--txt); margin:2px 0; }
 .pq-status { font-size:.72rem; font-weight:700; margin-top:2px; }
 .pq-jump { font-size:.66rem; color:var(--acc); }
+.pq-text { font-size:.76rem; color:var(--soft); margin:3px 0; border-left:2px solid var(--line);
+  padding-left:8px; }
+.pq-wait { font-size:.72rem; color:var(--dim); font-variant-numeric:tabular-nums; }
+.pq-done { display:flex; gap:8px; font-size:.72rem; color:var(--soft); padding:3px 0;
+  border-top:1px solid var(--line); }
+.pq-done .id { color:var(--dim); min-width:38px; }
 .pq-newtag { font-size:.6rem; font-weight:700; color:var(--acc); border:1px solid var(--acc);
   border-radius:3px; padding:0 4px; }
 </style>

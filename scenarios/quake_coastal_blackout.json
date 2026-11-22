@@ -1,643 +1,744 @@
 {
-  "meta": {
-    "id": "quake_coastal_blackout",
-    "name": "Coastal infrastructure blackout",
-    "description": "Port Selin after an earthquake: towers standing but the fibre trunk is cut and the grid is down; batteries are draining while a port operation and a shelter need communications.",
-    "hazard_label": "M6.7 earthquake",
-    "category": "exercise",
-    "order": 3,
-    "center_lat": 36.862,
-    "center_lon": 30.712,
-    "zoom": 12.4
+ "meta": {
+  "id": "quake_coastal_blackout",
+  "name": "Coastal infrastructure blackout",
+  "description": "Port Selin after an earthquake: towers standing but the fibre trunk is cut and the grid is down; batteries are draining while a port operation and a shelter need communications.",
+  "hazard_label": "M6.7 earthquake",
+  "category": "exercise",
+  "order": 3,
+  "center_lat": 36.862,
+  "center_lon": 30.712,
+  "zoom": 12.4
+ },
+ "dynamics": {
+  "battery_drain_pct_per_min": 0.6,
+  "demand_per_person": 0.01
+ },
+ "zones": [
+  {
+   "id": "Z-PORT",
+   "name": "Port & Ferry Terminal",
+   "lat": 36.848,
+   "lon": 30.705,
+   "radius_m": 700,
+   "population": 2500,
+   "road_access": "open"
   },
-  "dynamics": {
-    "battery_drain_pct_per_min": 0.6,
-    "demand_per_person": 0.01
+  {
+   "id": "Z-SHELTER",
+   "name": "School Shelter District",
+   "lat": 36.872,
+   "lon": 30.69,
+   "radius_m": 800,
+   "population": 5000,
+   "road_access": "open"
   },
-  "zones": [
-    {
-      "id": "Z-PORT",
-      "name": "Port & Ferry Terminal",
-      "lat": 36.848,
-      "lon": 30.705,
-      "radius_m": 700,
-      "population": 2500,
-      "road_access": "open"
+  {
+   "id": "Z-CENTRE",
+   "name": "Town Centre",
+   "lat": 36.862,
+   "lon": 30.712,
+   "radius_m": 800,
+   "population": 9000,
+   "road_access": "limited"
+  },
+  {
+   "id": "Z-EAST",
+   "name": "East Beach",
+   "lat": 36.858,
+   "lon": 30.742,
+   "radius_m": 900,
+   "population": 6000,
+   "road_access": "open"
+  },
+  {
+   "id": "Z-WEST",
+   "name": "West Hills",
+   "lat": 36.88,
+   "lon": 30.668,
+   "radius_m": 900,
+   "population": 3000,
+   "road_access": "limited"
+  }
+ ],
+ "sites": [
+  {
+   "id": "S-PORT",
+   "name": "Port Control",
+   "kind": "port",
+   "zone_id": "Z-PORT",
+   "critical": true
+  },
+  {
+   "id": "S-SCHOOL",
+   "name": "Ataturk School shelter",
+   "kind": "shelter",
+   "zone_id": "Z-SHELTER",
+   "critical": true
+  },
+  {
+   "id": "S-PHARM",
+   "name": "Central Pharmacy",
+   "kind": "pharmacy",
+   "zone_id": "Z-CENTRE"
+  }
+ ],
+ "assets": [
+  {
+   "id": "CORE",
+   "name": "Regional core",
+   "kind": "core",
+   "lat": 36.9,
+   "lon": 30.78
+  },
+  {
+   "id": "FT-1",
+   "name": "FT-1 Coastal fibre trunk",
+   "kind": "backhaul_link",
+   "lat": 36.87,
+   "lon": 30.76,
+   "links": [
+    "CORE"
+   ]
+  },
+  {
+   "id": "AGG-1",
+   "name": "AGG-1 West aggregation",
+   "kind": "backhaul_link",
+   "lat": 36.866,
+   "lon": 30.7,
+   "power": "battery",
+   "battery_pct": 95,
+   "links": [
+    "FT-1"
+   ]
+  },
+  {
+   "id": "MW-E",
+   "name": "MW-E East microwave",
+   "kind": "backhaul_link",
+   "lat": 36.872,
+   "lon": 30.76,
+   "power": "battery",
+   "battery_pct": 95,
+   "links": [
+    "CORE"
+   ]
+  },
+  {
+   "id": "P1",
+   "name": "P1 Port",
+   "kind": "cell_tower",
+   "lat": 36.85,
+   "lon": 30.702,
+   "capacity": 40,
+   "power": "battery",
+   "battery_pct": 40,
+   "coverage_zones": [
+    "Z-PORT"
+   ],
+   "links": [
+    "AGG-1"
+   ],
+   "serves": [
+    "voice",
+    "data",
+    "text"
+   ]
+  },
+  {
+   "id": "P2",
+   "name": "P2 Shelter",
+   "kind": "cell_tower",
+   "lat": 36.873,
+   "lon": 30.693,
+   "capacity": 50,
+   "power": "battery",
+   "battery_pct": 70,
+   "coverage_zones": [
+    "Z-SHELTER"
+   ],
+   "links": [
+    "AGG-1"
+   ],
+   "serves": [
+    "voice",
+    "data",
+    "text"
+   ]
+  },
+  {
+   "id": "P3",
+   "name": "P3 Centre-A",
+   "kind": "cell_tower",
+   "lat": 36.864,
+   "lon": 30.708,
+   "capacity": 50,
+   "power": "battery",
+   "battery_pct": 60,
+   "coverage_zones": [
+    "Z-CENTRE"
+   ],
+   "links": [
+    "AGG-1"
+   ],
+   "serves": [
+    "voice",
+    "data",
+    "text"
+   ]
+  },
+  {
+   "id": "P4",
+   "name": "P4 Centre-B",
+   "kind": "cell_tower",
+   "lat": 36.866,
+   "lon": 30.7,
+   "capacity": 50,
+   "power": "battery",
+   "battery_pct": 35,
+   "coverage_zones": [
+    "Z-CENTRE",
+    "Z-SHELTER"
+   ],
+   "links": [
+    "AGG-1"
+   ],
+   "serves": [
+    "voice",
+    "data",
+    "text"
+   ]
+  },
+  {
+   "id": "P5",
+   "name": "P5 West",
+   "kind": "cell_tower",
+   "lat": 36.879,
+   "lon": 30.672,
+   "capacity": 40,
+   "power": "battery",
+   "battery_pct": 50,
+   "coverage_zones": [
+    "Z-WEST"
+   ],
+   "links": [
+    "AGG-1"
+   ],
+   "serves": [
+    "voice",
+    "data",
+    "text"
+   ]
+  },
+  {
+   "id": "P6",
+   "name": "P6 East-A",
+   "kind": "cell_tower",
+   "lat": 36.857,
+   "lon": 30.746,
+   "capacity": 50,
+   "power": "battery",
+   "battery_pct": 80,
+   "coverage_zones": [
+    "Z-EAST"
+   ],
+   "links": [
+    "MW-E"
+   ],
+   "serves": [
+    "voice",
+    "data",
+    "text"
+   ]
+  },
+  {
+   "id": "P7",
+   "name": "P7 East-B",
+   "kind": "cell_tower",
+   "lat": 36.861,
+   "lon": 30.73,
+   "capacity": 50,
+   "power": "battery",
+   "battery_pct": 45,
+   "coverage_zones": [
+    "Z-EAST",
+    "Z-CENTRE"
+   ],
+   "links": [
+    "MW-E"
+   ],
+   "serves": [
+    "voice",
+    "data",
+    "text"
+   ]
+  },
+  {
+   "id": "P8",
+   "name": "P8 Hill",
+   "kind": "cell_tower",
+   "lat": 36.884,
+   "lon": 30.676,
+   "capacity": 40,
+   "power": "battery",
+   "battery_pct": 65,
+   "coverage_zones": [
+    "Z-WEST"
+   ],
+   "links": [
+    "MW-E"
+   ],
+   "serves": [
+    "voice",
+    "data",
+    "text"
+   ]
+  },
+  {
+   "id": "SAT-P",
+   "name": "SAT-P Port authority terminal",
+   "kind": "sat_terminal",
+   "lat": 36.849,
+   "lon": 30.707,
+   "status": "standby",
+   "bandwidth": 30,
+   "coverage_zones": [
+    "Z-PORT"
+   ],
+   "power": "battery",
+   "battery_pct": 100,
+   "serves": [
+    "voice",
+    "data",
+    "text"
+   ]
+  },
+  {
+   "id": "SAT-H",
+   "name": "SAT-H Town hall terminal",
+   "kind": "sat_terminal",
+   "lat": 36.862,
+   "lon": 30.714,
+   "status": "standby",
+   "bandwidth": 30,
+   "mobile": true,
+   "coverage_zones": [
+    "Z-CENTRE"
+   ],
+   "power": "battery",
+   "battery_pct": 100,
+   "serves": [
+    "voice",
+    "data",
+    "text"
+   ]
+  },
+  {
+   "id": "MS1",
+   "name": "Mesh School",
+   "kind": "mesh_node",
+   "lat": 36.872,
+   "lon": 30.691,
+   "capacity": 5,
+   "power": "battery",
+   "battery_pct": 90,
+   "coverage_zones": [
+    "Z-SHELTER"
+   ],
+   "links": [
+    "MS2",
+    "P2"
+   ],
+   "serves": [
+    "text"
+   ]
+  },
+  {
+   "id": "MS2",
+   "name": "Mesh Market",
+   "kind": "mesh_node",
+   "lat": 36.866,
+   "lon": 30.703,
+   "capacity": 5,
+   "power": "battery",
+   "battery_pct": 90,
+   "coverage_zones": [
+    "Z-SHELTER",
+    "Z-CENTRE"
+   ],
+   "links": [
+    "MS1",
+    "MS3"
+   ],
+   "serves": [
+    "text"
+   ]
+  },
+  {
+   "id": "MS3",
+   "name": "Mesh Square",
+   "kind": "mesh_node",
+   "lat": 36.862,
+   "lon": 30.713,
+   "capacity": 5,
+   "power": "battery",
+   "battery_pct": 90,
+   "coverage_zones": [
+    "Z-CENTRE"
+   ],
+   "links": [
+    "MS2",
+    "MS4"
+   ],
+   "serves": [
+    "text"
+   ]
+  },
+  {
+   "id": "MS4",
+   "name": "Mesh Promenade",
+   "kind": "mesh_node",
+   "lat": 36.859,
+   "lon": 30.724,
+   "capacity": 5,
+   "power": "battery",
+   "battery_pct": 90,
+   "coverage_zones": [
+    "Z-CENTRE",
+    "Z-EAST"
+   ],
+   "links": [
+    "MS3"
+   ],
+   "serves": [
+    "text"
+   ]
+  },
+  {
+   "id": "MBS-A",
+   "name": "MBS-A Mobile base station",
+   "kind": "mobile_base_station",
+   "lat": 36.866,
+   "lon": 30.77,
+   "status": "standby",
+   "capacity": 60,
+   "mobile": true,
+   "depot": "East depot",
+   "links": [
+    "CORE"
+   ],
+   "serves": [
+    "voice",
+    "data",
+    "text"
+   ]
+  },
+  {
+   "id": "MBS-B",
+   "name": "MBS-B Mobile base station",
+   "kind": "mobile_base_station",
+   "lat": 36.868,
+   "lon": 30.772,
+   "status": "standby",
+   "capacity": 60,
+   "mobile": true,
+   "depot": "East depot",
+   "links": [
+    "CORE"
+   ],
+   "serves": [
+    "voice",
+    "data",
+    "text"
+   ]
+  },
+  {
+   "id": "TS-C",
+   "name": "TETRA site Coast",
+   "kind": "tetra_site",
+   "lat": 36.866,
+   "lon": 30.715,
+   "capacity": 20,
+   "power": "battery",
+   "battery_pct": 95,
+   "coverage_zones": [
+    "Z-PORT",
+    "Z-SHELTER",
+    "Z-CENTRE",
+    "Z-EAST",
+    "Z-WEST"
+   ],
+   "serves": [
+    "responder_radio"
+   ]
+  }
+ ],
+ "events": [
+  {
+   "t": 0,
+   "kind": "telemetry",
+   "channel": "telemetry",
+   "payload": {
+    "id": "TM-1",
+    "asset_id": "FT-1",
+    "changes": {
+     "status": "down"
     },
-    {
-      "id": "Z-SHELTER",
-      "name": "School Shelter District",
-      "lat": 36.872,
-      "lon": 30.69,
-      "radius_m": 800,
-      "population": 5000,
-      "road_access": "open"
+    "note": "FT-1 coastal fibre trunk: loss of light. Towers P1-P5 behind AGG-1 are powered but have no path to the core"
+   }
+  },
+  {
+   "t": 0,
+   "kind": "telemetry",
+   "channel": "telemetry",
+   "payload": {
+    "id": "TM-2",
+    "asset_id": "AGG-1",
+    "changes": {},
+    "note": "Grid failure across Port Selin: all sites running on batteries"
+   }
+  },
+  {
+   "t": 2,
+   "kind": "comm",
+   "channel": "facility",
+   "payload": {
+    "id": "F-1",
+    "source_id": "port-control",
+    "source_role": "facility",
+    "lat": 36.8485,
+    "lon": 30.7052,
+    "text": "Port control: ferry Selin Star with about 300 passengers is holding outside the harbour. We cannot coordinate berthing with the coast guard: VHF works but our data and phone lines are down.",
+    "duration_min": null
+   }
+  },
+  {
+   "t": 4,
+   "kind": "comm",
+   "channel": "facility",
+   "payload": {
+    "id": "F-2",
+    "source_id": "school-shelter",
+    "source_role": "facility",
+    "lat": 36.8722,
+    "lon": 30.6905,
+    "text": "School shelter coordinator: about 800 people registered here, including 40 children whose parents are not yet located and 3 diabetics who need insulin. We have no phone or internet to reach the health directorate.",
+    "duration_min": null
+   }
+  },
+  {
+   "t": 5,
+   "kind": "comm",
+   "channel": "cellular",
+   "payload": {
+    "id": "C-4",
+    "source_id": "+90-5xx-1180",
+    "source_role": "citizen",
+    "session": "call",
+    "cell": "P7",
+    "audio": "audio/quake_coastal_blackout/C-4.ogg",
+    "script": "Hi love, the lights are out everywhere, but we're fine. I'm going over to Aunt Selma's with the kids. Don't come into town, the roads are a mess.",
+    "lat": 36.8615,
+    "lon": 30.713
+   }
+  },
+  {
+   "t": 6,
+   "kind": "comm",
+   "channel": "mesh",
+   "payload": {
+    "id": "M-1",
+    "source_id": "mesh-promenade-user",
+    "source_role": "citizen",
+    "zone_hint": "Z-EAST",
+    "text": "East beach: people are saying the tsunami sirens will go off, many want to leave now. We need official information."
+   }
+  },
+  {
+   "t": 8,
+   "kind": "comm",
+   "channel": "cellular",
+   "payload": {
+    "id": "C-5",
+    "source_id": "+90-5xx-7702",
+    "source_role": "citizen",
+    "session": "call",
+    "cell": "P7",
+    "audio": "audio/quake_coastal_blackout/C-5.ogg",
+    "script": "There is a woman in labour in our building on Harbour Road. The contractions are three minutes apart and the hospital line does not answer. What do we do?",
+    "duration_min": 5,
+    "lat": 36.8619,
+    "lon": 30.7118
+   }
+  },
+  {
+   "t": 9,
+   "kind": "comm",
+   "channel": "cellular",
+   "payload": {
+    "id": "C-1",
+    "source_id": "+90-5xx-6634",
+    "source_role": "citizen",
+    "session": "call",
+    "cell": "P6",
+    "audio": "audio/quake_coastal_blackout/C-1.ogg",
+    "script": "Is there a tsunami warning or not? The police at the east beach told us there is no warning, but people are running up the hill. My children are still on the sand.",
+    "lat": 36.8581,
+    "lon": 30.7415
+   }
+  },
+  {
+   "t": 12,
+   "kind": "telemetry",
+   "channel": "telemetry",
+   "payload": {
+    "id": "TM-3",
+    "asset_id": "P4",
+    "changes": {
+     "battery_pct": 20
     },
-    {
-      "id": "Z-CENTRE",
-      "name": "Town Centre",
-      "lat": 36.862,
-      "lon": 30.712,
-      "radius_m": 800,
-      "population": 9000,
-      "road_access": "limited"
-    },
-    {
-      "id": "Z-EAST",
-      "name": "East Beach",
-      "lat": 36.858,
-      "lon": 30.742,
-      "radius_m": 900,
-      "population": 6000,
-      "road_access": "open"
-    },
-    {
-      "id": "Z-WEST",
-      "name": "West Hills",
-      "lat": 36.88,
-      "lon": 30.668,
-      "radius_m": 900,
-      "population": 3000,
-      "road_access": "limited"
-    }
-  ],
-  "sites": [
-    {
-      "id": "S-PORT",
-      "name": "Port Control",
-      "kind": "port",
-      "zone_id": "Z-PORT",
-      "critical": true
-    },
-    {
-      "id": "S-SCHOOL",
-      "name": "Ataturk School shelter",
-      "kind": "shelter",
-      "zone_id": "Z-SHELTER",
-      "critical": true
-    },
-    {
-      "id": "S-PHARM",
-      "name": "Central Pharmacy",
-      "kind": "pharmacy",
-      "zone_id": "Z-CENTRE"
-    }
-  ],
-  "assets": [
-    {
-      "id": "CORE",
-      "name": "Regional core",
-      "kind": "core",
-      "lat": 36.9,
-      "lon": 30.78
-    },
-    {
-      "id": "FT-1",
-      "name": "FT-1 Coastal fibre trunk",
-      "kind": "backhaul_link",
-      "lat": 36.87,
-      "lon": 30.76,
-      "links": [
-        "CORE"
-      ]
-    },
-    {
-      "id": "AGG-1",
-      "name": "AGG-1 West aggregation",
-      "kind": "backhaul_link",
-      "lat": 36.866,
-      "lon": 30.7,
-      "power": "battery",
-      "battery_pct": 95,
-      "links": [
-        "FT-1"
-      ]
-    },
-    {
-      "id": "MW-E",
-      "name": "MW-E East microwave",
-      "kind": "backhaul_link",
-      "lat": 36.872,
-      "lon": 30.76,
-      "power": "battery",
-      "battery_pct": 95,
-      "links": [
-        "CORE"
-      ]
-    },
-    {
-      "id": "P1",
-      "name": "P1 Port",
-      "kind": "cell_tower",
-      "lat": 36.85,
-      "lon": 30.702,
-      "capacity": 40,
-      "power": "battery",
-      "battery_pct": 40,
-      "coverage_zones": [
-        "Z-PORT"
-      ],
-      "links": [
-        "AGG-1"
-      ],
-      "serves": [
-        "voice",
-        "data",
-        "text"
-      ]
-    },
-    {
-      "id": "P2",
-      "name": "P2 Shelter",
-      "kind": "cell_tower",
-      "lat": 36.873,
-      "lon": 30.693,
-      "capacity": 50,
-      "power": "battery",
-      "battery_pct": 70,
-      "coverage_zones": [
-        "Z-SHELTER"
-      ],
-      "links": [
-        "AGG-1"
-      ],
-      "serves": [
-        "voice",
-        "data",
-        "text"
-      ]
-    },
-    {
-      "id": "P3",
-      "name": "P3 Centre-A",
-      "kind": "cell_tower",
-      "lat": 36.864,
-      "lon": 30.708,
-      "capacity": 50,
-      "power": "battery",
-      "battery_pct": 60,
-      "coverage_zones": [
-        "Z-CENTRE"
-      ],
-      "links": [
-        "AGG-1"
-      ],
-      "serves": [
-        "voice",
-        "data",
-        "text"
-      ]
-    },
-    {
-      "id": "P4",
-      "name": "P4 Centre-B",
-      "kind": "cell_tower",
-      "lat": 36.866,
-      "lon": 30.7,
-      "capacity": 50,
-      "power": "battery",
-      "battery_pct": 35,
-      "coverage_zones": [
-        "Z-CENTRE",
-        "Z-SHELTER"
-      ],
-      "links": [
-        "AGG-1"
-      ],
-      "serves": [
-        "voice",
-        "data",
-        "text"
-      ]
-    },
-    {
-      "id": "P5",
-      "name": "P5 West",
-      "kind": "cell_tower",
-      "lat": 36.879,
-      "lon": 30.672,
-      "capacity": 40,
-      "power": "battery",
-      "battery_pct": 50,
-      "coverage_zones": [
-        "Z-WEST"
-      ],
-      "links": [
-        "AGG-1"
-      ],
-      "serves": [
-        "voice",
-        "data",
-        "text"
-      ]
-    },
-    {
-      "id": "P6",
-      "name": "P6 East-A",
-      "kind": "cell_tower",
-      "lat": 36.857,
-      "lon": 30.746,
-      "capacity": 50,
-      "power": "battery",
-      "battery_pct": 80,
-      "coverage_zones": [
-        "Z-EAST"
-      ],
-      "links": [
-        "MW-E"
-      ],
-      "serves": [
-        "voice",
-        "data",
-        "text"
-      ]
-    },
-    {
-      "id": "P7",
-      "name": "P7 East-B",
-      "kind": "cell_tower",
-      "lat": 36.861,
-      "lon": 30.73,
-      "capacity": 50,
-      "power": "battery",
-      "battery_pct": 45,
-      "coverage_zones": [
-        "Z-EAST",
-        "Z-CENTRE"
-      ],
-      "links": [
-        "MW-E"
-      ],
-      "serves": [
-        "voice",
-        "data",
-        "text"
-      ]
-    },
-    {
-      "id": "P8",
-      "name": "P8 Hill",
-      "kind": "cell_tower",
-      "lat": 36.884,
-      "lon": 30.676,
-      "capacity": 40,
-      "power": "battery",
-      "battery_pct": 65,
-      "coverage_zones": [
-        "Z-WEST"
-      ],
-      "links": [
-        "MW-E"
-      ],
-      "serves": [
-        "voice",
-        "data",
-        "text"
-      ]
-    },
-    {
-      "id": "SAT-P",
-      "name": "SAT-P Port authority terminal",
-      "kind": "sat_terminal",
-      "lat": 36.849,
-      "lon": 30.707,
-      "status": "standby",
-      "bandwidth": 30,
-      "coverage_zones": [
-        "Z-PORT"
-      ],
-      "power": "battery",
-      "battery_pct": 100,
-      "serves": [
-        "voice",
-        "data",
-        "text"
-      ]
-    },
-    {
-      "id": "SAT-H",
-      "name": "SAT-H Town hall terminal",
-      "kind": "sat_terminal",
-      "lat": 36.862,
-      "lon": 30.714,
-      "status": "standby",
-      "bandwidth": 30,
-      "mobile": true,
-      "coverage_zones": [
-        "Z-CENTRE"
-      ],
-      "power": "battery",
-      "battery_pct": 100,
-      "serves": [
-        "voice",
-        "data",
-        "text"
-      ]
-    },
-    {
-      "id": "MS1",
-      "name": "Mesh School",
-      "kind": "mesh_node",
-      "lat": 36.872,
-      "lon": 30.691,
-      "capacity": 5,
-      "power": "battery",
-      "battery_pct": 90,
-      "coverage_zones": [
-        "Z-SHELTER"
-      ],
-      "links": [
-        "MS2",
-        "P2"
-      ],
-      "serves": [
-        "text"
-      ]
-    },
-    {
-      "id": "MS2",
-      "name": "Mesh Market",
-      "kind": "mesh_node",
-      "lat": 36.866,
-      "lon": 30.703,
-      "capacity": 5,
-      "power": "battery",
-      "battery_pct": 90,
-      "coverage_zones": [
-        "Z-SHELTER",
-        "Z-CENTRE"
-      ],
-      "links": [
-        "MS1",
-        "MS3"
-      ],
-      "serves": [
-        "text"
-      ]
-    },
-    {
-      "id": "MS3",
-      "name": "Mesh Square",
-      "kind": "mesh_node",
-      "lat": 36.862,
-      "lon": 30.713,
-      "capacity": 5,
-      "power": "battery",
-      "battery_pct": 90,
-      "coverage_zones": [
-        "Z-CENTRE"
-      ],
-      "links": [
-        "MS2",
-        "MS4"
-      ],
-      "serves": [
-        "text"
-      ]
-    },
-    {
-      "id": "MS4",
-      "name": "Mesh Promenade",
-      "kind": "mesh_node",
-      "lat": 36.859,
-      "lon": 30.724,
-      "capacity": 5,
-      "power": "battery",
-      "battery_pct": 90,
-      "coverage_zones": [
-        "Z-CENTRE",
-        "Z-EAST"
-      ],
-      "links": [
-        "MS3"
-      ],
-      "serves": [
-        "text"
-      ]
-    },
-    {
-      "id": "MBS-A",
-      "name": "MBS-A Mobile base station",
-      "kind": "mobile_base_station",
-      "lat": 36.866,
-      "lon": 30.77,
-      "status": "standby",
-      "capacity": 60,
-      "mobile": true,
-      "depot": "East depot",
-      "links": [
-        "CORE"
-      ],
-      "serves": [
-        "voice",
-        "data",
-        "text"
-      ]
-    },
-    {
-      "id": "MBS-B",
-      "name": "MBS-B Mobile base station",
-      "kind": "mobile_base_station",
-      "lat": 36.868,
-      "lon": 30.772,
-      "status": "standby",
-      "capacity": 60,
-      "mobile": true,
-      "depot": "East depot",
-      "links": [
-        "CORE"
-      ],
-      "serves": [
-        "voice",
-        "data",
-        "text"
-      ]
-    },
-    {
-      "id": "TS-C",
-      "name": "TETRA site Coast",
-      "kind": "tetra_site",
-      "lat": 36.866,
-      "lon": 30.715,
-      "capacity": 20,
-      "power": "battery",
-      "battery_pct": 95,
-      "coverage_zones": [
-        "Z-PORT",
-        "Z-SHELTER",
-        "Z-CENTRE",
-        "Z-EAST",
-        "Z-WEST"
-      ],
-      "serves": [
-        "responder_radio"
-      ]
-    }
-  ],
-  "events": [
-    {
-      "t": 0,
-      "kind": "telemetry",
-      "channel": "telemetry",
-      "payload": {
-        "id": "TM-1",
-        "asset_id": "FT-1",
-        "changes": {
-          "status": "down"
-        },
-        "note": "FT-1 coastal fibre trunk: loss of light. Towers P1-P5 behind AGG-1 are powered but have no path to the core"
-      }
-    },
-    {
-      "t": 0,
-      "kind": "telemetry",
-      "channel": "telemetry",
-      "payload": {
-        "id": "TM-2",
-        "asset_id": "AGG-1",
-        "changes": {},
-        "note": "Grid failure across Port Selin: all sites running on batteries"
-      }
-    },
-    {
-      "t": 2,
-      "kind": "comm",
-      "channel": "facility",
-      "payload": {
-        "id": "F-1",
-        "source_id": "port-control",
-        "source_role": "facility",
-        "lat": 36.8485,
-        "lon": 30.7052,
-        "text": "Port control: ferry Selin Star with about 300 passengers is holding outside the harbour. We cannot coordinate berthing with the coast guard: VHF works but our data and phone lines are down."
-      }
-    },
-    {
-      "t": 4,
-      "kind": "comm",
-      "channel": "facility",
-      "payload": {
-        "id": "F-2",
-        "source_id": "school-shelter",
-        "source_role": "facility",
-        "lat": 36.8722,
-        "lon": 30.6905,
-        "text": "School shelter coordinator: about 800 people registered here, including 40 children whose parents are not yet located and 3 diabetics who need insulin. We have no phone or internet to reach the health directorate."
-      }
-    },
-    {
-      "t": 6,
-      "kind": "comm",
-      "channel": "mesh",
-      "payload": {
-        "id": "M-1",
-        "source_id": "mesh-promenade-user",
-        "source_role": "citizen",
-        "zone_hint": "Z-EAST",
-        "delivery_status": "delivered within mesh only",
-        "text": "East beach: people are saying the tsunami sirens will go off, many want to leave now. We need official information."
-      }
-    },
-    {
-      "t": 9,
-      "kind": "comm",
-      "channel": "cellular",
-      "payload": {
-        "id": "C-1",
-        "source_id": "+90-5xx-6634",
-        "source_role": "citizen",
-        "lat": 36.8581,
-        "lon": 30.7415,
-        "text": "Is there a tsunami warning or not? Police at east beach told us there is no warning."
-      }
-    },
-    {
-      "t": 12,
-      "kind": "telemetry",
-      "channel": "telemetry",
-      "payload": {
-        "id": "TM-3",
-        "asset_id": "P4",
-        "changes": {
-          "battery_pct": 20
-        },
-        "note": "P4 Centre-B: battery 20%, high discharge rate"
-      }
-    },
-    {
-      "t": 15,
-      "kind": "comm",
-      "channel": "citizen_app",
-      "payload": {
-        "id": "C-2",
-        "source_id": "app-user-1123",
-        "source_role": "citizen",
-        "lat": 36.8622,
-        "lon": 30.7121,
-        "text": "An old man collapsed at the central pharmacy, he is not breathing well and the ambulance line is busy."
-      }
-    },
-    {
-      "t": 20,
-      "kind": "comm",
-      "channel": "tetra",
-      "payload": {
-        "id": "R-1",
-        "source_id": "coast-guard-1",
-        "source_role": "responder",
-        "lat": 36.847,
-        "lon": 30.708,
-        "text": "Coast guard unit 1 to control: we can talk on TETRA but we cannot receive the port's passenger manifest, we need a data connection at the port."
-      }
-    },
-    {
-      "t": 30,
-      "kind": "telemetry",
-      "channel": "telemetry",
-      "payload": {
-        "id": "TM-4",
-        "asset_id": "P2",
-        "changes": {},
-        "note": "P2 Shelter: battery 52%, still isolated from the core"
-      }
-    },
-    {
-      "t": 45,
-      "kind": "comm",
-      "channel": "facility",
-      "payload": {
-        "id": "F-3",
-        "source_id": "school-shelter",
-        "source_role": "facility",
-        "lat": 36.8722,
-        "lon": 30.6905,
-        "text": "Shelter update: insulin patients stable for now, but we must reach the health directorate within 2 hours."
-      }
-    },
-    {
-      "t": 60,
-      "kind": "telemetry",
-      "channel": "telemetry",
-      "payload": {
-        "id": "TM-5",
-        "asset_id": "P7",
-        "changes": {},
-        "note": "P7 East-B: battery low, site expected off air within 15 minutes"
-      }
-    },
-    {
-      "t": 70,
-      "kind": "comm",
-      "channel": "cellular",
-      "payload": {
-        "id": "C-3",
-        "source_id": "+90-5xx-3071",
-        "source_role": "citizen",
-        "lat": 36.8489,
-        "lon": 30.7043,
-        "text": "At the port: ferry passengers are disembarking slowly, hundreds trying to call families and the network does not work at all here.",
-        "delivery_status": "delivered via SMS retry"
-      }
-    }
-  ]
+    "note": "P4 Centre-B: battery 20%, high discharge rate"
+   }
+  },
+  {
+   "t": 12,
+   "kind": "comm",
+   "channel": "cellular",
+   "payload": {
+    "id": "C-6",
+    "source_id": "+90-5xx-3305",
+    "source_role": "citizen",
+    "session": "call",
+    "cell": "P6",
+    "audio": "audio/quake_coastal_blackout/C-6.ogg",
+    "script": "Hello, I'm calling about the restaurant. The freezers will spoil without power. Who do I call about renting a generator?",
+    "lat": 36.8577,
+    "lon": 30.7402
+   }
+  },
+  {
+   "t": 15,
+   "kind": "comm",
+   "channel": "citizen_app",
+   "payload": {
+    "id": "C-2",
+    "source_id": "app-user-1123",
+    "source_role": "citizen",
+    "lat": 36.8622,
+    "lon": 30.7121,
+    "text": "An old man collapsed at the central pharmacy, he is not breathing well and the ambulance line is busy."
+   }
+  },
+  {
+   "t": 17,
+   "kind": "comm",
+   "channel": "cellular",
+   "payload": {
+    "id": "C-7",
+    "source_id": "+90-5xx-9921",
+    "source_role": "citizen",
+    "session": "sms",
+    "cell": "P6",
+    "text": "where are you? call me when the network is back"
+   }
+  },
+  {
+   "t": 20,
+   "kind": "comm",
+   "channel": "tetra",
+   "payload": {
+    "id": "R-1",
+    "source_id": "coast-guard-1",
+    "source_role": "responder",
+    "lat": 36.847,
+    "lon": 30.708,
+    "audio": "audio/quake_coastal_blackout/R-1.ogg",
+    "script": "Coast guard unit one to control. We can talk on TETRA but we cannot receive the port's passenger manifest. We need a data connection at the port. Over."
+   }
+  },
+  {
+   "t": 22,
+   "kind": "comm",
+   "channel": "cellular",
+   "payload": {
+    "id": "C-8",
+    "source_id": "+90-5xx-4416",
+    "source_role": "citizen",
+    "session": "call",
+    "cell": "P7",
+    "audio": "audio/quake_coastal_blackout/C-8.ogg",
+    "script": "My father's dialysis is due today and the clinic is closed. He is dizzy and his ankles are swollen. Where can we take him?",
+    "lat": 36.8608,
+    "lon": 30.7136
+   }
+  },
+  {
+   "t": 25,
+   "kind": "comm",
+   "channel": "cellular",
+   "payload": {
+    "id": "C-9",
+    "source_id": "+90-5xx-6248",
+    "source_role": "citizen",
+    "session": "call",
+    "cell": "P6",
+    "audio": "audio/quake_coastal_blackout/C-9.ogg",
+    "script": "Just checking you got home okay. We're fine here, the house is fine. Call me back when you can.",
+    "lat": 36.8583,
+    "lon": 30.7421
+   }
+  },
+  {
+   "t": 30,
+   "kind": "telemetry",
+   "channel": "telemetry",
+   "payload": {
+    "id": "TM-4",
+    "asset_id": "P2",
+    "changes": {},
+    "note": "P2 Shelter: battery 52%, still isolated from the core"
+   }
+  },
+  {
+   "t": 45,
+   "kind": "comm",
+   "channel": "facility",
+   "payload": {
+    "id": "F-3",
+    "source_id": "school-shelter",
+    "source_role": "facility",
+    "lat": 36.8722,
+    "lon": 30.6905,
+    "text": "Shelter update: insulin patients stable for now, but we must reach the health directorate within 2 hours."
+   }
+  },
+  {
+   "t": 60,
+   "kind": "telemetry",
+   "channel": "telemetry",
+   "payload": {
+    "id": "TM-5",
+    "asset_id": "P7",
+    "changes": {},
+    "note": "P7 East-B: battery low, site expected off air within 15 minutes"
+   }
+  },
+  {
+   "t": 70,
+   "kind": "comm",
+   "channel": "cellular",
+   "payload": {
+    "id": "C-3",
+    "source_id": "+90-5xx-3071",
+    "source_role": "citizen",
+    "session": "call",
+    "cell": "P1",
+    "audio": "audio/quake_coastal_blackout/C-3.ogg",
+    "script": "I'm at the port. The ferry passengers are coming off slowly, there are hundreds of people trying to call their families and the network does not work at all here.",
+    "lat": 36.8489,
+    "lon": 30.7043
+   }
+  }
+ ]
 }
