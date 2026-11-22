@@ -38,7 +38,8 @@ from lifeline.optimization.network import ACCESS_KINDS, PRIORITY_MIN_RATIO, cove
 SCALE = 100
 SESSION_UNITS = {Service.VOICE: 1.0, Service.DATA: 3.0}  # one active emergency session
 FACILITY_SESSIONS = 4  # a facility's data link carries several sessions at once
-URGENT = {"life_safety", "critical_facility", "emergency_operation"}
+URGENT = frozenset({"life_safety", "critical_facility", "emergency_operation"})
+ALL_CATEGORIES = URGENT | {"population", "non_urgent"}
 
 
 def need_demand(need: CommNeed) -> float:
@@ -57,7 +58,10 @@ def allocate(
     ranked: list[CommNeed],
     demand_per_person: float,
     priority_zones: set[str],
+    admit: frozenset[str] = URGENT,
 ) -> dict[str, NeedAllocation]:
+    """Allocate capacity to needs. `admit`: categories that get their own priority class
+    (urgent ones by default; every category for a first-come-first-served baseline)."""
     by_id = {a.id: a for a in assets}
     usable = set(snap.usable_assets)
     backhaul_terminals = {
@@ -112,7 +116,7 @@ def allocate(
     def prioritised(n: CommNeed) -> bool:
         zs = snap.zones.get(n.zone_id or "")
         return (
-            n.category in URGENT
+            n.category in admit
             and n.zone_id in priority_zones
             and zs is not None
             and zs.ratio >= PRIORITY_MIN_RATIO
@@ -173,7 +177,8 @@ def with_allocation(
     ranked: list[CommNeed],
     demand_per_person: float,
     priority_zones: set[str],
+    admit: frozenset[str] = URGENT,
 ) -> NetworkSnapshot:
     """Copy of the snapshot with the flow allocation for the given queue order attached."""
-    alloc = allocate(assets, zones, snap, ranked, demand_per_person, priority_zones)
+    alloc = allocate(assets, zones, snap, ranked, demand_per_person, priority_zones, admit)
     return snap.model_copy(update={"allocation": alloc})

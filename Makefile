@@ -1,7 +1,7 @@
 PY ?= .venv/bin/python
 PIP ?= $(PY) -m pip
 
-.PHONY: install fmt lint typecheck test build check run cache
+.PHONY: install fmt lint typecheck test build check run cache evaluate
 
 install:
 	$(PIP) install -e ".[dev]"
@@ -30,3 +30,6 @@ run:
 
 cache:
 	$(PY) scripts/build_cache.py
+
+evaluate:
+	$(PY) -m lifeline.evaluation

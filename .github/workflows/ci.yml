@@ -8,11 +8,15 @@ on:
 jobs:
   check:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.12", "3.13"]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: ${{ matrix.python-version }}
           cache: pip
       - name: Install
         run: |
@@ -24,9 +28,12 @@ jobs:
         run: make typecheck PY=python
       - name: Test
         run: make test PY=python
+      - name: Evaluate
+        run: make evaluate PY=python
       - name: Build
         run: make build PY=python
-      - uses: actions/upload-artifact@v4
+      - if: matrix.python-version == '3.12'
+        uses: actions/upload-artifact@v4
         with:
           name: lifeline-wheel
           path: dist/*.whl
