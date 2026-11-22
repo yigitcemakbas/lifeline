@@ -1,0 +1,1752 @@
+{
+ "interpret:C-1": {
+  "hash": "b69281b46e2f12bd",
+  "model": "openai/gpt-oss-120b",
+  "output": {
+   "comm_id": "C-1",
+   "confidence": 0.95,
+   "facts": [
+    {
+     "claim": "Police at east beach told us there is no warning.",
+     "evidence": [
+      {
+       "quote": "Police at east beach told us there is no warning.",
+       "source_id": "C-1"
+      }
+     ],
+     "flagged": null,
+     "status": "reported"
+    },
+    {
+     "claim": "The citizen is uncertain whether a tsunami warning exists.",
+     "evidence": [
+      {
+       "quote": "Is there a tsunami warning or not?",
+       "source_id": "C-1"
+      }
+     ],
+     "flagged": null,
+     "status": "reported"
+    }
+   ],
+   "interpreter": "groq:openai/gpt-oss-120b",
+   "life_threat": "unknown",
+   "location_text": "East Beach",
+   "missing_info": [
+    "Official confirmation of tsunami warning status",
+    "Any evacuation or shelter instructions"
+   ],
+   "needs_mentioned": [],
+   "operations_affected": [],
+   "people_max": null,
+   "people_min": null,
+   "summary": "A citizen asks whether a tsunami warning is in effect and reports that police at East Beach said there is no warning.",
+   "zone_id": "Z-EAST"
+  }
+ },
+ "interpret:C-2": {
+  "hash": "0e8f2b4a5f18849a",
+  "model": "openai/gpt-oss-120b",
+  "output": {
+   "comm_id": "C-2",
+   "confidence": 0.98,
+   "facts": [
+    {
+     "claim": "An old man collapsed at the central pharmacy.",
+     "evidence": [
+      {
+       "quote": "An old man collapsed at the central pharmacy",
+       "source_id": "C-2"
+      }
+     ],
+     "flagged": null,
+     "status": "reported"
+    },
+    {
+     "claim": "The man is not breathing well.",
+     "evidence": [
+      {
+       "quote": "he is not breathing well",
+       "source_id": "C-2"
+      }
+     ],
+     "flagged": null,
+     "status": "reported"
+    },
+    {
+     "claim": "The ambulance line is busy.",
+     "evidence": [
+      {
+       "quote": "the ambulance line is busy",
+       "source_id": "C-2"
+      }
+     ],
+     "flagged": null,
+     "status": "reported"
+    }
+   ],
+   "interpreter": "groq:openai/gpt-oss-120b",
+   "life_threat": "yes",
+   "location_text": "central pharmacy",
+   "missing_info": [
+    "Exact location within the pharmacy (room or aisle)",
+    "Current vital signs of the patient",
+    "Availability of alternative emergency contact methods",
+    "Time since collapse"
+   ],
+   "needs_mentioned": [
+    "medical assistance for the collapsed individual"
+   ],
+   "operations_affected": [
+    "ambulance dispatch communication"
+   ],
+   "people_max": null,
+   "people_min": null,
+   "summary": "A citizen reports an elderly man collapsed at the central pharmacy, is having breathing difficulty, and the ambulance line is currently busy.",
+   "zone_id": "Z-CENTRE"
+  }
+ },
+ "interpret:C-3": {
+  "hash": "b3d4e33ce323ad74",
+  "model": "openai/gpt-oss-120b",
+  "output": {
+   "comm_id": "C-3",
+   "confidence": 0.98,
+   "facts": [
+    {
+     "claim": "Ferry passengers are disembarking slowly at the port.",
+     "evidence": [
+      {
+       "quote": "At the port: ferry passengers are disembarking slowly",
+       "source_id": "C-3"
+      }
+     ],
+     "flagged": null,
+     "status": "reported"
+    },
+    {
+     "claim": "Hundreds of passengers are trying to call families.",
+     "evidence": [
+      {
+       "quote": "hundreds trying to call families",
+       "source_id": "C-3"
+      }
+     ],
+     "flagged": null,
+     "status": "reported"
+    },
+    {
+     "claim": "The cellular network does not work at all at the port.",
+     "evidence": [
+      {
+       "quote": "the network does not work at all here",
+       "source_id": "C-3"
+      }
+     ],
+     "flagged": null,
+     "status": "reported"
+    }
+   ],
+   "interpreter": "groq:openai/gpt-oss-120b",
+   "life_threat": "unknown",
+   "location_text": "At the port",
+   "missing_info": [
+    "Exact number of affected passengers",
+    "Cause of the network outage",
+    "Status of ferry schedule and any delays"
+   ],
+   "needs_mentioned": [],
+   "operations_affected": [
+    "cellular communication"
+   ],
+   "people_max": null,
+   "people_min": null,
+   "summary": "Citizens report that ferry passengers are disembarking slowly at the port, hundreds are trying to call families, and the cellular network is completely down.",
+   "zone_id": "Z-PORT"
+  }
+ },
+ "interpret:F-1": {
+  "hash": "0d9355873ef1d006",
+  "model": "openai/gpt-oss-120b",
+  "output": {
+   "comm_id": "F-1",
+   "confidence": 0.98,
+   "facts": [
+    {
+     "claim": "The ferry Selin Star has about 300 passengers.",
+     "evidence": [
+      {
+       "quote": "ferry Selin Star with about 300 passengers is holding outside the harbour",
+       "source_id": "F-1"
+      }
+     ],
+     "flagged": null,
+     "status": "reported"
+    },
+    {
+     "claim": "The ferry Selin Star is holding outside the harbour.",
+     "evidence": [
+      {
+       "quote": "ferry Selin Star with about 300 passengers is holding outside the harbour",
+       "source_id": "F-1"
+      }
+     ],
+     "flagged": null,
+     "status": "reported"
+    },
+    {
+     "claim": "Port control cannot coordinate berthing with the coast guard.",
+     "evidence": [
+      {
+       "quote": "We cannot coordinate berthing with the coast guard",
+       "source_id": "F-1"
+      }
+     ],
+     "flagged": null,
+     "status": "reported"
+    },
+    {
+     "claim": "VHF communications are functional.",
+     "evidence": [
+      {
+       "quote": "VHF works",
+       "source_id": "F-1"
+      }
+     ],
+     "flagged": null,
+     "status": "reported"
+    },
+    {
+     "claim": "Data and phone lines are down.",
+     "evidence": [
+      {
+       "quote": "our data and phone lines are down",
+       "source_id": "F-1"
+      }
+     ],
+     "flagged": null,
+     "status": "reported"
+    }
+   ],
+   "interpreter": "groq:openai/gpt-oss-120b",
+   "life_threat": "unknown",
+   "location_text": null,
+   "missing_info": [
+    "Exact number of passengers",
+    "Current safety status of passengers",
+    "Estimated time of arrival for the ferry",
+    "Alternative communication methods with the coast guard"
+   ],
+   "needs_mentioned": [
+    "coordination with coast guard",
+    "restoration of data and phone lines"
+   ],
+   "operations_affected": [
+    "berthing coordination",
+    "data communications",
+    "telephone communications"
+   ],
+   "people_max": null,
+   "people_min": null,
+   "summary": "Port control reports the ferry Selin Star with about 300 passengers is waiting outside the harbour and cannot coordinate berthing because data and phone lines are down while VHF still works.",
+   "zone_id": "Z-PORT"
+  }
+ },
+ "interpret:F-2": {
+  "hash": "226f9ef8aa2b98a2",
+  "model": "openai/gpt-oss-120b",
+  "output": {
+   "comm_id": "F-2",
+   "confidence": 0.98,
+   "facts": [
+    {
+     "claim": "About 800 people are registered at the school shelter.",
+     "evidence": [
+      {
+       "quote": "about 800 people registered here",
+       "source_id": "F-2"
+      }
+     ],
+     "flagged": null,
+     "status": "reported"
+    },
+    {
+     "claim": "40 children at the shelter have parents who are not yet located.",
+     "evidence": [
+      {
+       "quote": "including 40 children whose parents are not yet located",
+       "source_id": "F-2"
+      }
+     ],
+     "flagged": null,
+     "status": "reported"
+    },
+    {
+     "claim": "3 diabetics at the shelter need insulin.",
+     "evidence": [
+      {
+       "quote": "and 3 diabetics who need insulin",
+       "source_id": "F-2"
+      }
+     ],
+     "flagged": null,
+     "status": "reported"
+    },
+    {
+     "claim": "The shelter has no phone or internet to reach the health directorate.",
+     "evidence": [
+      {
+       "quote": "We have no phone or internet to reach the health directorate.",
+       "source_id": "F-2"
+      }
+     ],
+     "flagged": null,
+     "status": "reported"
+    }
+   ],
+   "interpreter": "groq:openai/gpt-oss-120b",
+   "life_threat": "unknown",
+   "location_text": null,
+   "missing_info": [
+    "Location or status of the missing parents of the 40 children",
+    "Availability of insulin for the 3 diabetics",
+    "Alternative means to contact health authorities"
+   ],
+   "needs_mentioned": [
+    "phone",
+    "internet",
+    "health directorate contact"
+   ],
+   "operations_affected": [
+    "communication (phone/internet) to health directorate"
+   ],
+   "people_max": null,
+   "people_min": 800,
+   "summary": "School shelter reports 800 registered occupants, including vulnerable individuals, and lacks phone or internet to contact health authorities.",
+   "zone_id": "Z-SHELTER"
+  }
+ },
+ "interpret:F-3": {
+  "hash": "2e5185e23255869e",
+  "model": "openai/gpt-oss-120b",
+  "output": {
+   "comm_id": "F-3",
+   "confidence": 0.98,
+   "facts": [
+    {
+     "claim": "Insulin patients at the shelter are stable for now.",
+     "evidence": [
+      {
+       "quote": "insulin patients stable for now",
+       "source_id": "F-3"
+      }
+     ],
+     "flagged": null,
+     "status": "reported"
+    },
+    {
+     "claim": "The shelter must reach the health directorate within 2 hours.",
+     "evidence": [
+      {
+       "quote": "we must reach the health directorate within 2 hours",
+       "source_id": "F-3"
+      }
+     ],
+     "flagged": null,
+     "status": "reported"
+    }
+   ],
+   "interpreter": "groq:openai/gpt-oss-120b",
+   "life_threat": "unknown",
+   "location_text": null,
+   "missing_info": [
+    "Number of insulin\u2011dependent patients",
+    "Exact location/contact details of the health directorate",
+    "Available means of transport to reach the directorate",
+    "Current medical supplies at the shelter"
+   ],
+   "needs_mentioned": [
+    "health directorate"
+   ],
+   "operations_affected": [
+    "communication with health directorate"
+   ],
+   "people_max": null,
+   "people_min": null,
+   "summary": "Shelter reports insulin patients are stable but requires contact with the health directorate within two hours.",
+   "zone_id": "Z-SHELTER"
+  }
+ },
+ "interpret:M-1": {
+  "hash": "2c8aaf029bfa8b17",
+  "model": "openai/gpt-oss-120b",
+  "output": {
+   "comm_id": "M-1",
+   "confidence": 0.98,
+   "facts": [
+    {
+     "claim": "People are saying the tsunami sirens will go off at East Beach.",
+     "evidence": [
+      {
+       "quote": "people are saying the tsunami sirens will go off",
+       "source_id": "M-1"
+      }
+     ],
+     "flagged": null,
+     "status": "reported"
+    },
+    {
+     "claim": "Many people want to leave now.",
+     "evidence": [
+      {
+       "quote": "many want to leave now",
+       "source_id": "M-1"
+      }
+     ],
+     "flagged": null,
+     "status": "reported"
+    }
+   ],
+   "interpreter": "groq:openai/gpt-oss-120b",
+   "life_threat": "unknown",
+   "location_text": "East beach",
+   "missing_info": [
+    "Official confirmation of a tsunami warning or siren activation",
+    "Authority instructions for evacuation or shelter",
+    "Estimated number of people seeking to evacuate",
+    "Available evacuation routes and transportation"
+   ],
+   "needs_mentioned": [
+    "official information"
+   ],
+   "operations_affected": [],
+   "people_max": null,
+   "people_min": null,
+   "summary": "A citizen on East Beach reports rumors that tsunami sirens will sound and many people want to leave, requesting official information.",
+   "zone_id": "Z-EAST"
+  }
+ },
+ "interpret:R-1": {
+  "hash": "9b7b4b717ce8ede6",
+  "model": "openai/gpt-oss-120b",
+  "output": {
+   "comm_id": "R-1",
+   "confidence": 0.98,
+   "facts": [
+    {
+     "claim": "Coast guard unit 1 can talk on TETRA",
+     "evidence": [
+      {
+       "quote": "we can talk on TETRA",
+       "source_id": "R-1"
+      }
+     ],
+     "flagged": null,
+     "status": "reported"
+    },
+    {
+     "claim": "Coast guard unit 1 cannot receive the port's passenger manifest",
+     "evidence": [
+      {
+       "quote": "we cannot receive the port's passenger manifest",
+       "source_id": "R-1"
+      }
+     ],
+     "flagged": null,
+     "status": "reported"
+    },
+    {
+     "claim": "Coast guard unit 1 needs a data connection at the port",
+     "evidence": [
+      {
+       "quote": "we need a data connection at the port",
+       "source_id": "R-1"
+      }
+     ],
+     "flagged": null,
+     "status": "reported"
+    }
+   ],
+   "interpreter": "groq:openai/gpt-oss-120b",
+   "life_threat": "unknown",
+   "location_text": null,
+   "missing_info": [
+    "Who can provide the required data connection",
+    "Status of the passenger manifest transmission infrastructure",
+    "Whether alternative communication methods are available"
+   ],
+   "needs_mentioned": [
+    "data connection for receiving passenger manifest"
+   ],
+   "operations_affected": [
+    "communication of passenger manifest",
+    "lack of data connection at port"
+   ],
+   "people_max": null,
+   "people_min": null,
+   "summary": "Coast guard unit 1 reports they can transmit via TETRA but cannot receive the port's passenger manifest and request a data connection at the port.",
+   "zone_id": "Z-PORT"
+  }
+ },
+ "synth:1": {
+  "hash": "84eba2b7ec242f11",
+  "model": "openai/gpt-oss-120b",
+  "output": {
+   "changes": [
+    {
+     "caused_by": [
+      "TM-1",
+      "TM-2"
+     ],
+     "needs_affected": [
+      "NEED-1"
+     ],
+     "summary": "Added two incidents (fiber loss, grid failure) and a corresponding emergency operation need; documented dependencies and identified information gaps.",
+     "t": 0.0
+    }
+   ],
+   "closed_item_ids": [],
+   "contradictions": [],
+   "dependencies": [
+    {
+     "id": "DEP-1",
+     "status": "verified",
+     "steps": [
+      {
+       "description": "FT-1 loss of light removes backhaul for towers P1\u2011P5",
+       "evidence": [
+        {
+         "quote": "FT-1 coastal fibre trunk: loss of light. Towers P1-P5 behind AGG-1 are powered but have no path to the core",
+         "source_id": "TM-1"
+        }
+       ]
+      },
+      {
+       "description": "Towers lose connectivity to dispatch, impairing responder radio communications",
+       "evidence": []
+      }
+     ],
+     "title": "Backhaul loss due to FT-1 outage"
+    },
+    {
+     "id": "DEP-2",
+     "status": "verified",
+     "steps": [
+      {
+       "description": "AGG-1 grid failure forces sites onto batteries, limiting power duration",
+       "evidence": [
+        {
+         "quote": "Grid failure across Port Selin: all sites running on batteries",
+         "source_id": "TM-2"
+        }
+       ]
+      },
+      {
+       "description": "Reduced power may cause further equipment shutdowns, compounding communication loss",
+       "evidence": []
+      }
+     ],
+     "title": "Power loss at AGG-1 affecting site operations"
+    }
+   ],
+   "gaps": [
+    {
+     "id": "GAP-1",
+     "question": "Exact number of users and responders affected by the backhaul outage",
+     "why_it_matters": "Needed to size alternative communication resources"
+    },
+    {
+     "id": "GAP-2",
+     "question": "Estimated time until battery backup at AGG-1 is exhausted",
+     "why_it_matters": "Impacts planning for temporary power or alternative routing"
+    }
+   ],
+   "incidents": [
+    {
+     "comm_ids": [],
+     "confidence": 0.9,
+     "facts": [
+      {
+       "claim": "FT-1 coastal fibre trunk has loss of light, cutting backhaul for towers P1\u2011P5",
+       "evidence": [
+        {
+         "quote": "FT-1 coastal fibre trunk: loss of light. Towers P1-P5 behind AGG-1 are powered but have no path to the core",
+         "source_id": "TM-1"
+        }
+       ],
+       "flagged": null,
+       "status": "verified"
+      }
+     ],
+     "id": "INC-1",
+     "life_threat": "unknown",
+     "people_max": null,
+     "people_min": null,
+     "related": [],
+     "title": "Coastal fibre trunk (FT-1) loss of light",
+     "zone_id": "Z-PORT"
+    },
+    {
+     "comm_ids": [],
+     "confidence": 0.9,
+     "facts": [
+      {
+       "claim": "Grid failure across Port Selin; all sites running on batteries",
+       "evidence": [
+        {
+         "quote": "Grid failure across Port Selin: all sites running on batteries",
+         "source_id": "TM-2"
+        }
+       ],
+       "flagged": null,
+       "status": "verified"
+      }
+     ],
+     "id": "INC-2",
+     "life_threat": "unknown",
+     "people_max": null,
+     "people_min": null,
+     "related": [
+      {
+       "incident_id": "INC-1",
+       "note": "",
+       "relation": "same_area"
+      }
+     ],
+     "title": "Grid failure at aggregator AGG-1",
+     "zone_id": "Z-PORT"
+    }
+   ],
+   "needs": [
+    {
+     "category": "emergency_operation",
+     "confidence": 0.8,
+     "evidence": [],
+     "first_seen_t": 0.0,
+     "id": "NEED-1",
+     "incident_ids": [
+      "INC-1",
+      "INC-2"
+     ],
+     "life_threat": "yes",
+     "people_max": null,
+     "people_min": null,
+     "purpose": "Coordinate rescue and response despite backhaul loss",
+     "resolution": "",
+     "service": "responder_radio",
+     "status": "open",
+     "verification_needed": false,
+     "who": "Port emergency responders",
+     "zone_id": "Z-PORT"
+    }
+   ],
+   "resolved_need_ids": [],
+   "summary": "Telemetry shows a loss of light on the coastal fibre trunk (FT-1) cutting backhaul for towers P1\u2011P5, and a grid failure at aggregator AGG-1 leaving all port sites on batteries."
+  }
+ },
+ "synth:10": {
+  "hash": "8e801266a9ff4ea7",
+  "model": "openai/gpt-oss-120b",
+  "output": {
+   "changes": [
+    {
+     "caused_by": [
+      "F-3"
+     ],
+     "needs_affected": [
+      "NEED-5"
+     ],
+     "summary": "Added two reported facts about insulin patients and urgent need to contact health directorate to incident INC-4; updated need NEED-5 with evidence and purpose.",
+     "t": 45.0
+    }
+   ],
+   "closed_item_ids": [],
+   "contradictions": [],
+   "dependencies": [],
+   "gaps": [],
+   "incidents": [
+    {
+     "comm_ids": [
+      "F-2",
+      "F-3"
+     ],
+     "confidence": 0.5,
+     "facts": [
+      {
+       "claim": "Insulin patients at the shelter are stable for now.",
+       "evidence": [
+        {
+         "quote": "insulin patients stable for now",
+         "source_id": "F-3"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "The shelter must reach the health directorate within 2 hours.",
+       "evidence": [
+        {
+         "quote": "we must reach the health directorate within 2 hours",
+         "source_id": "F-3"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      }
+     ],
+     "id": "INC-4",
+     "life_threat": "unknown",
+     "people_max": null,
+     "people_min": null,
+     "related": [],
+     "title": "School shelter lacking phone and internet connectivity",
+     "zone_id": "Z-SHELTER"
+    }
+   ],
+   "needs": [
+    {
+     "category": "critical_facility",
+     "confidence": 0.5,
+     "evidence": [
+      {
+       "quote": "insulin patients stable for now",
+       "source_id": "F-3"
+      },
+      {
+       "quote": "we must reach the health directorate within 2 hours",
+       "source_id": "F-3"
+      }
+     ],
+     "first_seen_t": 45.0,
+     "id": "NEED-5",
+     "incident_ids": [
+      "INC-4"
+     ],
+     "life_threat": "unknown",
+     "people_max": 3,
+     "people_min": 3,
+     "purpose": "receive status update and coordinate medical supplies for insulin\u2011dependent patients",
+     "resolution": "",
+     "service": "data",
+     "status": "open",
+     "verification_needed": false,
+     "who": "Health authorities",
+     "zone_id": "Z-SHELTER"
+    }
+   ],
+   "resolved_need_ids": [],
+   "summary": "Shelter reports insulin\u2011dependent patients are stable but require contact with the health directorate within two hours. No new incidents reported; existing incidents remain unchanged."
+  }
+ },
+ "synth:11": {
+  "hash": "550071c95812ac61",
+  "model": "openai/gpt-oss-120b",
+  "output": {
+   "changes": [],
+   "closed_item_ids": [],
+   "contradictions": [],
+   "dependencies": [],
+   "gaps": [
+    {
+     "id": "GAP-13",
+     "question": "Will the East Beach site lose communication within the next 15 minutes due to battery depletion?",
+     "why_it_matters": "Loss would affect voice alerts for residents and any emergency coordination on the beach."
+    }
+   ],
+   "incidents": [],
+   "needs": [],
+   "resolved_need_ids": [],
+   "summary": "Port fibre trunk remains dark and power\u2011only towers lack backhaul; AGG\u20111 is on batteries with limited charge. Shelter batteries are at 52% but still isolated. East Beach site battery is low and may go off\u2011air in 15 minutes."
+  }
+ },
+ "synth:12": {
+  "hash": "3efdfe45884c2b0f",
+  "model": "openai/gpt-oss-120b",
+  "output": {
+   "changes": [
+    {
+     "caused_by": [
+      "C-3",
+      "TM-1",
+      "TM-2"
+     ],
+     "needs_affected": [
+      "NEED-2"
+     ],
+     "summary": "Added cellular outage facts to ferry incident and created dependency chain linking FT-1 and AGG-1 failures to the outage.",
+     "t": 0.0
+    }
+   ],
+   "closed_item_ids": [],
+   "contradictions": [],
+   "dependencies": [
+    {
+     "id": "DEP-5",
+     "status": "reported",
+     "steps": [
+      {
+       "description": "FT-1 loss of light removes backhaul for cellular base stations.",
+       "evidence": [
+        {
+         "quote": "FT-1 coastal fibre trunk: loss of light. Towers P1-P5 behind AGG-1 are powered but have no path to the core",
+         "source_id": "TM-1"
+        }
+       ]
+      },
+      {
+       "description": "AGG-1 grid failure forces sites onto batteries, limiting power for cellular equipment.",
+       "evidence": [
+        {
+         "quote": "Grid failure across Port Selin: all sites running on batteries",
+         "source_id": "TM-2"
+        }
+       ]
+      },
+      {
+       "description": "Combined backhaul and power loss results in complete cellular outage reported by citizens.",
+       "evidence": [
+        {
+         "quote": "the network does not work at all here",
+         "source_id": "C-3"
+        }
+       ]
+      }
+     ],
+     "title": "Cellular network outage at port"
+    }
+   ],
+   "gaps": [
+    {
+     "id": "GAP-14",
+     "question": "Exact number of passengers unable to reach cellular network and any alternative communication methods they have",
+     "why_it_matters": "Determines urgency of establishing emergency voice/data links for life\u2011safety communication."
+    }
+   ],
+   "incidents": [
+    {
+     "comm_ids": [
+      "F-1",
+      "R-1",
+      "C-3"
+     ],
+     "confidence": 0.5,
+     "facts": [
+      {
+       "claim": "Cellular network does not work at all at the port.",
+       "evidence": [
+        {
+         "quote": "the network does not work at all here",
+         "source_id": "C-3"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "Hundreds of passengers are trying to call families.",
+       "evidence": [
+        {
+         "quote": "hundreds trying to call families",
+         "source_id": "C-3"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "Ferry passengers are disembarking slowly at the port.",
+       "evidence": [
+        {
+         "quote": "At the port: ferry passengers are disembarking slowly",
+         "source_id": "C-3"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      }
+     ],
+     "id": "INC-3",
+     "life_threat": "unknown",
+     "people_max": null,
+     "people_min": null,
+     "related": [],
+     "title": "Ferry Selin Star unable to coordinate berthing",
+     "zone_id": "Z-PORT"
+    }
+   ],
+   "needs": [
+    {
+     "category": "life_safety",
+     "confidence": 0.7,
+     "evidence": [],
+     "first_seen_t": 70.0,
+     "id": "NEED-2",
+     "incident_ids": [
+      "INC-3"
+     ],
+     "life_threat": "unknown",
+     "people_max": 300,
+     "people_min": 300,
+     "purpose": "Allow passengers to contact families and receive instructions while disembarking",
+     "resolution": "",
+     "service": "voice",
+     "status": "open",
+     "verification_needed": false,
+     "who": "Ferry crew and passengers on Selin Star",
+     "zone_id": "Z-PORT"
+    }
+   ],
+   "resolved_need_ids": [],
+   "summary": "Port cellular network is confirmed down, preventing ferry passengers from contacting families while they disembark slowly. This adds confirmed data loss to the existing backhaul and power failures affecting port operations."
+  }
+ },
+ "synth:2": {
+  "hash": "50b50fe731073ec8",
+  "model": "openai/gpt-oss-120b",
+  "output": {
+   "changes": [
+    {
+     "caused_by": [
+      "F-1",
+      "TM-1",
+      "TM-2"
+     ],
+     "needs_affected": [
+      "NEED-2",
+      "NEED-3"
+     ],
+     "summary": "Added incident for ferry berthing coordination failure and related communication needs; linked to existing backhaul and power failures.",
+     "t": 2.0
+    }
+   ],
+   "closed_item_ids": [],
+   "contradictions": [],
+   "dependencies": [
+    {
+     "id": "DEP-3",
+     "status": "inferred",
+     "steps": [
+      {
+       "description": "FT-1 loss of light cuts backhaul for towers serving port control, causing data and phone outage.",
+       "evidence": [
+        {
+         "quote": "FT-1 coastal fibre trunk: loss of light. Towers P1-P5 behind AGG-1 are powered but have no path to the core",
+         "source_id": "TM-1"
+        },
+        {
+         "quote": "our data and phone lines are down",
+         "source_id": "F-1"
+        }
+       ]
+      },
+      {
+       "description": "AGG-1 grid failure forces sites onto batteries, limiting power for communications equipment.",
+       "evidence": [
+        {
+         "quote": "Grid failure across Port Selin: all sites running on batteries",
+         "source_id": "TM-2"
+        }
+       ]
+      }
+     ],
+     "title": "Impact of FT-1 and AGG-1 failures on port communications"
+    }
+   ],
+   "gaps": [
+    {
+     "id": "GAP-3",
+     "question": "Exact safety status of ferry passengers and any medical emergencies on board",
+     "why_it_matters": "Determines urgency of life\u2011safety communications"
+    }
+   ],
+   "incidents": [
+    {
+     "comm_ids": [
+      "F-1"
+     ],
+     "confidence": 0.7,
+     "facts": [
+      {
+       "claim": "The ferry Selin Star has about 300 passengers.",
+       "evidence": [
+        {
+         "quote": "ferry Selin Star with about 300 passengers is holding outside the harbour",
+         "source_id": "F-1"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "Port control cannot coordinate berthing with the coast guard.",
+       "evidence": [
+        {
+         "quote": "We cannot coordinate berthing with the coast guard",
+         "source_id": "F-1"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "VHF communications are functional.",
+       "evidence": [
+        {
+         "quote": "VHF works",
+         "source_id": "F-1"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "Data and phone lines are down.",
+       "evidence": [
+        {
+         "quote": "our data and phone lines are down",
+         "source_id": "F-1"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      }
+     ],
+     "id": "INC-3",
+     "life_threat": "unknown",
+     "people_max": 300,
+     "people_min": 300,
+     "related": [
+      {
+       "incident_id": "INC-1",
+       "note": "",
+       "relation": "caused_by"
+      },
+      {
+       "incident_id": "INC-2",
+       "note": "",
+       "relation": "caused_by"
+      }
+     ],
+     "title": "Ferry Selin Star unable to coordinate berthing",
+     "zone_id": "Z-PORT"
+    }
+   ],
+   "needs": [
+    {
+     "category": "life_safety",
+     "confidence": 0.6,
+     "evidence": [],
+     "first_seen_t": 2.0,
+     "id": "NEED-2",
+     "incident_ids": [
+      "INC-3"
+     ],
+     "life_threat": "unknown",
+     "people_max": 300,
+     "people_min": 300,
+     "purpose": "Coordinate safe berthing and emergency communication with coast guard",
+     "resolution": "",
+     "service": "voice",
+     "status": "open",
+     "verification_needed": false,
+     "who": "Ferry crew and passengers on Selin Star",
+     "zone_id": "Z-PORT"
+    },
+    {
+     "category": "emergency_operation",
+     "confidence": 0.6,
+     "evidence": [],
+     "first_seen_t": 2.0,
+     "id": "NEED-3",
+     "incident_ids": [
+      "INC-3"
+     ],
+     "life_threat": "unknown",
+     "people_max": null,
+     "people_min": null,
+     "purpose": "Restore data communications for berthing coordination and site operations",
+     "resolution": "",
+     "service": "data",
+     "status": "open",
+     "verification_needed": false,
+     "who": "Port emergency responders",
+     "zone_id": "Z-PORT"
+    }
+   ],
+   "resolved_need_ids": [],
+   "summary": "Port control reports the ferry Selin Star with ~300 passengers unable to coordinate berthing due to data and phone outages, while VHF remains functional. The outage stems from the FT-1 backhaul loss and AGG-1 grid failure, leaving port sites on battery power."
+  }
+ },
+ "synth:3": {
+  "hash": "bb1bd1ac8834e48e",
+  "model": "openai/gpt-oss-120b",
+  "output": {
+   "changes": [
+    {
+     "caused_by": [
+      "F-2"
+     ],
+     "needs_affected": [
+      "NEED-4",
+      "NEED-5"
+     ],
+     "summary": "Added incident for shelter communication loss and two new needs for voice and data support.",
+     "t": 4.0
+    }
+   ],
+   "closed_item_ids": [],
+   "contradictions": [],
+   "dependencies": [
+    {
+     "id": "DEP-4",
+     "status": "inferred",
+     "steps": [
+      {
+       "description": "FT-1 loss removes backhaul for Z-SHELTER communications",
+       "evidence": [
+        {
+         "quote": "FT-1 coastal fibre trunk: loss of light. Towers P1-P5 behind AGG-1 are powered but have no path to the core",
+         "source_id": "TM-1"
+        }
+       ]
+      },
+      {
+       "description": "No alternative backhaul; shelter phones/internet offline",
+       "evidence": [
+        {
+         "quote": "We have no phone or internet to reach the health directorate.",
+         "source_id": "F-2"
+        }
+       ]
+      }
+     ],
+     "title": "Backhaul loss affecting shelter communications"
+    }
+   ],
+   "gaps": [
+    {
+     "id": "GAP-4",
+     "question": "Availability of insulin for the 3 diabetics at the shelter",
+     "why_it_matters": "Medical emergency may become life\u2011threatening without timely supply"
+    },
+    {
+     "id": "GAP-5",
+     "question": "Alternative communication methods for the shelter to reach health authorities",
+     "why_it_matters": "Needed to resolve NEED-4 and NEED-5"
+    }
+   ],
+   "incidents": [
+    {
+     "comm_ids": [
+      "F-2"
+     ],
+     "confidence": 0.7,
+     "facts": [
+      {
+       "claim": "about 800 people registered here",
+       "evidence": [
+        {
+         "quote": "about 800 people registered here",
+         "source_id": "F-2"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "including 40 children whose parents are not yet located",
+       "evidence": [
+        {
+         "quote": "including 40 children whose parents are not yet located",
+         "source_id": "F-2"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "and 3 diabetics who need insulin",
+       "evidence": [
+        {
+         "quote": "and 3 diabetics who need insulin",
+         "source_id": "F-2"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "We have no phone or internet to reach the health directorate.",
+       "evidence": [
+        {
+         "quote": "We have no phone or internet to reach the health directorate.",
+         "source_id": "F-2"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      }
+     ],
+     "id": "INC-4",
+     "life_threat": "unknown",
+     "people_max": null,
+     "people_min": 800,
+     "related": [
+      {
+       "incident_id": "INC-1",
+       "note": "",
+       "relation": "same_area"
+      }
+     ],
+     "title": "School shelter lacking phone and internet connectivity",
+     "zone_id": "Z-SHELTER"
+    }
+   ],
+   "needs": [
+    {
+     "category": "life_safety",
+     "confidence": 0.8,
+     "evidence": [],
+     "first_seen_t": 4.0,
+     "id": "NEED-4",
+     "incident_ids": [
+      "INC-4"
+     ],
+     "life_threat": "yes",
+     "people_max": null,
+     "people_min": 800,
+     "purpose": "Contact health directorate for medical assistance (insulin) and child welfare",
+     "resolution": "",
+     "service": "voice",
+     "status": "open",
+     "verification_needed": false,
+     "who": "School shelter occupants and staff",
+     "zone_id": "Z-SHELTER"
+    },
+    {
+     "category": "critical_facility",
+     "confidence": 0.8,
+     "evidence": [],
+     "first_seen_t": 4.0,
+     "id": "NEED-5",
+     "incident_ids": [
+      "INC-4"
+     ],
+     "life_threat": "yes",
+     "people_max": 3,
+     "people_min": 3,
+     "purpose": "Receive status of 3 diabetics needing insulin and coordinate supply",
+     "resolution": "",
+     "service": "data",
+     "status": "open",
+     "verification_needed": false,
+     "who": "Health authorities",
+     "zone_id": "Z-SHELTER"
+    }
+   ],
+   "resolved_need_ids": [],
+   "summary": "A school shelter in zone Z-SHELTER reports ~800 occupants, including 40 unaccompanied children and 3 diabetics needing insulin, but lacks phone or internet to contact health authorities. This adds a new communication\u2011critical situation alongside the ongoing port outage."
+  }
+ },
+ "synth:4": {
+  "hash": "f2e4b9f9fdc3e75f",
+  "model": "openai/gpt-oss-120b",
+  "output": {
+   "changes": [
+    {
+     "caused_by": [
+      "M-1"
+     ],
+     "needs_affected": [
+      "NEED-6"
+     ],
+     "summary": "Added incident for tsunami siren rumors and a new population communication need for East Beach.",
+     "t": 6.0
+    }
+   ],
+   "closed_item_ids": [],
+   "contradictions": [],
+   "dependencies": [],
+   "gaps": [
+    {
+     "id": "GAP-6",
+     "question": "Is there an official tsunami warning or siren activation for East Beach?",
+     "why_it_matters": "Clarifies life\u2011safety threat and guides evacuation communication"
+    },
+    {
+     "id": "GAP-7",
+     "question": "How many people are currently seeking to evacuate from East Beach?",
+     "why_it_matters": "Helps size the communication and transport response"
+    }
+   ],
+   "incidents": [
+    {
+     "comm_ids": [
+      "M-1"
+     ],
+     "confidence": 0.6,
+     "facts": [
+      {
+       "claim": "People are saying the tsunami sirens will go off at East Beach.",
+       "evidence": [
+        {
+         "quote": "people are saying the tsunami sirens will go off",
+         "source_id": "M-1"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "Many people want to leave now.",
+       "evidence": [
+        {
+         "quote": "many want to leave now",
+         "source_id": "M-1"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      }
+     ],
+     "id": "INC-5",
+     "life_threat": "unknown",
+     "people_max": null,
+     "people_min": null,
+     "related": [],
+     "title": "Rumors of tsunami siren at East Beach",
+     "zone_id": "Z-EAST"
+    }
+   ],
+   "needs": [
+    {
+     "category": "population",
+     "confidence": 0.5,
+     "evidence": [],
+     "first_seen_t": 6.0,
+     "id": "NEED-6",
+     "incident_ids": [
+      "INC-5"
+     ],
+     "life_threat": "unknown",
+     "people_max": null,
+     "people_min": null,
+     "purpose": "Obtain official confirmation of tsunami warning and evacuation instructions",
+     "resolution": "",
+     "service": "voice",
+     "status": "open",
+     "verification_needed": true,
+     "who": "East Beach residents and visitors",
+     "zone_id": "Z-EAST"
+    }
+   ],
+   "resolved_need_ids": [],
+   "summary": "Rumors of an imminent tsunami siren at East Beach (Z-EAST) are spreading, prompting many residents to seek evacuation. No official warning has been confirmed, but the situation adds a population\u2011level communication need alongside the existing port and shelter crises."
+  }
+ },
+ "synth:5": {
+  "hash": "5eb59f52d112632a",
+  "model": "openai/gpt-oss-120b",
+  "output": {
+   "changes": [
+    {
+     "caused_by": [
+      "C-1"
+     ],
+     "needs_affected": [
+      "NEED-6"
+     ],
+     "summary": "Added police denial claim to East Beach rumor incident and flagged population voice need as requiring verification.",
+     "t": 9.0
+    }
+   ],
+   "closed_item_ids": [],
+   "contradictions": [],
+   "dependencies": [],
+   "gaps": [
+    {
+     "id": "GAP-6",
+     "question": "Is there an official tsunami warning or siren activation for East Beach?",
+     "why_it_matters": "Residents need authoritative guidance to decide whether to evacuate."
+    }
+   ],
+   "incidents": [
+    {
+     "comm_ids": [
+      "M-1",
+      "C-1"
+     ],
+     "confidence": 0.5,
+     "facts": [
+      {
+       "claim": "Police at east beach told us there is no warning.",
+       "evidence": [
+        {
+         "quote": "Police at east beach told us there is no warning.",
+         "source_id": "C-1"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "The citizen is uncertain whether a tsunami warning exists.",
+       "evidence": [
+        {
+         "quote": "Is there a tsunami warning or not?",
+         "source_id": "C-1"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      }
+     ],
+     "id": "INC-5",
+     "life_threat": "unknown",
+     "people_max": null,
+     "people_min": null,
+     "related": [],
+     "title": "Rumors of tsunami siren at East Beach",
+     "zone_id": "Z-EAST"
+    }
+   ],
+   "needs": [
+    {
+     "category": "population",
+     "confidence": 0.5,
+     "evidence": [],
+     "first_seen_t": 9.0,
+     "id": "NEED-6",
+     "incident_ids": [
+      "INC-5"
+     ],
+     "life_threat": "unknown",
+     "people_max": null,
+     "people_min": null,
+     "purpose": "obtain official tsunami warning status and evacuation instructions",
+     "resolution": "",
+     "service": "voice",
+     "status": "open",
+     "verification_needed": true,
+     "who": "East Beach residents and visitors",
+     "zone_id": "Z-EAST"
+    }
+   ],
+   "resolved_need_ids": [],
+   "summary": "A citizen at East Beach reports police saying there is no tsunami warning, but the official status remains unconfirmed. This adds a reported clarification to the rumor incident and highlights the need for verification of the warning status for residents."
+  }
+ },
+ "synth:6": {
+  "hash": "7b55b36d6702cfa0",
+  "model": "openai/gpt-oss-120b",
+  "output": {
+   "changes": [
+    {
+     "caused_by": [],
+     "needs_affected": [],
+     "summary": "No new communications, telemetry, or correlation hints were added; existing incidents, needs, and dependencies stay as previously recorded.",
+     "t": 12.0
+    }
+   ],
+   "closed_item_ids": [],
+   "contradictions": [],
+   "dependencies": [],
+   "gaps": [],
+   "incidents": [],
+   "needs": [],
+   "resolved_need_ids": [],
+   "summary": "No new information received; the operational picture remains unchanged since the last update."
+  }
+ },
+ "synth:7": {
+  "hash": "070b33a71cd93b0c",
+  "model": "openai/gpt-oss-120b",
+  "output": {
+   "changes": [
+    {
+     "caused_by": [
+      "C-2"
+     ],
+     "needs_affected": [
+      "NEED-7"
+     ],
+     "summary": "Added new incident (INC-6) for medical emergency at central pharmacy and created corresponding life\u2011safety need (NEED-7).",
+     "t": 15.0
+    }
+   ],
+   "closed_item_ids": [],
+   "contradictions": [],
+   "dependencies": [],
+   "gaps": [
+    {
+     "id": "GAP-8",
+     "question": "Exact location within the pharmacy (room or aisle) of the collapsed patient",
+     "why_it_matters": "Needed for rapid responder navigation"
+    },
+    {
+     "id": "GAP-9",
+     "question": "Current vital signs of the patient",
+     "why_it_matters": "Determines urgency and required medical resources"
+    },
+    {
+     "id": "GAP-10",
+     "question": "Alternative emergency contact methods available when ambulance line is busy",
+     "why_it_matters": "Ensures continuity of emergency communication"
+    },
+    {
+     "id": "GAP-11",
+     "question": "Time since collapse",
+     "why_it_matters": "Impacts patient prognosis and response priority"
+    }
+   ],
+   "incidents": [
+    {
+     "comm_ids": [
+      "C-2"
+     ],
+     "confidence": 0.5,
+     "facts": [
+      {
+       "claim": "An old man collapsed at the central pharmacy.",
+       "evidence": [
+        {
+         "quote": "An old man collapsed at the central pharmacy",
+         "source_id": "C-2"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "The man is not breathing well.",
+       "evidence": [
+        {
+         "quote": "he is not breathing well",
+         "source_id": "C-2"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "The ambulance line is busy.",
+       "evidence": [
+        {
+         "quote": "the ambulance line is busy",
+         "source_id": "C-2"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      }
+     ],
+     "id": "INC-6",
+     "life_threat": "yes",
+     "people_max": null,
+     "people_min": null,
+     "related": [],
+     "title": "Elderly man collapsed at central pharmacy, ambulance line busy",
+     "zone_id": "Z-CENTRE"
+    }
+   ],
+   "needs": [
+    {
+     "category": "life_safety",
+     "confidence": 0.7,
+     "evidence": [],
+     "first_seen_t": 15.0,
+     "id": "NEED-7",
+     "incident_ids": [
+      "INC-6"
+     ],
+     "life_threat": "yes",
+     "people_max": null,
+     "people_min": null,
+     "purpose": "Coordinate emergency medical response for collapsed patient at central pharmacy",
+     "resolution": "",
+     "service": "voice",
+     "status": "open",
+     "verification_needed": false,
+     "who": "Emergency medical responders (ambulance crew)",
+     "zone_id": "Z-CENTRE"
+    }
+   ],
+   "resolved_need_ids": [],
+   "summary": "A life\u2011threatening medical emergency has been reported at the central pharmacy in the town centre (Z\u2011CENTRE). The patient is an elderly man with breathing difficulty and the ambulance dispatch line is currently busy, indicating a potential communications bottleneck for emergency services. No other changes to existing incidents or infrastructure have been reported."
+  }
+ },
+ "synth:8": {
+  "hash": "18184431df69c395",
+  "model": "openai/gpt-oss-120b",
+  "output": {
+   "changes": [
+    {
+     "caused_by": [
+      "R-1"
+     ],
+     "needs_affected": [
+      "NEED-8"
+     ],
+     "summary": "Added reported data outage facts to INC-1 and created a new need for coast guard data connectivity.",
+     "t": 20.0
+    }
+   ],
+   "closed_item_ids": [],
+   "contradictions": [],
+   "dependencies": [],
+   "gaps": [
+    {
+     "id": "GAP-12",
+     "question": "Who can provide the required data connection at the port?",
+     "why_it_matters": "Resolving the data gap is needed for passenger manifest transmission and safe berthing coordination."
+    }
+   ],
+   "incidents": [
+    {
+     "comm_ids": [
+      "F-1",
+      "R-1"
+     ],
+     "confidence": 0.5,
+     "facts": [
+      {
+       "claim": "Data and phone lines are down at the port, preventing receipt of passenger manifest",
+       "evidence": [
+        {
+         "quote": "we cannot receive the port's passenger manifest",
+         "source_id": "R-1"
+        },
+        {
+         "quote": "our data and phone lines are down",
+         "source_id": "F-1"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "Coast guard needs a data connection at the port",
+       "evidence": [
+        {
+         "quote": "we need a data connection at the port",
+         "source_id": "R-1"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      }
+     ],
+     "id": "INC-1",
+     "life_threat": "unknown",
+     "people_max": null,
+     "people_min": null,
+     "related": [],
+     "title": "Coastal fibre trunk (FT-1) loss of light",
+     "zone_id": "Z-PORT"
+    }
+   ],
+   "needs": [
+    {
+     "category": "emergency_operation",
+     "confidence": 0.5,
+     "evidence": [],
+     "first_seen_t": 20.0,
+     "id": "NEED-8",
+     "incident_ids": [
+      "INC-1"
+     ],
+     "life_threat": "unknown",
+     "people_max": null,
+     "people_min": null,
+     "purpose": "receive passenger manifest and coordinate berthing",
+     "resolution": "",
+     "service": "data",
+     "status": "open",
+     "verification_needed": true,
+     "who": "Coast guard unit 1",
+     "zone_id": "Z-PORT"
+    }
+   ],
+   "resolved_need_ids": [],
+   "summary": "Coast guard unit 1 reports they can communicate via TETRA but cannot receive the passenger manifest and need a data connection at the port. The existing fibre trunk outage (FT-1) continues to block data and phone services, confirming the port's data connectivity gap."
+  }
+ },
+ "synth:9": {
+  "hash": "43323eb1a54f1d07",
+  "model": "openai/gpt-oss-120b",
+  "output": {
+   "changes": [
+    {
+     "caused_by": [
+      "TM-1",
+      "TM-2"
+     ],
+     "needs_affected": [],
+     "summary": "Added verified telemetry facts to incidents INC-1 and INC-2",
+     "t": 30.0
+    }
+   ],
+   "closed_item_ids": [],
+   "contradictions": [],
+   "dependencies": [],
+   "gaps": [],
+   "incidents": [
+    {
+     "comm_ids": [
+      "F-1",
+      "R-1"
+     ],
+     "confidence": 0.9,
+     "facts": [
+      {
+       "claim": "FT-1 coastal fibre trunk: loss of light. Towers P1-P5 behind AGG-1 are powered but have no path to the core",
+       "evidence": [
+        {
+         "quote": "FT-1 coastal fibre trunk: loss of light. Towers P1-P5 behind AGG-1 are powered but have no path to the core",
+         "source_id": "TM-1"
+        }
+       ],
+       "flagged": null,
+       "status": "verified"
+      }
+     ],
+     "id": "INC-1",
+     "life_threat": "unknown",
+     "people_max": null,
+     "people_min": null,
+     "related": [],
+     "title": "Coastal fibre trunk (FT-1) loss of light",
+     "zone_id": "Z-PORT"
+    },
+    {
+     "comm_ids": [],
+     "confidence": 0.9,
+     "facts": [
+      {
+       "claim": "Grid failure across Port Selin: all sites running on batteries",
+       "evidence": [
+        {
+         "quote": "Grid failure across Port Selin: all sites running on batteries",
+         "source_id": "TM-2"
+        }
+       ],
+       "flagged": null,
+       "status": "verified"
+      }
+     ],
+     "id": "INC-2",
+     "life_threat": "unknown",
+     "people_max": null,
+     "people_min": null,
+     "related": [],
+     "title": "Grid failure at aggregator AGG-1",
+     "zone_id": "Z-PORT"
+    }
+   ],
+   "needs": [],
+   "resolved_need_ids": [],
+   "summary": "Telemetry confirms the coastal fibre trunk FT-1 loss of light and the grid failure at aggregator AGG-1, both verified. No new communications arrived, so the operational picture remains otherwise unchanged."
+  }
+ }
+}

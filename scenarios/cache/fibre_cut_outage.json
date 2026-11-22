@@ -1,0 +1,680 @@
+{
+ "interpret:C-1": {
+  "hash": "5bc34f25301cac7c",
+  "model": "openai/gpt-oss-120b",
+  "output": {
+   "comm_id": "C-1",
+   "confidence": 0.9,
+   "facts": [
+    {
+     "claim": "Card payments are down across the business district.",
+     "evidence": [
+      {
+       "quote": "Card payments and phones are down across the business district, shops are closing early.",
+       "source_id": "C-1"
+      }
+     ],
+     "flagged": null,
+     "status": "reported"
+    },
+    {
+     "claim": "Phones are down across the business district.",
+     "evidence": [
+      {
+       "quote": "Card payments and phones are down across the business district, shops are closing early.",
+       "source_id": "C-1"
+      }
+     ],
+     "flagged": null,
+     "status": "reported"
+    },
+    {
+     "claim": "Shops are closing early in the business district.",
+     "evidence": [
+      {
+       "quote": "Card payments and phones are down across the business district, shops are closing early.",
+       "source_id": "C-1"
+      }
+     ],
+     "flagged": null,
+     "status": "reported"
+    }
+   ],
+   "interpreter": "groq:openai/gpt-oss-120b",
+   "life_threat": "unknown",
+   "location_text": "business district",
+   "missing_info": [
+    "Verification of outage scope and duration",
+    "Cause of the outage",
+    "Impact on other services (e.g., internet, emergency calls)",
+    "Exact number of shops affected"
+   ],
+   "needs_mentioned": [],
+   "operations_affected": [
+    "payment processing",
+    "cellular communication"
+   ],
+   "people_max": null,
+   "people_min": null,
+   "summary": "A citizen reports that card payments and phones are down in the business district, causing shops to close early.",
+   "zone_id": "Z-BIZ"
+  }
+ },
+ "interpret:C-2": {
+  "hash": "1f10c9d9a21198c6",
+  "model": "openai/gpt-oss-120b",
+  "output": {
+   "comm_id": "C-2",
+   "confidence": 0.98,
+   "facts": [
+    {
+     "claim": "Cannot reach the office VPN from the reported location",
+     "evidence": [
+      {
+       "quote": "Cannot reach the office VPN from here",
+       "source_id": "C-2"
+      }
+     ],
+     "flagged": null,
+     "status": "reported"
+    },
+    {
+     "claim": "Nobody is hurt",
+     "evidence": [
+      {
+       "quote": "Nobody is hurt, just annoying.",
+       "source_id": "C-2"
+      }
+     ],
+     "flagged": null,
+     "status": "reported"
+    }
+   ],
+   "interpreter": "groq:openai/gpt-oss-120b",
+   "life_threat": "no",
+   "location_text": null,
+   "missing_info": [
+    "Estimated time to repair the VPN outage",
+    "Cause of the VPN connectivity issue"
+   ],
+   "needs_mentioned": [],
+   "operations_affected": [
+    "VPN connectivity"
+   ],
+   "people_max": null,
+   "people_min": null,
+   "summary": "A citizen reports inability to reach the office VPN and states no one is injured.",
+   "zone_id": "Z-BIZ"
+  }
+ },
+ "interpret:F-1": {
+  "hash": "e288cf6e3c250a88",
+  "model": "openai/gpt-oss-120b",
+  "output": {
+   "comm_id": "F-1",
+   "confidence": 0.98,
+   "facts": [
+    {
+     "claim": "The nurse call and telecare alarm platform has been offline since 10:05.",
+     "evidence": [
+      {
+       "quote": "our nurse call and telecare alarm platform has been offline since 10:05.",
+       "source_id": "F-1"
+      }
+     ],
+     "flagged": null,
+     "status": "reported"
+    },
+    {
+     "claim": "There are 64 residents at Elm Park Care Home.",
+     "evidence": [
+      {
+       "quote": "64 residents, 2 of them on remote oxygen monitoring.",
+       "source_id": "F-1"
+      }
+     ],
+     "flagged": null,
+     "status": "reported"
+    },
+    {
+     "claim": "Two residents are on remote oxygen monitoring.",
+     "evidence": [
+      {
+       "quote": "2 of them on remote oxygen monitoring.",
+       "source_id": "F-1"
+      }
+     ],
+     "flagged": null,
+     "status": "reported"
+    }
+   ],
+   "interpreter": "groq:openai/gpt-oss-120b",
+   "life_threat": "unknown",
+   "location_text": "Elm Park Care Home",
+   "missing_info": [
+    "Cause of the platform outage",
+    "Estimated time to restore service",
+    "Backup communication measures in place",
+    "Impact on clinical care for residents, especially those on oxygen monitoring"
+   ],
+   "needs_mentioned": [],
+   "operations_affected": [
+    "nurse call system",
+    "telecare alarm platform"
+   ],
+   "people_max": 64,
+   "people_min": 64,
+   "summary": "Elm Park Care Home reports its nurse call and telecare alarm platform has been offline since 10:05, affecting 64 residents, including 2 on remote oxygen monitoring.",
+   "zone_id": "Z-CARE"
+  }
+ },
+ "synth:1": {
+  "hash": "2462a23379aee024",
+  "model": "openai/gpt-oss-120b",
+  "output": {
+   "changes": [
+    {
+     "caused_by": [
+      "TM-1"
+     ],
+     "needs_affected": [],
+     "summary": "Added incident for FB-1 fibre loss and inferred dependency chain; identified gaps about affected zones and critical facilities.",
+     "t": 0.0
+    }
+   ],
+   "closed_item_ids": [],
+   "contradictions": [],
+   "dependencies": [
+    {
+     "id": "DEP-1",
+     "status": "reported",
+     "steps": [
+      {
+       "description": "Excavator strike damaged metro fibre FB-1, causing loss of light.",
+       "evidence": [
+        {
+         "quote": "FB-1 metro fibre: loss of light at 10:05; contractor reports excavator strike at roadworks",
+         "source_id": "TM-1"
+        }
+       ]
+      },
+      {
+       "description": "Potential loss of backhaul connectivity for services in zones served by FB-1.",
+       "evidence": []
+      }
+     ],
+     "title": "FB-1 fibre outage dependency"
+    }
+   ],
+   "gaps": [
+    {
+     "id": "GAP-1",
+     "question": "Which zones and services are dependent on metro fibre link FB-1?",
+     "why_it_matters": "To assess the scope of communication outage and prioritize restoration."
+    },
+    {
+     "id": "GAP-2",
+     "question": "Are any critical facilities (e.g., hospitals, care homes) currently impacted by the fibre loss?",
+     "why_it_matters": "Critical facilities require immediate communication restoration for life\u2011safety operations."
+    }
+   ],
+   "incidents": [
+    {
+     "comm_ids": [],
+     "confidence": 0.6,
+     "facts": [
+      {
+       "claim": "FB-1 metro fibre lost light at 10:05",
+       "evidence": [
+        {
+         "quote": "FB-1 metro fibre: loss of light at 10:05; contractor reports excavator strike at roadworks",
+         "source_id": "TM-1"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "Excavator strike during roadworks caused the loss",
+       "evidence": [
+        {
+         "quote": "contractor reports excavator strike at roadworks",
+         "source_id": "TM-1"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      }
+     ],
+     "id": "INC-1",
+     "life_threat": "unknown",
+     "people_max": null,
+     "people_min": null,
+     "related": [],
+     "title": "Metro fibre link FB-1 loss of light",
+     "zone_id": null
+    }
+   ],
+   "needs": [],
+   "resolved_need_ids": [],
+   "summary": "Metro fibre link FB-1 experienced a loss of light at 10:05, likely due to an excavator strike during roadworks. This infrastructure failure may impact communications in the affected zones, but specific service impacts are not yet confirmed."
+  }
+ },
+ "synth:2": {
+  "hash": "5de22177d76af198",
+  "model": "openai/gpt-oss-120b",
+  "output": {
+   "changes": [
+    {
+     "caused_by": [
+      "F-1",
+      "TM-1"
+     ],
+     "needs_affected": [
+      "NEED-1"
+     ],
+     "summary": "Added incident for care home platform outage, created life\u2011safety need, inferred dependency on FB-1 fibre loss, and recorded gaps about backup measures and restoration time.",
+     "t": 3.0
+    }
+   ],
+   "closed_item_ids": [],
+   "contradictions": [],
+   "dependencies": [
+    {
+     "id": "DEP-2",
+     "status": "inferred",
+     "steps": [
+      {
+       "description": "FB-1 metro fibre loss of light at 10:05 disables backhaul for Elm Park Care Home communication systems.",
+       "evidence": [
+        {
+         "quote": "FB-1 metro fibre: loss of light at 10:05; contractor reports excavator strike at roadworks",
+         "source_id": "TM-1"
+        },
+        {
+         "quote": "our nurse call and telecare alarm platform has been offline since 10:05.",
+         "source_id": "F-1"
+        }
+       ]
+      }
+     ],
+     "title": "Care home platform outage dependency on FB-1 fibre"
+    }
+   ],
+   "gaps": [
+    {
+     "id": "GAP-3",
+     "question": "What backup communication measures are in place at Elm Park Care Home?",
+     "why_it_matters": "To assess alternative life\u2011safety channels while the primary platform is down."
+    },
+    {
+     "id": "GAP-4",
+     "question": "Estimated time to restore the nurse call and telecare alarm platform?",
+     "why_it_matters": "Determines duration of life\u2011safety risk for residents."
+    }
+   ],
+   "incidents": [
+    {
+     "comm_ids": [
+      "F-1"
+     ],
+     "confidence": 0.7,
+     "facts": [
+      {
+       "claim": "The nurse call and telecare alarm platform has been offline since 10:05.",
+       "evidence": [
+        {
+         "quote": "our nurse call and telecare alarm platform has been offline since 10:05.",
+         "source_id": "F-1"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "There are 64 residents at Elm Park Care Home.",
+       "evidence": [
+        {
+         "quote": "64 residents, 2 of them on remote oxygen monitoring.",
+         "source_id": "F-1"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "Two residents are on remote oxygen monitoring.",
+       "evidence": [
+        {
+         "quote": "2 of them on remote oxygen monitoring.",
+         "source_id": "F-1"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      }
+     ],
+     "id": "INC-2",
+     "life_threat": "yes",
+     "people_max": 64,
+     "people_min": 64,
+     "related": [
+      {
+       "incident_id": "INC-1",
+       "note": "Possible dependency on Metro fibre FB-1 loss of light.",
+       "relation": "caused_by"
+      }
+     ],
+     "title": "Elm Park Care Home nurse call and telecare alarm platform outage",
+     "zone_id": "Z-CARE"
+    }
+   ],
+   "needs": [
+    {
+     "category": "life_safety",
+     "confidence": 0.8,
+     "evidence": [],
+     "first_seen_t": 3.0,
+     "id": "NEED-1",
+     "incident_ids": [
+      "INC-2"
+     ],
+     "life_threat": "yes",
+     "people_max": 64,
+     "people_min": 64,
+     "purpose": "Maintain life\u2011safety communication for nurse call and remote monitoring alerts",
+     "resolution": "",
+     "service": "voice",
+     "status": "open",
+     "verification_needed": false,
+     "who": "Elm Park Care Home residents and staff",
+     "zone_id": "Z-CARE"
+    }
+   ],
+   "resolved_need_ids": [],
+   "summary": "Elm Park Care Home reports its nurse call and telecare alarm platform offline since 10:05, affecting 64 residents (including 2 on remote oxygen monitoring). The outage coincides with the Metro fibre link FB-1 loss of light, suggesting a possible dependency. Communication needs for life\u2011safety at the care home are now identified."
+  }
+ },
+ "synth:3": {
+  "hash": "a8c75b448754a99d",
+  "model": "openai/gpt-oss-120b",
+  "output": {
+   "changes": [
+    {
+     "caused_by": [
+      "C-1"
+     ],
+     "needs_affected": [
+      "NEED-2"
+     ],
+     "summary": "Added incident INC-3 for Business District outage and created need NEED-2 for affected population; added GAP-5 for missing outage details.",
+     "t": 5.0
+    }
+   ],
+   "closed_item_ids": [],
+   "contradictions": [],
+   "dependencies": [],
+   "gaps": [
+    {
+     "id": "GAP-5",
+     "question": "What is the exact scope, duration, and cause of the Business District payment and phone outage?",
+     "why_it_matters": "Understanding the impact and root cause is needed to assess whether emergency communication services are affected."
+    }
+   ],
+   "incidents": [
+    {
+     "comm_ids": [
+      "C-1"
+     ],
+     "confidence": 0.5,
+     "facts": [
+      {
+       "claim": "Card payments are down across the business district.",
+       "evidence": [
+        {
+         "quote": "Card payments and phones are down across the business district, shops are closing early.",
+         "source_id": "C-1"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "Phones are down across the business district.",
+       "evidence": [
+        {
+         "quote": "Card payments and phones are down across the business district, shops are closing early.",
+         "source_id": "C-1"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "Shops are closing early in the business district.",
+       "evidence": [
+        {
+         "quote": "Card payments and phones are down across the business district, shops are closing early.",
+         "source_id": "C-1"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      }
+     ],
+     "id": "INC-3",
+     "life_threat": "unknown",
+     "people_max": null,
+     "people_min": null,
+     "related": [],
+     "title": "Business District card payment and phone service outage",
+     "zone_id": "Z-BIZ"
+    }
+   ],
+   "needs": [
+    {
+     "category": "population",
+     "confidence": 0.5,
+     "evidence": [],
+     "first_seen_t": 5.0,
+     "id": "NEED-2",
+     "incident_ids": [
+      "INC-3"
+     ],
+     "life_threat": "no",
+     "people_max": null,
+     "people_min": null,
+     "purpose": "to obtain information about the outage and arrange alternative payment/communication methods",
+     "resolution": "",
+     "service": "voice",
+     "status": "open",
+     "verification_needed": true,
+     "who": "Business District residents and merchants",
+     "zone_id": "Z-BIZ"
+    }
+   ],
+   "resolved_need_ids": [],
+   "summary": "A reported outage of card payment processing and cellular phone service is affecting the Business District (Z-BIZ), causing early shop closures. The previously identified care home platform outage remains unchanged. No confirmed infrastructure link between the two outages has been established."
+  }
+ },
+ "synth:4": {
+  "hash": "b06768b0cd627d95",
+  "model": "openai/gpt-oss-120b",
+  "output": {
+   "changes": [
+    {
+     "caused_by": [
+      "C-2"
+     ],
+     "needs_affected": [
+      "NEED-3"
+     ],
+     "summary": "Added VPN outage incident and associated data need; linked to existing Business District outage.",
+     "t": 8.0
+    }
+   ],
+   "closed_item_ids": [],
+   "contradictions": [],
+   "dependencies": [],
+   "gaps": [
+    {
+     "id": "GAP-6",
+     "question": "What is the cause of the Business District VPN outage and expected repair time?",
+     "why_it_matters": ""
+    }
+   ],
+   "incidents": [
+    {
+     "comm_ids": [
+      "C-2"
+     ],
+     "confidence": 0.6,
+     "facts": [
+      {
+       "claim": "Cannot reach the office VPN from the reported location",
+       "evidence": [
+        {
+         "quote": "Cannot reach the office VPN from here",
+         "source_id": "C-2"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "Nobody is hurt",
+       "evidence": [
+        {
+         "quote": "Nobody is hurt, just annoying.",
+         "source_id": "C-2"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      }
+     ],
+     "id": "INC-4",
+     "life_threat": "no",
+     "people_max": null,
+     "people_min": null,
+     "related": [
+      {
+       "incident_id": "INC-3",
+       "note": "Both incidents reported within 300\u202fm per correlation hint",
+       "relation": "same_area"
+      }
+     ],
+     "title": "Business District VPN connectivity outage",
+     "zone_id": "Z-BIZ"
+    }
+   ],
+   "needs": [
+    {
+     "category": "population",
+     "confidence": 0.6,
+     "evidence": [],
+     "first_seen_t": 8.0,
+     "id": "NEED-3",
+     "incident_ids": [
+      "INC-4"
+     ],
+     "life_threat": "no",
+     "people_max": null,
+     "people_min": null,
+     "purpose": "Restore VPN connectivity for business operations",
+     "resolution": "",
+     "service": "data",
+     "status": "open",
+     "verification_needed": false,
+     "who": "Business District office workers and merchants",
+     "zone_id": "Z-BIZ"
+    }
+   ],
+   "resolved_need_ids": [],
+   "summary": "A citizen in the Business District reports loss of VPN connectivity (C-2) while confirming no injuries. The outage adds a data communication need for business users. Existing card payment/phone outage (INC-3) and care home platform outage (INC-2) remain unchanged."
+  }
+ },
+ "synth:5": {
+  "hash": "aa2b92896e81a9c8",
+  "model": "openai/gpt-oss-120b",
+  "output": {
+   "changes": [
+    {
+     "caused_by": [
+      "TM-1"
+     ],
+     "needs_affected": [],
+     "summary": "Added verified cause for FB-1 outage and updated dependency chain.",
+     "t": 12.0
+    }
+   ],
+   "closed_item_ids": [],
+   "contradictions": [],
+   "dependencies": [
+    {
+     "id": "DEP-1",
+     "status": "verified",
+     "steps": [
+      {
+       "description": "Excavator strike caused loss of light on FB-1, cutting backhaul for Business District and Elm Park Care Home.",
+       "evidence": [
+        {
+         "quote": "FB-1 metro fibre: loss of light at 10:05; contractor reports excavator strike at roadworks",
+         "source_id": "TM-1"
+        }
+       ]
+      }
+     ],
+     "title": "FB-1 fibre outage dependency"
+    }
+   ],
+   "gaps": [
+    {
+     "id": "GAP-6",
+     "question": "What is the cause of the Business District VPN outage and expected repair time?",
+     "why_it_matters": ""
+    }
+   ],
+   "incidents": [
+    {
+     "comm_ids": [],
+     "confidence": 0.9,
+     "facts": [
+      {
+       "claim": "Loss of light on FB-1 confirmed at 10:05",
+       "evidence": [
+        {
+         "quote": "FB-1 metro fibre: loss of light at 10:05; contractor reports excavator strike at roadworks",
+         "source_id": "TM-1"
+        }
+       ],
+       "flagged": null,
+       "status": "verified"
+      },
+      {
+       "claim": "Cause of loss is excavator strike",
+       "evidence": [
+        {
+         "quote": "contractor reports excavator strike at roadworks",
+         "source_id": "TM-1"
+        }
+       ],
+       "flagged": null,
+       "status": "verified"
+      }
+     ],
+     "id": "INC-1",
+     "life_threat": "unknown",
+     "people_max": null,
+     "people_min": null,
+     "related": [],
+     "title": "Metro fibre link FB-1 loss of light",
+     "zone_id": null
+    }
+   ],
+   "needs": [],
+   "resolved_need_ids": [],
+   "summary": "Metro fibre link FB-1 loss of light is confirmed to be caused by an excavator strike at roadworks (verified). This reinforces the dependency of the Business District and Elm Park Care Home on FB-1. No new communications were received; existing incidents and needs remain unchanged."
+  }
+ }
+}

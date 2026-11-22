@@ -1,0 +1,1633 @@
+{
+ "interpret:C-1": {
+  "hash": "c3b363d3ca4e372a",
+  "model": "openai/gpt-oss-120b",
+  "output": {
+   "comm_id": "C-1",
+   "confidence": 0.95,
+   "facts": [
+    {
+     "claim": "The sister lives in Ridge Hamlets.",
+     "evidence": [
+      {
+       "quote": "My sister lives in the Ridge Hamlets",
+       "source_id": "C-1"
+      }
+     ],
+     "flagged": null,
+     "status": "reported"
+    },
+    {
+     "claim": "The citizen has not heard from the sister since the shaking.",
+     "evidence": [
+      {
+       "quote": "I have not heard from her since the shaking.",
+       "source_id": "C-1"
+      }
+     ],
+     "flagged": null,
+     "status": "reported"
+    },
+    {
+     "claim": "Nobody in Ridge Hamlets answers their phone.",
+     "evidence": [
+      {
+       "quote": "Nobody there answers their phone.",
+       "source_id": "C-1"
+      }
+     ],
+     "flagged": null,
+     "status": "reported"
+    },
+    {
+     "claim": "The location mentioned is Ridge Hamlets (zone Z-RIDGE).",
+     "evidence": [
+      {
+       "quote": "Ridge Hamlets",
+       "source_id": "C-1"
+      }
+     ],
+     "flagged": null,
+     "status": "inferred"
+    }
+   ],
+   "interpreter": "groq:openai/gpt-oss-120b",
+   "life_threat": "unknown",
+   "location_text": "Ridge Hamlets",
+   "missing_info": [
+    "Current condition and safety of the sister",
+    "Number of people unable to communicate in Ridge Hamlets",
+    "Status of cellular network infrastructure in Ridge Hamlets"
+   ],
+   "needs_mentioned": [],
+   "operations_affected": [
+    "cellular communication"
+   ],
+   "people_max": null,
+   "people_min": null,
+   "summary": "A citizen reports no contact with their sister in Ridge Hamlets after shaking, noting phones are not being answered.",
+   "zone_id": "Z-RIDGE"
+  }
+ },
+ "interpret:C-2": {
+  "hash": "eb3e333377089ab4",
+  "model": "openai/gpt-oss-120b",
+  "output": {
+   "comm_id": "C-2",
+   "confidence": 0.98,
+   "facts": [
+    {
+     "claim": "Cellular calls are dropping near the market in Valley Town.",
+     "evidence": [
+      {
+       "quote": "calls keep dropping near the market",
+       "source_id": "C-2"
+      }
+     ],
+     "flagged": null,
+     "status": "reported"
+    },
+    {
+     "claim": "Everyone is trying to reach relatives in the villages.",
+     "evidence": [
+      {
+       "quote": "everyone is trying to reach relatives in the villages",
+       "source_id": "C-2"
+      }
+     ],
+     "flagged": null,
+     "status": "reported"
+    }
+   ],
+   "interpreter": "groq:openai/gpt-oss-120b",
+   "life_threat": "unknown",
+   "location_text": "Valley Town",
+   "missing_info": [
+    "Exact number of callers affected",
+    "Specific cause of call drops",
+    "Precise location of the market within Valley Town",
+    "Whether any emergency services are impacted"
+   ],
+   "needs_mentioned": [],
+   "operations_affected": [
+    "cellular communication"
+   ],
+   "people_max": null,
+   "people_min": null,
+   "summary": "Citizens report that cellular calls are dropping near the market in Valley Town.",
+   "zone_id": "Z-TOWN"
+  }
+ },
+ "interpret:M-1": {
+  "hash": "e655b4c6140baea6",
+  "model": "openai/gpt-oss-120b",
+  "output": {
+   "comm_id": "M-1",
+   "confidence": 0.98,
+   "facts": [
+    {
+     "claim": "The speaker is a school teacher in Yaylakoy.",
+     "evidence": [
+      {
+       "quote": "This is the school teacher in Yaylakoy.",
+       "source_id": "M-1"
+      }
+     ],
+     "flagged": null,
+     "status": "reported"
+    },
+    {
+     "claim": "Families gathered in the school yard, 60\u201170 people.",
+     "evidence": [
+      {
+       "quote": "Families gathered in the school yard, 60-70 people, it will be cold tonight, we need blankets.",
+       "source_id": "M-1"
+      }
+     ],
+     "flagged": null,
+     "status": "reported"
+    },
+    {
+     "claim": "The gathered people need blankets because it will be cold tonight.",
+     "evidence": [
+      {
+       "quote": "it will be cold tonight, we need blankets.",
+       "source_id": "M-1"
+      }
+     ],
+     "flagged": null,
+     "status": "reported"
+    },
+    {
+     "claim": "Some elderly are not accounted for.",
+     "evidence": [
+      {
+       "quote": "Some elderly are not accounted for.",
+       "source_id": "M-1"
+      }
+     ],
+     "flagged": null,
+     "status": "reported"
+    }
+   ],
+   "interpreter": "groq:openai/gpt-oss-120b",
+   "life_threat": "unknown",
+   "location_text": null,
+   "missing_info": [
+    "Exact number of elderly missing",
+    "Identity and condition of the unaccounted elderly",
+    "Current temperature and weather forecast",
+    "Availability of blankets or other warming resources"
+   ],
+   "needs_mentioned": [
+    "blankets"
+   ],
+   "operations_affected": [
+    "school operations"
+   ],
+   "people_max": 70,
+   "people_min": 60,
+   "summary": "A school teacher in Yaylakoy reports 60\u201170 people gathered in the school yard needing blankets and notes some elderly are unaccounted for.",
+   "zone_id": "Z-UPPER"
+  }
+ },
+ "interpret:R-1": {
+  "hash": "21b1d5fadf6d0c3d",
+  "model": "openai/gpt-oss-120b",
+  "output": {
+   "comm_id": "R-1",
+   "confidence": 0.98,
+   "facts": [
+    {
+     "claim": "Mountain Rescue Unit 2 is at km 14 on the pass road.",
+     "evidence": [
+      {
+       "quote": "Mountain Rescue Unit 2 at km 14 on the pass road.",
+       "source_id": "R-1"
+      }
+     ],
+     "flagged": null,
+     "status": "reported"
+    },
+    {
+     "claim": "A landslide has covered the road.",
+     "evidence": [
+      {
+       "quote": "Landslide covered the road,",
+       "source_id": "R-1"
+      }
+     ],
+     "flagged": null,
+     "status": "reported"
+    },
+    {
+     "claim": "At least one car is buried by the landslide.",
+     "evidence": [
+      {
+       "quote": "at least one car buried,",
+       "source_id": "R-1"
+      }
+     ],
+     "flagged": null,
+     "status": "reported"
+    },
+    {
+     "claim": "Rescuers can hear a horn from the buried vehicle.",
+     "evidence": [
+      {
+       "quote": "we can hear a horn.",
+       "source_id": "R-1"
+      }
+     ],
+     "flagged": null,
+     "status": "reported"
+    },
+    {
+     "claim": "Radio contact with base is lost beyond the bend.",
+     "evidence": [
+      {
+       "quote": "We lose radio contact with base beyond the bend,",
+       "source_id": "R-1"
+      }
+     ],
+     "flagged": null,
+     "status": "reported"
+    },
+    {
+     "claim": "The unit needs a radio relay to restore communication.",
+     "evidence": [
+      {
+       "quote": "need a relay.",
+       "source_id": "R-1"
+      }
+     ],
+     "flagged": null,
+     "status": "reported"
+    }
+   ],
+   "interpreter": "groq:openai/gpt-oss-120b",
+   "life_threat": "yes",
+   "location_text": "Mountain Pass Road, km 14",
+   "missing_info": [
+    "Number of people trapped in the buried vehicle",
+    "Condition and injuries of any occupants",
+    "Exact coordinates of the relay point needed",
+    "Status of rescue equipment and personnel availability"
+   ],
+   "needs_mentioned": [
+    "radio relay"
+   ],
+   "operations_affected": [
+    "communication",
+    "road transport"
+   ],
+   "people_max": null,
+   "people_min": null,
+   "summary": "Mountain Rescue Unit 2 reports a landslide on the pass road at km 14 that has buried at least one car, they have lost radio contact with base and request a relay.",
+   "zone_id": "Z-PASS"
+  }
+ },
+ "interpret:R-2": {
+  "hash": "9723742dedcb5128",
+  "model": "openai/gpt-oss-120b",
+  "output": {
+   "comm_id": "R-2",
+   "confidence": 0.98,
+   "facts": [
+    {
+     "claim": "One person was extracted from the buried car and is hypothermic but alive.",
+     "evidence": [
+      {
+       "quote": "one person extracted from the buried car, hypothermic but alive",
+       "source_id": "R-2"
+      }
+     ],
+     "flagged": null,
+     "status": "reported"
+    },
+    {
+     "claim": "A second vehicle may be under the debris.",
+     "evidence": [
+      {
+       "quote": "A second vehicle may be under the debris, unconfirmed",
+       "source_id": "R-2"
+      }
+     ],
+     "flagged": null,
+     "status": "reported"
+    }
+   ],
+   "interpreter": "groq:openai/gpt-oss-120b",
+   "life_threat": "yes",
+   "location_text": null,
+   "missing_info": [
+    "Confirmation of the second vehicle's presence",
+    "Number of additional persons possibly trapped",
+    "Medical status beyond hypothermia for the extracted person"
+   ],
+   "needs_mentioned": [],
+   "operations_affected": [
+    "emergency rescue operations"
+   ],
+   "people_max": null,
+   "people_min": 1,
+   "summary": "Responder reports one hypothermic survivor extracted from a buried car and mentions an unconfirmed second vehicle possibly under debris.",
+   "zone_id": "Z-PASS"
+  }
+ },
+ "interpret:S-1": {
+  "hash": "8311d862446333ff",
+  "model": "openai/gpt-oss-120b",
+  "output": {
+   "comm_id": "S-1",
+   "confidence": 0.97,
+   "facts": [
+    {
+     "claim": "Yaylakoy clinic has 2 nurses on site.",
+     "evidence": [
+      {
+       "quote": "Yaylakoy clinic: 2 nurses, 11 injured villagers brought in.",
+       "source_id": "S-1"
+      }
+     ],
+     "flagged": null,
+     "status": "reported"
+    },
+    {
+     "claim": "11 injured villagers have been brought to the clinic.",
+     "evidence": [
+      {
+       "quote": "Yaylakoy clinic: 2 nurses, 11 injured villagers brought in.",
+       "source_id": "S-1"
+      }
+     ],
+     "flagged": null,
+     "status": "reported"
+    },
+    {
+     "claim": "One man has a crushed leg and needs evacuation.",
+     "evidence": [
+      {
+       "quote": "One man with a crushed leg needs evacuation.",
+       "source_id": "S-1"
+      }
+     ],
+     "flagged": null,
+     "status": "reported"
+    },
+    {
+     "claim": "The road to town is blocked by a landslide.",
+     "evidence": [
+      {
+       "quote": "Road to town blocked by landslide.",
+       "source_id": "S-1"
+      }
+     ],
+     "flagged": null,
+     "status": "reported"
+    },
+    {
+     "claim": "There is no phone signal at the clinic.",
+     "evidence": [
+      {
+       "quote": "No phone signal here.",
+       "source_id": "S-1"
+      }
+     ],
+     "flagged": null,
+     "status": "reported"
+    }
+   ],
+   "interpreter": "groq:openai/gpt-oss-120b",
+   "life_threat": "yes",
+   "location_text": null,
+   "missing_info": [
+    "Exact location of the man needing evacuation",
+    "Availability of transport for evacuation",
+    "Status of the landslide clearance effort",
+    "Condition of the 11 injured villagers beyond being injured",
+    "Any additional medical resources needed"
+   ],
+   "needs_mentioned": [
+    "evacuation for the man with a crushed leg",
+    "road clearance",
+    "restoration of phone signal"
+   ],
+   "operations_affected": [
+    "medical evacuation",
+    "road access",
+    "communication"
+   ],
+   "people_max": null,
+   "people_min": 12,
+   "summary": "Yaylakoy clinic reports 2 nurses treating 11 injured villagers and a man with a crushed leg needing evacuation; road to town blocked by landslide and no phone signal.",
+   "zone_id": "Z-UPPER"
+  }
+ },
+ "interpret:S-2": {
+  "hash": "2151fa2c78d84b40",
+  "model": "openai/gpt-oss-120b",
+  "output": {
+   "comm_id": "S-2",
+   "confidence": 0.97,
+   "facts": [
+    {
+     "claim": "A patient with a crushed leg is deteriorating at Yaylakoy Clinic.",
+     "evidence": [
+      {
+       "quote": "Yaylakoy clinic: crushed leg patient deteriorating.",
+       "source_id": "S-2"
+      }
+     ],
+     "flagged": null,
+     "status": "reported"
+    },
+    {
+     "claim": "The clinic requests a doctor on the line for guidance.",
+     "evidence": [
+      {
+       "quote": "We need a doctor on the line for guidance, the satellite messenger only allows short texts.",
+       "source_id": "S-2"
+      }
+     ],
+     "flagged": null,
+     "status": "reported"
+    },
+    {
+     "claim": "The satellite messenger only allows short texts.",
+     "evidence": [
+      {
+       "quote": "the satellite messenger only allows short texts.",
+       "source_id": "S-2"
+      }
+     ],
+     "flagged": null,
+     "status": "reported"
+    },
+    {
+     "claim": "The incident is located at Yaylakoy Clinic in zone Z-UPPER.",
+     "evidence": [
+      {
+       "quote": "Yaylakoy clinic: crushed leg patient deteriorating.",
+       "source_id": "S-2"
+      },
+      {
+       "quote": "\"zone_from_metadata\": \"Z-UPPER\"",
+       "source_id": "metadata"
+      }
+     ],
+     "flagged": null,
+     "status": "verified"
+    }
+   ],
+   "interpreter": "groq:openai/gpt-oss-120b",
+   "life_threat": "yes",
+   "location_text": "Yaylakoy Clinic, Yaylakoy Village (zone Z-UPPER)",
+   "missing_info": [
+    "patient's vital signs and exact condition",
+    "required medical supplies or interventions",
+    "alternative communication method for detailed guidance"
+   ],
+   "needs_mentioned": [
+    "doctor assistance"
+   ],
+   "operations_affected": [
+    "medical guidance",
+    "patient care"
+   ],
+   "people_max": null,
+   "people_min": null,
+   "summary": "A patient with a crushed leg at Yaylakoy Clinic is deteriorating and the clinic requests a doctor for guidance.",
+   "zone_id": "Z-UPPER"
+  }
+ },
+ "synth:1": {
+  "hash": "d260a07d44477963",
+  "model": "openai/gpt-oss-120b",
+  "output": {
+   "changes": [
+    {
+     "caused_by": [
+      "TM-1",
+      "TM-2",
+      "TM-3"
+     ],
+     "needs_affected": [
+      "NEED-1",
+      "NEED-2",
+      "NEED-3"
+     ],
+     "summary": "Added three incidents based on telemetry reports and created corresponding communication needs and dependencies.",
+     "t": 0.0
+    }
+   ],
+   "closed_item_ids": [],
+   "contradictions": [],
+   "dependencies": [
+    {
+     "id": "DEP-1",
+     "status": "reported",
+     "steps": [
+      {
+       "description": "Power and transmission loss at Upper Ridge disables backhaul for local responders",
+       "evidence": [
+        {
+         "quote": "V2 Upper Ridge: power and transmission lost; access road reported blocked",
+         "source_id": "TM-1"
+        }
+       ]
+      },
+      {
+       "description": "Resulting need for voice communications for emergency operations",
+       "evidence": [
+        {
+         "quote": "V2 Upper Ridge: power and transmission lost; access road reported blocked",
+         "source_id": "TM-1"
+        }
+       ]
+      }
+     ],
+     "title": "Upper Ridge power/transmission outage impacts communications"
+    },
+    {
+     "id": "DEP-2",
+     "status": "reported",
+     "steps": [
+      {
+       "description": "Microwave link loss cuts Ridge Hamlets off from core network",
+       "evidence": [
+        {
+         "quote": "MW-2 Ridge microwave: loss of frame. V3 Ridge Hamlets still powered but cut off from the core",
+         "source_id": "TM-2"
+        }
+       ]
+      },
+      {
+       "description": "Creates need for data communications for coordination",
+       "evidence": [
+        {
+         "quote": "MW-2 Ridge microwave: loss of frame. V3 Ridge Hamlets still powered but cut off from the core",
+         "source_id": "TM-2"
+        }
+       ]
+      }
+     ],
+     "title": "Microwave link failure isolates Ridge Hamlets"
+    },
+    {
+     "id": "DEP-3",
+     "status": "reported",
+     "steps": [
+      {
+       "description": "Cabinet alarm and off\u2011air condition at V4 Town South disables voice channel",
+       "evidence": [
+        {
+         "quote": "V4 Town South: cabinet alarm, off air",
+         "source_id": "TM-3"
+        }
+       ]
+      },
+      {
+       "description": "Triggers life\u2011safety need for voice communications for fire station",
+       "evidence": [
+        {
+         "quote": "V4 Town South: cabinet alarm, off air",
+         "source_id": "TM-3"
+        }
+       ]
+      }
+     ],
+     "title": "Town South cabinet alarm disables voice channel"
+    }
+   ],
+   "gaps": [
+    {
+     "id": "GAP-1",
+     "question": "Exact number of people affected by each outage",
+     "why_it_matters": "Helps prioritize resource allocation"
+    },
+    {
+     "id": "GAP-2",
+     "question": "Status of access road to Upper Ridge (blocked or passable)",
+     "why_it_matters": "Impacts ability to send repair crews"
+    }
+   ],
+   "incidents": [
+    {
+     "comm_ids": [
+      "TM-1"
+     ],
+     "confidence": 0.5,
+     "facts": [
+      {
+       "claim": "Power and transmission lost at Upper Ridge; access road blocked",
+       "evidence": [
+        {
+         "quote": "V2 Upper Ridge: power and transmission lost; access road reported blocked",
+         "source_id": "TM-1"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      }
+     ],
+     "id": "INC-1",
+     "life_threat": "unknown",
+     "people_max": null,
+     "people_min": null,
+     "related": [],
+     "title": "Power and transmission loss at Upper Ridge",
+     "zone_id": "Z-RIDGE"
+    },
+    {
+     "comm_ids": [
+      "TM-2"
+     ],
+     "confidence": 0.5,
+     "facts": [
+      {
+       "claim": "Loss of frame on MW-2 ridge microwave; V3 Ridge Hamlets still powered but cut off from core",
+       "evidence": [
+        {
+         "quote": "MW-2 Ridge microwave: loss of frame. V3 Ridge Hamlets still powered but cut off from the core",
+         "source_id": "TM-2"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      }
+     ],
+     "id": "INC-2",
+     "life_threat": "unknown",
+     "people_max": null,
+     "people_min": null,
+     "related": [],
+     "title": "Microwave link loss affecting Ridge Hamlets",
+     "zone_id": "Z-RIDGE"
+    },
+    {
+     "comm_ids": [
+      "TM-3"
+     ],
+     "confidence": 0.5,
+     "facts": [
+      {
+       "claim": "Cabinet alarm, off air at V4 Town South",
+       "evidence": [
+        {
+         "quote": "V4 Town South: cabinet alarm, off air",
+         "source_id": "TM-3"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      }
+     ],
+     "id": "INC-3",
+     "life_threat": "unknown",
+     "people_max": null,
+     "people_min": null,
+     "related": [],
+     "title": "Cabinet alarm at Town South",
+     "zone_id": "Z-TOWN"
+    }
+   ],
+   "needs": [
+    {
+     "category": "emergency_operation",
+     "confidence": 0.5,
+     "evidence": [
+      {
+       "quote": "V2 Upper Ridge: power and transmission lost; access road reported blocked",
+       "source_id": "TM-1"
+      }
+     ],
+     "first_seen_t": 0.0,
+     "id": "NEED-1",
+     "incident_ids": [
+      "INC-1"
+     ],
+     "life_threat": "unknown",
+     "people_max": null,
+     "people_min": null,
+     "purpose": "Coordinate rescue and restoration efforts in Upper Ridge where power and transmission are down and road access is blocked",
+     "resolution": "",
+     "service": "voice",
+     "status": "open",
+     "verification_needed": false,
+     "who": "Emergency responders",
+     "zone_id": "Z-RIDGE"
+    },
+    {
+     "category": "emergency_operation",
+     "confidence": 0.5,
+     "evidence": [
+      {
+       "quote": "MW-2 Ridge microwave: loss of frame. V3 Ridge Hamlets still powered but cut off from the core",
+       "source_id": "TM-2"
+      }
+     ],
+     "first_seen_t": 0.0,
+     "id": "NEED-2",
+     "incident_ids": [
+      "INC-2"
+     ],
+     "life_threat": "unknown",
+     "people_max": null,
+     "people_min": null,
+     "purpose": "Maintain command and control for Ridge Hamlets isolated by microwave link loss",
+     "resolution": "",
+     "service": "data",
+     "status": "open",
+     "verification_needed": false,
+     "who": "Emergency responders",
+     "zone_id": "Z-RIDGE"
+    },
+    {
+     "category": "life_safety",
+     "confidence": 0.5,
+     "evidence": [
+      {
+       "quote": "V4 Town South: cabinet alarm, off air",
+       "source_id": "TM-3"
+      }
+     ],
+     "first_seen_t": 0.0,
+     "id": "NEED-3",
+     "incident_ids": [
+      "INC-3"
+     ],
+     "life_threat": "unknown",
+     "people_max": null,
+     "people_min": null,
+     "purpose": "Restore communications after cabinet alarm and loss of air at V4",
+     "resolution": "",
+     "service": "voice",
+     "status": "open",
+     "verification_needed": false,
+     "who": "Town South fire station and local responders",
+     "zone_id": "Z-TOWN"
+    }
+   ],
+   "resolved_need_ids": [],
+   "summary": "Multiple infrastructure failures reported: power and transmission loss at Upper Ridge, microwave link loss affecting Ridge Hamlets, and a cabinet alarm at Town South. These outages isolate zones Z-RIDGE, Z-UPPER, and Z-TOWN, creating urgent communication needs for emergency operations and life\u2011safety responders."
+  }
+ },
+ "synth:2": {
+  "hash": "0d7a671f06f840d5",
+  "model": "openai/gpt-oss-120b",
+  "output": {
+   "changes": [
+    {
+     "caused_by": [
+      "S-1"
+     ],
+     "needs_affected": [
+      "NEED-4",
+      "NEED-5"
+     ],
+     "summary": "Added medical emergency incident and associated life\u2011safety communication needs for Z-UPPER; created dependency chain linking landslide blockage and lack of signal to evacuation difficulty.",
+     "t": 3.0
+    }
+   ],
+   "closed_item_ids": [],
+   "contradictions": [],
+   "dependencies": [
+    {
+     "id": "DEP-4",
+     "status": "reported",
+     "steps": [
+      {
+       "description": "Landslide blocks road to town, preventing ground transport for evacuation.",
+       "evidence": [
+        {
+         "quote": "Road to town blocked by landslide.",
+         "source_id": "S-1"
+        }
+       ]
+      },
+      {
+       "description": "No phone signal at clinic hampers coordination with external responders.",
+       "evidence": [
+        {
+         "quote": "No phone signal here.",
+         "source_id": "S-1"
+        }
+       ]
+      }
+     ],
+     "title": "Landslide and signal loss impede evacuation"
+    }
+   ],
+   "gaps": [
+    {
+     "id": "GAP-3",
+     "question": "Availability of transport (ambulance, helicopter) for evacuation of the man with a crushed leg",
+     "why_it_matters": "Without transport the life\u2011threatening injury cannot be addressed."
+    },
+    {
+     "id": "GAP-4",
+     "question": "Status of landslide clearance effort on the road to town",
+     "why_it_matters": "Road clearance is required to enable ground evacuation and supply delivery."
+    }
+   ],
+   "incidents": [
+    {
+     "comm_ids": [
+      "S-1"
+     ],
+     "confidence": 0.5,
+     "facts": [
+      {
+       "claim": "Yaylakoy clinic has 2 nurses on site.",
+       "evidence": [
+        {
+         "quote": "Yaylakoy clinic: 2 nurses, 11 injured villagers brought in.",
+         "source_id": "S-1"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "11 injured villagers have been brought to the clinic.",
+       "evidence": [
+        {
+         "quote": "Yaylakoy clinic: 2 nurses, 11 injured villagers brought in.",
+         "source_id": "S-1"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "One man has a crushed leg and needs evacuation.",
+       "evidence": [
+        {
+         "quote": "One man with a crushed leg needs evacuation.",
+         "source_id": "S-1"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "The road to town is blocked by a landslide.",
+       "evidence": [
+        {
+         "quote": "Road to town blocked by landslide.",
+         "source_id": "S-1"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "There is no phone signal at the clinic.",
+       "evidence": [
+        {
+         "quote": "No phone signal here.",
+         "source_id": "S-1"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      }
+     ],
+     "id": "INC-4",
+     "life_threat": "yes",
+     "people_max": null,
+     "people_min": 12,
+     "related": [
+      {
+       "incident_id": "INC-1",
+       "note": "",
+       "relation": "same_area"
+      }
+     ],
+     "title": "Medical emergency and road blockage at Yaylakoy Clinic",
+     "zone_id": "Z-UPPER"
+    }
+   ],
+   "needs": [
+    {
+     "category": "life_safety",
+     "confidence": 0.7,
+     "evidence": [],
+     "first_seen_t": 3.0,
+     "id": "NEED-4",
+     "incident_ids": [
+      "INC-4"
+     ],
+     "life_threat": "yes",
+     "people_max": null,
+     "people_min": 12,
+     "purpose": "coordinate medical evacuation and request assistance",
+     "resolution": "",
+     "service": "voice",
+     "status": "open",
+     "verification_needed": false,
+     "who": "Yaylakoy clinic staff and injured patients",
+     "zone_id": "Z-UPPER"
+    },
+    {
+     "category": "life_safety",
+     "confidence": 0.7,
+     "evidence": [],
+     "first_seen_t": 3.0,
+     "id": "NEED-5",
+     "incident_ids": [
+      "INC-4"
+     ],
+     "life_threat": "yes",
+     "people_max": null,
+     "people_min": 12,
+     "purpose": "send patient status updates and request transport resources",
+     "resolution": "",
+     "service": "data",
+     "status": "open",
+     "verification_needed": false,
+     "who": "Yaylakoy clinic staff",
+     "zone_id": "Z-UPPER"
+    }
+   ],
+   "resolved_need_ids": [],
+   "summary": "A medical emergency has emerged in Z-UPPER (Yaylakoy Clinic) with 11 injured villagers and a man requiring evacuation, while the access road is blocked by a landslide and there is no phone signal. Existing power and microwave outages continue to isolate Z-RIDGE and Z-TOWN, maintaining open communication needs for responders."
+  }
+ },
+ "synth:3": {
+  "hash": "f1115da24a00ae13",
+  "model": "openai/gpt-oss-120b",
+  "output": {
+   "changes": [
+    {
+     "caused_by": [
+      "R-1"
+     ],
+     "needs_affected": [
+      "NEED-6"
+     ],
+     "summary": "Added new incident for landslide on pass road and associated emergency communication need; created dependency chain for radio relay.",
+     "t": 0.0
+    }
+   ],
+   "closed_item_ids": [],
+   "contradictions": [],
+   "dependencies": [
+    {
+     "id": "DEP-5",
+     "status": "reported",
+     "steps": [
+      {
+       "description": "Landslide blocks road and creates terrain that blocks line\u2011of\u2011sight radio to base",
+       "evidence": [
+        {
+         "quote": "We lose radio contact with base beyond the bend",
+         "source_id": "R-1"
+        }
+       ]
+      },
+      {
+       "description": "Unit requests a relay to re\u2011establish voice link",
+       "evidence": [
+        {
+         "quote": "need a relay.",
+         "source_id": "R-1"
+        }
+       ]
+      }
+     ],
+     "title": "Radio relay required for Mountain Rescue Unit 2 due to landslide\u2011induced loss of contact"
+    }
+   ],
+   "gaps": [
+    {
+     "id": "GAP-5",
+     "question": "Number of people trapped in the buried vehicle and their condition",
+     "why_it_matters": "Determines urgency of rescue and needed medical resources"
+    },
+    {
+     "id": "GAP-6",
+     "question": "Exact coordinates for the required radio relay point",
+     "why_it_matters": "Enables rapid deployment of relay equipment"
+    }
+   ],
+   "incidents": [
+    {
+     "comm_ids": [
+      "R-1"
+     ],
+     "confidence": 0.7,
+     "facts": [
+      {
+       "claim": "Mountain Rescue Unit 2 is at km 14 on the pass road.",
+       "evidence": [
+        {
+         "quote": "Mountain Rescue Unit 2 at km 14 on the pass road.",
+         "source_id": "R-1"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "A landslide has covered the road and buried at least one car.",
+       "evidence": [
+        {
+         "quote": "Landslide covered the road, at least one car buried,",
+         "source_id": "R-1"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "Rescuers can hear a horn from the buried vehicle.",
+       "evidence": [
+        {
+         "quote": "we can hear a horn.",
+         "source_id": "R-1"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "Radio contact with base is lost beyond the bend.",
+       "evidence": [
+        {
+         "quote": "We lose radio contact with base beyond the bend,",
+         "source_id": "R-1"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "The unit needs a radio relay to restore communication.",
+       "evidence": [
+        {
+         "quote": "need a relay.",
+         "source_id": "R-1"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      }
+     ],
+     "id": "INC-5",
+     "life_threat": "yes",
+     "people_max": null,
+     "people_min": null,
+     "related": [
+      {
+       "incident_id": "INC-1",
+       "note": "",
+       "relation": "same_area"
+      }
+     ],
+     "title": "Landslide on Mountain Pass Road blocking transport and communications",
+     "zone_id": "Z-PASS"
+    }
+   ],
+   "needs": [
+    {
+     "category": "emergency_operation",
+     "confidence": 0.8,
+     "evidence": [],
+     "first_seen_t": 5.0,
+     "id": "NEED-6",
+     "incident_ids": [
+      "INC-5"
+     ],
+     "life_threat": "yes",
+     "people_max": null,
+     "people_min": null,
+     "purpose": "Restore radio communication with base via a relay",
+     "resolution": "",
+     "service": "voice",
+     "status": "open",
+     "verification_needed": false,
+     "who": "Mountain Rescue Unit 2",
+     "zone_id": "Z-PASS"
+    }
+   ],
+   "resolved_need_ids": [],
+   "summary": "A landslide on Mountain Pass Road (Z-PASS) has buried a vehicle and cut radio contact for Mountain Rescue Unit 2, creating an urgent need for a radio relay. Existing power and microwave outages continue to isolate Z-RIDGE, while the medical emergency in Z-UPPER remains active."
+  }
+ },
+ "synth:4": {
+  "hash": "d31877a64c00e77f",
+  "model": "openai/gpt-oss-120b",
+  "output": {
+   "changes": [
+    {
+     "caused_by": [
+      "M-1"
+     ],
+     "needs_affected": [
+      "NEED-7"
+     ],
+     "summary": "Added incident for cold exposure risk at Yaylakoy school and a new population need for blankets and missing elderly.",
+     "t": 6.0
+    }
+   ],
+   "closed_item_ids": [],
+   "contradictions": [],
+   "dependencies": [],
+   "gaps": [
+    {
+     "id": "GAP-7",
+     "question": "Exact number and condition of unaccounted elderly at the school yard",
+     "why_it_matters": "Determines urgency of rescue and medical assistance"
+    },
+    {
+     "id": "GAP-8",
+     "question": "Current temperature and forecast for Z\u2011UPPER tonight",
+     "why_it_matters": "Impacts risk of hypothermia for gathered families"
+    }
+   ],
+   "incidents": [
+    {
+     "comm_ids": [
+      "M-1"
+     ],
+     "confidence": 0.6,
+     "facts": [
+      {
+       "claim": "Families gathered in the school yard, 60\u201170 people.",
+       "evidence": [
+        {
+         "quote": "Families gathered in the school yard, 60-70 people, it will be cold tonight, we need blankets.",
+         "source_id": "M-1"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "Some elderly are not accounted for.",
+       "evidence": [
+        {
+         "quote": "Some elderly are not accounted for.",
+         "source_id": "M-1"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "Need blankets due to cold weather.",
+       "evidence": [
+        {
+         "quote": "it will be cold tonight, we need blankets.",
+         "source_id": "M-1"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      }
+     ],
+     "id": "INC-6",
+     "life_threat": "unknown",
+     "people_max": 70,
+     "people_min": 60,
+     "related": [
+      {
+       "incident_id": "INC-4",
+       "note": "",
+       "relation": "same_area"
+      }
+     ],
+     "title": "Cold exposure risk and missing elderly at Yaylakoy school yard",
+     "zone_id": "Z-UPPER"
+    }
+   ],
+   "needs": [
+    {
+     "category": "population",
+     "confidence": 0.7,
+     "evidence": [],
+     "first_seen_t": 6.0,
+     "id": "NEED-7",
+     "incident_ids": [
+      "INC-6"
+     ],
+     "life_threat": "unknown",
+     "people_max": 70,
+     "people_min": 60,
+     "purpose": "Request blankets and locate missing elderly",
+     "resolution": "",
+     "service": "text",
+     "status": "open",
+     "verification_needed": false,
+     "who": "Families and elderly in Yaylakoy school yard",
+     "zone_id": "Z-UPPER"
+    }
+   ],
+   "resolved_need_ids": [],
+   "summary": "A school teacher reports 60\u201170 families gathered in the Yaylakoy school yard needing blankets as temperatures drop, with some elderly unaccounted for. This adds a population\u2011level shelter need in Z\u2011UPPER alongside the existing medical emergency. No new infrastructure failures were reported."
+  }
+ },
+ "synth:5": {
+  "hash": "0ec0bbbf71ce965c",
+  "model": "openai/gpt-oss-120b",
+  "output": {
+   "changes": [
+    {
+     "caused_by": [
+      "C-1"
+     ],
+     "needs_affected": [
+      "NEED-8"
+     ],
+     "summary": "Added citizen report to microwave link incident and created new population voice need for Ridge Hamlets.",
+     "t": 8.0
+    }
+   ],
+   "closed_item_ids": [],
+   "contradictions": [],
+   "dependencies": [],
+   "gaps": [
+    {
+     "id": "GAP-9",
+     "question": "How many residents in Ridge Hamlets are unable to communicate by phone",
+     "why_it_matters": "Determines scale of population communication need"
+    }
+   ],
+   "incidents": [
+    {
+     "comm_ids": [
+      "TM-2",
+      "C-1"
+     ],
+     "confidence": 0.5,
+     "facts": [
+      {
+       "claim": "Nobody in Ridge Hamlets answers their phone.",
+       "evidence": [
+        {
+         "quote": "Nobody there answers their phone.",
+         "source_id": "C-1"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      }
+     ],
+     "id": "INC-2",
+     "life_threat": "unknown",
+     "people_max": null,
+     "people_min": null,
+     "related": [],
+     "title": "Microwave link loss affecting Ridge Hamlets",
+     "zone_id": "Z-RIDGE"
+    }
+   ],
+   "needs": [
+    {
+     "category": "population",
+     "confidence": 0.5,
+     "evidence": [],
+     "first_seen_t": 8.0,
+     "id": "NEED-8",
+     "incident_ids": [
+      "INC-2"
+     ],
+     "life_threat": "unknown",
+     "people_max": null,
+     "people_min": null,
+     "purpose": "Check on safety and restore personal communication",
+     "resolution": "",
+     "service": "voice",
+     "status": "open",
+     "verification_needed": true,
+     "who": "Residents of Ridge Hamlets",
+     "zone_id": "Z-RIDGE"
+    }
+   ],
+   "resolved_need_ids": [],
+   "summary": "Citizen reports loss of phone contact in Ridge Hamlets, confirming communication outage there. The report is linked to the existing microwave link loss incident (INC-2). A new population communication need is identified for Ridge Hamlets residents."
+  }
+ },
+ "synth:6": {
+  "hash": "83d7d01375271518",
+  "model": "openai/gpt-oss-120b",
+  "output": {
+   "changes": [
+    {
+     "caused_by": [
+      "TM-4"
+     ],
+     "needs_affected": [
+      "NEED-8"
+     ],
+     "summary": "Added verified telemetry confirming mains loss in Ridge Hamlets and continued backhaul outage.",
+     "t": 10.0
+    }
+   ],
+   "closed_item_ids": [],
+   "contradictions": [],
+   "dependencies": [],
+   "gaps": [
+    {
+     "id": "GAP-9",
+     "question": "How many residents in Ridge Hamlets are unable to communicate by phone",
+     "why_it_matters": "Quantifies the population communication need."
+    }
+   ],
+   "incidents": [],
+   "needs": [],
+   "resolved_need_ids": [],
+   "summary": "Telemetry confirms that Ridge Hamlets lost mains power and backhaul remains down, reinforcing the microwave link loss incident (INC-2). The population communication need for Ridge Hamlets (NEED-8) remains open, now with verified outage evidence."
+  }
+ },
+ "synth:7": {
+  "hash": "421776cd90d6bce4",
+  "model": "openai/gpt-oss-120b",
+  "output": {
+   "changes": [
+    {
+     "caused_by": [
+      "R-2"
+     ],
+     "needs_affected": [],
+     "summary": "Added survivor extraction details to INC-5 and linked R-2 communication.",
+     "t": 12.0
+    },
+    {
+     "caused_by": [
+      "R-2"
+     ],
+     "needs_affected": [],
+     "summary": "Updated GAP-5 to reflect new uncertainty about additional victims.",
+     "t": 12.0
+    }
+   ],
+   "closed_item_ids": [],
+   "contradictions": [],
+   "dependencies": [],
+   "gaps": [
+    {
+     "id": "GAP-5",
+     "question": "Number of people trapped in the buried vehicle and their condition",
+     "why_it_matters": "Determines urgency of additional rescue resources and medical support"
+    }
+   ],
+   "incidents": [
+    {
+     "comm_ids": [
+      "R-1",
+      "R-2"
+     ],
+     "confidence": 0.5,
+     "facts": [
+      {
+       "claim": "One person was extracted from the buried car and is hypothermic but alive.",
+       "evidence": [
+        {
+         "quote": "one person extracted from the buried car, hypothermic but alive",
+         "source_id": "R-2"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "A second vehicle may be under the debris, unconfirmed.",
+       "evidence": [
+        {
+         "quote": "A second vehicle may be under the debris, unconfirmed",
+         "source_id": "R-2"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      }
+     ],
+     "id": "INC-5",
+     "life_threat": "yes",
+     "people_max": null,
+     "people_min": 1,
+     "related": [],
+     "title": "Landslide on Mountain Pass Road blocking transport and communications",
+     "zone_id": "Z-PASS"
+    }
+   ],
+   "needs": [],
+   "resolved_need_ids": [],
+   "summary": "Responder R-2 confirmed one hypothermic survivor extracted from a buried vehicle on Mountain Pass Road, confirming ongoing life\u2011threatening conditions from the landslide (INC-5). The second vehicle remains unconfirmed, keeping uncertainty about additional victims."
+  }
+ },
+ "synth:8": {
+  "hash": "90393f7e79cfcf6b",
+  "model": "openai/gpt-oss-120b",
+  "output": {
+   "changes": [
+    {
+     "caused_by": [
+      "S-2"
+     ],
+     "needs_affected": [
+      "NEED-9"
+     ],
+     "summary": "Added deteriorating patient detail to INC-4 and created a new voice communication need for a doctor.",
+     "t": 14.0
+    }
+   ],
+   "closed_item_ids": [],
+   "contradictions": [],
+   "dependencies": [],
+   "gaps": [
+    {
+     "id": "GAP-10",
+     "question": "Patient's vital signs and exact condition",
+     "why_it_matters": "Needed to determine urgency of medical evacuation and required interventions"
+    }
+   ],
+   "incidents": [
+    {
+     "comm_ids": [
+      "S-1",
+      "S-2"
+     ],
+     "confidence": 0.5,
+     "facts": [
+      {
+       "claim": "A patient with a crushed leg is deteriorating at Yaylakoy Clinic.",
+       "evidence": [
+        {
+         "quote": "Yaylakoy clinic: crushed leg patient deteriorating.",
+         "source_id": "S-2"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "The clinic requests a doctor on the line for guidance.",
+       "evidence": [
+        {
+         "quote": "We need a doctor on the line for guidance, the satellite messenger only allows short texts.",
+         "source_id": "S-2"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      }
+     ],
+     "id": "INC-4",
+     "life_threat": "yes",
+     "people_max": null,
+     "people_min": 12,
+     "related": [],
+     "title": "Medical emergency and road blockage at Yaylakoy Clinic",
+     "zone_id": "Z-UPPER"
+    }
+   ],
+   "needs": [
+    {
+     "category": "life_safety",
+     "confidence": 0.5,
+     "evidence": [],
+     "first_seen_t": 14.0,
+     "id": "NEED-9",
+     "incident_ids": [
+      "INC-4"
+     ],
+     "life_threat": "yes",
+     "people_max": null,
+     "people_min": 1,
+     "purpose": "Doctor guidance for deteriorating patient with crushed leg",
+     "resolution": "",
+     "service": "voice",
+     "status": "open",
+     "verification_needed": true,
+     "who": "Yaylakoy clinic staff",
+     "zone_id": "Z-UPPER"
+    }
+   ],
+   "resolved_need_ids": [],
+   "summary": "A patient with a crushed leg at Yaylakoy Clinic is deteriorating, prompting a request for a doctor to provide real\u2011time guidance via voice. This adds a critical life\u2011safety communication need for medical expertise in zone Z\u2011UPPER."
+  }
+ },
+ "synth:9": {
+  "hash": "e6bb5602c68d9ec8",
+  "model": "openai/gpt-oss-120b",
+  "output": {
+   "changes": [
+    {
+     "caused_by": [
+      "C-2"
+     ],
+     "needs_affected": [
+      "NEED-10"
+     ],
+     "summary": "Added new incident for cellular call drops in Valley Town and associated population voice need; introduced dependency linking the issue to potential emergency impact.",
+     "t": 0.0
+    }
+   ],
+   "closed_item_ids": [],
+   "contradictions": [],
+   "dependencies": [
+    {
+     "id": "DEP-6",
+     "status": "reported",
+     "steps": [
+      {
+       "description": "Call drops reported by citizens, may reduce ability to contact emergency services.",
+       "evidence": [
+        {
+         "quote": "calls keep dropping near the market",
+         "source_id": "C-2"
+        }
+       ]
+      }
+     ],
+     "title": "Cellular network degradation near Valley Town market"
+    }
+   ],
+   "gaps": [
+    {
+     "id": "GAP-11",
+     "question": "Root cause of cellular call drops near the market (e.g., tower damage, backhaul loss)",
+     "why_it_matters": "Identifying cause is needed to restore reliable voice service for residents and responders."
+    },
+    {
+     "id": "GAP-12",
+     "question": "Number of callers affected by the drop issue",
+     "why_it_matters": "Quantifies the scale of the communication disruption."
+    }
+   ],
+   "incidents": [
+    {
+     "comm_ids": [
+      "C-2"
+     ],
+     "confidence": 0.6,
+     "facts": [
+      {
+       "claim": "Cellular calls are dropping near the market in Valley Town.",
+       "evidence": [
+        {
+         "quote": "calls keep dropping near the market",
+         "source_id": "C-2"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      },
+      {
+       "claim": "Everyone is trying to reach relatives in the villages.",
+       "evidence": [
+        {
+         "quote": "everyone is trying to reach relatives in the villages",
+         "source_id": "C-2"
+        }
+       ],
+       "flagged": null,
+       "status": "reported"
+      }
+     ],
+     "id": "INC-7",
+     "life_threat": "unknown",
+     "people_max": null,
+     "people_min": null,
+     "related": [
+      {
+       "incident_id": "INC-3",
+       "note": "Both incidents occur in Z\u2011TOWN",
+       "relation": "same_area"
+      }
+     ],
+     "title": "Cellular call drops near market in Valley Town",
+     "zone_id": "Z-TOWN"
+    }
+   ],
+   "needs": [
+    {
+     "category": "population",
+     "confidence": 0.5,
+     "evidence": [],
+     "first_seen_t": 16.0,
+     "id": "NEED-10",
+     "incident_ids": [
+      "INC-7"
+     ],
+     "life_threat": "unknown",
+     "people_max": null,
+     "people_min": null,
+     "purpose": "personal communication with relatives and possible emergency coordination",
+     "resolution": "",
+     "service": "voice",
+     "status": "open",
+     "verification_needed": true,
+     "who": "Residents of Valley Town",
+     "zone_id": "Z-TOWN"
+    }
+   ],
+   "resolved_need_ids": [],
+   "summary": "Cellular callers in Valley Town report dropped calls near the market, adding a new communications issue affecting residents. No life\u2011threat is confirmed, but the problem may impact personal contact and possibly emergency coordination."
+  }
+ }
+}
